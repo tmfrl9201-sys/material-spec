@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>유타건축 — 재료 마감 리스트</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f6f4;--bg2:#f0eeeb;--bg3:#e8e5e0;
+  --fg:#1a1a1a;--fg2:#555;--fg3:#888;--fg4:#bbb;
+  --border:#ddd;--border2:#e8e8e8;
+  --blue:#3b7eff;--blue-bg:#eef3ff;--blue-border:#c5d8ff;
+  --green:#2d9e6b;--green-bg:#edfaf4;--green-border:#b3e8d0;
+  --red:#e03e3e;--red-bg:#fff0f0;--red-border:#ffc5c5;
+  --yellow-bg:#fffbea;--yellow-border:#fde68a;--yellow:#b45309;
+  --radius:6px;--radius-lg:10px;
+  --font-sans:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code',monospace;
+  --shadow:0 1px 4px rgba(0,0,0,0.08);
+}
+body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(--fg)}
+.app{display:flex;height:100vh;min-height:600px}
+.sidebar{width:172px;min-width:172px;background:#fff;border-right:1px solid var(--border2);display:flex;flex-direction:column}
+.logo{padding:14px 14px 12px;border-bottom:1px solid var(--border2)}
+.logo h1{font-size:14px;font-weight:600;letter-spacing:-0.3px}
+.logo p{font-size:10px;color:var(--fg3);margin-top:2px}
+.nav-sec{padding:8px 0}
+.nav-lbl{font-size:10px;color:var(--fg4);padding:4px 14px;letter-spacing:0.5px;text-transform:uppercase}
+.nitem{display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;font-size:12px;color:var(--fg2);border-left:2px solid transparent;transition:all 0.1s}
+.nitem:hover{background:var(--bg);color:var(--fg)}
+.nitem.on{color:var(--fg);font-weight:500;background:var(--bg);border-left-color:var(--fg)}
+.nitem i{font-size:15px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{background:#fff;border-bottom:1px solid var(--border2);padding:9px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:var(--shadow)}
+.topbar h2{font-size:14px;font-weight:600;letter-spacing:-0.2px;white-space:nowrap}
+.sw{flex:1;position:relative;max-width:260px}
+.sw i{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--fg4);pointer-events:none}
+.si{width:100%;padding:6px 9px 6px 30px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg);color:var(--fg);font-size:12px;font-family:var(--font-sans)}
+.si:focus{outline:none;border-color:#aaa;background:#fff}
+.ta{display:flex;gap:6px;margin-left:auto}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:var(--radius);font-size:12px;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--fg);font-family:var(--font-sans);transition:all 0.1s;font-weight:500}
+.btn:hover{background:var(--bg);border-color:#bbb}
+.btn-dark{background:var(--fg);color:#fff;border-color:var(--fg)}
+.btn-dark:hover{background:#333}
+.btn-danger{color:var(--red);border-color:var(--red-border)}
+.btn-danger:hover{background:var(--red-bg)}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.view{flex:1;overflow:hidden;display:none}
+.view.on{display:flex}
+.db-view{flex-direction:row}
+.db-left{width:138px;min-width:138px;border-right:1px solid var(--border2);overflow-y:auto;padding:8px 0;background:#fff}
+.db-sec-lbl{font-size:10px;color:var(--fg4);padding:8px 12px 3px;letter-spacing:0.4px;text-transform:uppercase}
+.dcat{padding:6px 12px;font-size:12px;color:var(--fg2);cursor:pointer;display:flex;align-items:center;gap:4px;transition:background 0.1s}
+.dcat:hover{background:var(--bg)}
+.dcat.on{color:var(--fg);font-weight:500;background:var(--bg2)}
+.dcat .cnt{font-size:10px;color:var(--fg4);margin-left:auto}
+.dcat-add{border-top:1px solid var(--border2);margin-top:4px;padding-top:4px;color:var(--fg3)}
+.db-main{flex:1;overflow-y:auto;padding:14px}
+.db-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px}
+.mcard{background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);transition:box-shadow 0.1s}
+.mcard:hover{box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+.mcard-thumb-wrap{position:relative}
+.mthumb{height:80px;display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(0,0,0,0.3);text-align:center;padding:4px}
+.mthumb-imgs{display:grid;gap:1px;height:80px}
+.mthumb-imgs.n1{grid-template-columns:1fr}.mthumb-imgs.n2{grid-template-columns:1fr 1fr}.mthumb-imgs.n3{grid-template-columns:1fr 1fr 1fr}
+.mthumb-imgs img{width:100%;height:100%;object-fit:cover}
+.mcard-img-btn{position:absolute;bottom:5px;right:5px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:4px;padding:3px 7px;font-size:10px;cursor:pointer;display:flex;align-items:center;gap:3px;font-family:var(--font-sans)}
+.mcard-img-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.minfo{padding:8px 10px}
+.mname{font-size:11px;font-weight:600;color:var(--fg);line-height:1.3}
+.msub{font-size:10px;color:var(--fg3);margin-top:2px}
+.mtag{display:inline-block;font-size:9px;padding:2px 6px;border-radius:20px;background:var(--bg2);color:var(--fg3);margin-top:4px;border:1px solid var(--border2)}
+.mimg-cnt{font-size:10px;color:var(--fg4);margin-top:3px;display:flex;align-items:center;gap:3px}
+.dashed-card{border:1.5px dashed var(--border);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer;color:var(--fg4);font-size:11px;min-height:120px;transition:all 0.1s}
+.dashed-card:hover{background:var(--bg);border-color:#aaa;color:var(--fg3)}
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px}
+.ref-card{background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.ref-card-img{height:108px;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--fg4);position:relative;overflow:hidden}
+.ref-card-img img{width:100%;height:100%;object-fit:cover}
+.ref-card-img-up{position:absolute;inset:0;opacity:0;cursor:pointer}
+.ref-card-body{padding:8px 10px}
+.ref-card-title{font-size:12px;font-weight:600;color:var(--fg)}
+.ref-card-desc{font-size:10px;color:var(--fg3);margin-top:2px}
+.ref-add{border:1.5px dashed var(--border);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;color:var(--fg4);font-size:11px;min-height:150px}
+.ref-add:hover{background:var(--bg);color:var(--fg3)}
+.upload-view{flex-direction:column;overflow-y:auto;padding:16px;gap:14px}
+.upload-rule-box{background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow)}
+.upload-rule-title{font-size:11px;font-weight:600;color:var(--fg2);margin-bottom:9px}
+.rule-table{width:100%;border-collapse:collapse;font-size:11px}
+.rule-table th{font-size:10px;color:var(--fg4);padding:4px 9px;border-bottom:1px solid var(--border2);text-align:left;font-weight:600}
+.rule-table td{padding:5px 9px;border-bottom:1px solid var(--border2);color:var(--fg);font-family:var(--font-mono);font-size:11px}
+.rule-table td.ok{color:var(--green);font-family:var(--font-sans)}
+.rule-table td.err{color:var(--red);font-family:var(--font-sans)}
+.rule-table tr:last-child td{border-bottom:none}
+.upload-zone{border:2px dashed var(--border);border-radius:var(--radius-lg);padding:28px;text-align:center;cursor:pointer;position:relative;background:#fff;transition:all 0.1s}
+.upload-zone:hover{background:var(--bg);border-color:#aaa}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-zone i{font-size:28px;color:var(--fg4);display:block;margin-bottom:8px}
+.upload-zone p{font-size:13px;font-weight:600;color:var(--fg)}
+.upload-zone span{font-size:11px;color:var(--fg3)}
+.ul-preview{display:none;background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);padding:14px;box-shadow:var(--shadow)}
+.ul-preview-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.schips{display:flex;gap:6px}
+.schip{font-size:10px;padding:3px 9px;border-radius:20px;border:1px solid var(--border);background:var(--bg);color:var(--fg2);font-weight:500}
+.schip.ok{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
+.schip.warn{background:var(--yellow-bg);color:var(--yellow);border-color:var(--yellow-border)}
+.schip.err{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
+.ul-group{margin-bottom:14px}
+.ul-group-lbl{font-size:11px;font-weight:600;color:var(--fg2);padding:4px 0;border-bottom:1px solid var(--border2);margin-bottom:9px;display:flex;align-items:center;gap:6px}
+.new-badge{font-size:9px;padding:2px 6px;border-radius:20px;background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);font-weight:500}
+.ul-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:8px}
+.ul-card{border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:#fff}
+.ul-thumb{height:68px;object-fit:cover;width:100%;display:block}
+.ul-info{padding:6px 8px}
+.ul-name{font-size:11px;font-weight:600;color:var(--fg);line-height:1.3}
+.ul-sub{font-size:10px;color:var(--fg3);font-style:italic;margin-top:1px}
+.ul-status{font-size:9px;margin-top:3px;display:flex;align-items:center;gap:3px;font-weight:500}
+.ul-status.ok{color:var(--green)}.ul-status.add{color:var(--blue)}.ul-status.warn{color:var(--yellow)}
+.ul-err-box{background:var(--red-bg);border:1px solid var(--red-border);border-radius:var(--radius);padding:10px 12px;margin-top:9px;font-size:11px;color:var(--red)}
+.ul-action{display:flex;align-items:center;justify-content:space-between;padding:12px 0 0;border-top:1px solid var(--border2);margin-top:13px}
+.ul-result{background:var(--green-bg);border:1px solid var(--green-border);border-radius:var(--radius-lg);padding:14px;display:none}
+.ul-result.show{display:block}
+.ul-result-title{font-size:13px;font-weight:600;color:var(--green);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ul-result-item{font-size:11px;color:var(--green);display:flex;align-items:center;gap:5px;margin-bottom:3px}
+.proj-view{flex-direction:row}
+.proj-panel{width:214px;min-width:214px;background:#fff;border-right:1px solid var(--border2);display:flex;flex-direction:column;overflow:hidden}
+.proj-sa{padding:9px;border-bottom:1px solid var(--border2);flex-shrink:0}
+.psrow{position:relative;margin-bottom:7px}
+.psrow i{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--fg4);pointer-events:none}
+.psi{width:100%;padding:6px 9px 6px 29px;border-radius:var(--radius);border:1px solid var(--border);background:var(--bg);color:var(--fg);font-size:12px;font-family:var(--font-sans)}
+.psi:focus{outline:none;border-color:#aaa;background:#fff}
+.fchips{display:flex;flex-wrap:wrap;gap:4px}
+.fchip{font-size:10px;padding:3px 8px;border-radius:20px;cursor:pointer;border:1px solid var(--border2);background:var(--bg);color:var(--fg3);font-weight:500;transition:all 0.1s}
+.fchip.on{background:var(--fg);color:#fff;border-color:var(--fg)}
+.proj-scroll{flex:1;overflow-y:auto;padding:9px}
+.pcnt{font-size:10px;color:var(--fg4);padding:0 5px 6px;font-weight:500}
+.pitem{padding:9px 10px;border-radius:var(--radius);cursor:pointer;margin-bottom:5px;border:1px solid transparent;transition:all 0.1s}
+.pitem:hover{background:var(--bg)}
+.pitem.on{border-color:var(--fg);background:var(--bg2)}
+.pitem h4{font-size:12px;font-weight:600;letter-spacing:-0.2px}
+.pitem-meta{font-size:10px;color:var(--fg3);margin-top:2px}
+.pitem-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.ptag{font-size:9px;padding:2px 6px;border-radius:20px;background:var(--bg2);color:var(--fg3);border:1px solid var(--border2);font-weight:500}
+.ptag-type{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
+.ptag-copy{background:var(--green-bg);color:var(--green);border-color:var(--green-border);cursor:pointer}
+.ptag-copy:hover{background:var(--green);color:#fff}
+.noproj{font-size:11px;color:var(--fg4);text-align:center;padding:20px 9px;line-height:1.6}
+.add-proj{border:1.5px dashed var(--border);border-radius:var(--radius);padding:8px;text-align:center;cursor:pointer;color:var(--fg4);font-size:11px;margin-top:5px;transition:all 0.1s}
+.add-proj:hover{background:var(--bg);color:var(--fg3)}
+.proj-editor{flex:1;overflow-y:auto;padding:14px}
+.sp-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+.sp-hdr h3{font-size:14px;font-weight:600;letter-spacing:-0.2px}
+.sp-hdr-btns{display:flex;gap:5px;flex-wrap:wrap}
+.proj-infobar{background:#fff;border:1px solid var(--border2);border-radius:var(--radius);padding:8px 13px;margin-bottom:13px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--fg3);box-shadow:var(--shadow)}
+.proj-infobar strong{color:var(--fg);font-weight:600}
+.spaces-grid{display:flex;flex-direction:column;gap:10px}
+.space-card{background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.space-head{padding:8px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border2);background:var(--bg)}
+.space-name-txt{font-size:12px;font-weight:600;letter-spacing:-0.2px}
+.layout-badge{font-size:9px;padding:2px 7px;border-radius:20px;background:#fff;color:var(--fg3);border:1px solid var(--border2);margin-left:7px;font-weight:500}
+.ibtn{width:24px;height:24px;border-radius:var(--radius);border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--fg3);font-size:14px;transition:all 0.1s}
+.ibtn:hover{background:var(--bg2);color:var(--fg)}
+.space-body-A{display:grid;grid-template-columns:1fr 1fr 1fr 122px;gap:0}
+.slot{border-right:1px solid var(--border2);padding:8px 10px;min-height:74px}
+.slot:last-child{border-right:none}
+.slot-lbl{font-size:10px;color:var(--fg4);margin-bottom:5px;display:flex;align-items:center;gap:3px;font-weight:500}
+.smat{display:flex;align-items:center;gap:5px;padding:3px 6px;background:var(--bg);border-radius:4px;font-size:11px;margin-bottom:3px;border:1px solid var(--border2)}
+.smat-sw{width:13px;height:13px;border-radius:3px;flex-shrink:0;border:1px solid rgba(0,0,0,0.08)}
+.smat-nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--fg)}
+.smat-del{font-size:11px;color:var(--fg4);cursor:pointer;line-height:1}
+.smat-del:hover{color:var(--red)}
+.slot-add{display:flex;align-items:center;gap:3px;font-size:10px;color:var(--fg4);cursor:pointer;padding:3px 5px;border-radius:4px;border:1px dashed var(--border);margin-top:4px;font-weight:500;transition:all 0.1s}
+.slot-add:hover{background:var(--bg2);color:var(--fg3)}
+.img-slot{padding:8px 10px;display:flex;flex-direction:column;gap:3px}
+.img-slot-lbl{font-size:10px;color:var(--fg4);margin-bottom:2px;font-weight:500}
+.iup{border:1px dashed var(--border);border-radius:6px;cursor:pointer;overflow:hidden;position:relative;transition:border-color 0.1s}
+.iup:hover{border-color:#aaa}
+.iup input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.iup-inner{padding:5px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;color:var(--fg4);font-size:10px;min-height:46px}
+.iup-inner i{font-size:15px}
+.iup img{width:100%;height:52px;object-fit:cover;display:none}
+.iup.has-img .iup-inner{display:none}
+.iup.has-img img{display:block}
+.space-body-B{padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.spec-block{background:var(--bg);border-radius:var(--radius);padding:9px 11px;border:1px solid var(--border2)}
+.spec-block-lbl{font-size:10px;font-weight:600;color:var(--fg2);margin-bottom:7px}
+.spec-row{display:flex;gap:7px;margin-bottom:5px;align-items:flex-start}
+.spec-key{font-size:10px;color:var(--fg4);width:46px;flex-shrink:0;padding-top:2px;font-weight:500;letter-spacing:0.2px}
+.spec-val-inp{font-size:11px;color:var(--fg);flex:1;border:none;outline:none;background:transparent;resize:none;font-family:var(--font-sans);width:100%;line-height:1.5}
+.spec-val-inp:focus{border-bottom:1px solid var(--border)}
+.space-body-C{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.multi-item{border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden}
+.multi-item-head{padding:6px 11px;background:var(--bg);display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:600}
+.multi-item-badge{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--fg);color:#fff;font-weight:600}
+.multi-item-body{display:grid;grid-template-columns:1fr 1fr 1fr 98px;gap:0}
+.add-multi{border:1px dashed var(--border);border-radius:var(--radius);padding:7px;text-align:center;cursor:pointer;color:var(--fg4);font-size:11px;transition:all 0.1s;font-weight:500}
+.add-multi:hover{background:var(--bg);color:var(--fg3)}
+.space-body-D{padding:10px 12px;display:flex;flex-direction:column;gap:7px}
+.cmp-grid{display:grid;gap:8px}
+.cmp-card{border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:border-color 0.1s}
+.cmp-card:hover{border-color:#aaa}
+.cmp-card.sel{border:2px solid var(--fg)}
+.cmp-img{height:78px;background:var(--bg2);position:relative;overflow:hidden}
+.cmp-img img{width:100%;height:100%;object-fit:cover}
+.cmp-img input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.cmp-info{padding:6px 8px}
+.cmp-title{font-size:11px;font-weight:600;color:var(--fg)}
+.cmp-desc{font-size:10px;color:var(--fg3);margin-top:1px}
+.cmp-add{border:1px dashed var(--border);border-radius:var(--radius);padding:8px;text-align:center;cursor:pointer;color:var(--fg4);font-size:11px;transition:all 0.1s;font-weight:500}
+.cmp-add:hover{background:var(--bg);color:var(--fg3)}
+.space-body-E{padding:10px 12px;overflow-x:auto}
+.spec-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.spec-tbl th{font-size:10px;color:var(--fg3);padding:5px 8px;border-bottom:1px solid var(--border);text-align:left;font-weight:600}
+.spec-tbl td{padding:6px 8px;border-bottom:1px solid var(--border2);color:var(--fg);vertical-align:top}
+.spec-tbl tr:last-child td{border-bottom:none}
+.spec-tbl td input{border:none;outline:none;background:transparent;font-size:11px;color:var(--fg);width:100%;font-family:var(--font-sans)}
+.tbl-add{padding:6px 8px;font-size:11px;color:var(--fg4);cursor:pointer;text-align:center;border-top:1px solid var(--border2);transition:background 0.1s;font-weight:500}
+.tbl-add:hover{background:var(--bg)}
+.ref-link-tag{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blue-bg);color:var(--blue);cursor:pointer;border:1px solid var(--blue-border);font-weight:500}
+.ref-link-add{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--bg);color:var(--fg4);cursor:pointer;border:1px dashed var(--border);font-weight:500;transition:all 0.1s}
+.ref-link-add:hover{background:var(--bg2);color:var(--fg3)}
+.tmpl-view{flex-direction:column;overflow-y:auto}
+.tmpl-section{padding:16px 18px;border-bottom:1px solid var(--border2)}
+.tmpl-sec-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:13px;gap:8px}
+.tmpl-sec-title{font-size:14px;font-weight:600;letter-spacing:-0.2px}
+.tmpl-sec-desc{font-size:11px;color:var(--fg3);margin-top:3px}
+.tmpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(214px,1fr));gap:10px}
+.tmpl-card{background:#fff;border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow)}
+.tmpl-card-head{padding:11px 13px;border-bottom:1px solid var(--border2);display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.tmpl-card-title{font-size:12px;font-weight:600;color:var(--fg);letter-spacing:-0.2px}
+.tmpl-card-desc{font-size:10px;color:var(--fg3);margin-top:2px}
+.tmpl-type-badge{font-size:9px;padding:2px 7px;border-radius:20px;flex-shrink:0;font-weight:500}
+.tmpl-type-badge.common{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border)}
+.tmpl-type-badge.project{background:var(--bg2);color:var(--fg3);border:1px solid var(--border2)}
+.tmpl-spaces{padding:9px 13px;display:flex;flex-direction:column;gap:5px}
+.tmpl-sp-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--fg2)}
+.tmpl-sp-badge{font-size:9px;padding:1px 6px;border-radius:4px;background:var(--bg2);color:var(--fg4);border:1px solid var(--border2);font-weight:500}
+.tmpl-mat-chips{display:flex;flex-wrap:wrap;gap:3px;padding-left:18px;margin-top:2px}
+.tmpl-mat-chip{font-size:9px;padding:2px 6px;border-radius:20px;background:var(--bg2);color:var(--fg3);border:1px solid var(--border2);display:flex;align-items:center;gap:3px;font-weight:500}
+.tmpl-mat-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.tmpl-card-foot{padding:8px 13px;border-top:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between}
+.tmpl-card-foot-info{font-size:10px;color:var(--fg4)}
+.tmpl-add-card{border:1.5px dashed var(--border);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:var(--fg4);font-size:11px;min-height:134px;transition:all 0.1s;font-weight:500}
+.tmpl-add-card:hover{background:var(--bg);color:var(--fg3);border-color:#aaa}
+.ov-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:flex-start;justify-content:center;padding:24px 0;z-index:1000;overflow-y:auto}
+.ov-wrap.show{display:flex}
+.modal{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--border2);display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,0.16);max-width:96vw}
+.modal-top{padding:13px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-top h3{font-size:14px;font-weight:600;letter-spacing:-0.2px}
+.modal-foot{padding:12px 16px;border-top:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.mbody{padding:16px;flex:1;overflow-y:auto}
+.frow{margin-bottom:13px}
+.flbl{font-size:11px;color:var(--fg2);margin-bottom:5px;font-weight:600}
+.finput{width:100%;padding:7px 10px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--fg);font-size:12px;font-family:var(--font-sans);transition:border-color 0.1s}
+.finput:focus{outline:none;border-color:#aaa}
+.radio-row{display:flex;gap:8px}
+.radio-opt{flex:1;border:1px solid var(--border);border-radius:var(--radius);padding:9px 11px;cursor:pointer;font-size:12px;color:var(--fg3);font-weight:500;transition:all 0.1s}
+.radio-opt.on{border-color:var(--fg);background:var(--bg);color:var(--fg)}
+.tchip{font-size:11px;padding:5px 11px;border-radius:20px;cursor:pointer;border:1px solid var(--border);background:var(--bg);color:var(--fg3);font-weight:500;transition:all 0.1s}
+.tchip.on{background:var(--fg);color:#fff;border-color:var(--fg)}
+.type-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.space-check-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;margin-bottom:6px;transition:all 0.1s}
+.space-check-item.on{border-color:var(--fg);background:var(--bg)}
+.space-chkbox{width:17px;height:17px;border-radius:4px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all 0.1s}
+.space-chkbox.on{background:var(--fg);border-color:var(--fg)}
+.picker-modal{width:490px;max-height:520px}
+.picker-body{display:flex;flex:1;overflow:hidden;min-height:0}
+.pcats{width:104px;border-right:1px solid var(--border2);overflow-y:auto;padding:6px 0}
+.pcat{padding:7px 12px;font-size:12px;color:var(--fg2);cursor:pointer;transition:background 0.1s;font-weight:500}
+.pcat:hover{background:var(--bg)}
+.pcat.on{color:var(--fg);font-weight:600;background:var(--bg2)}
+.pgrid{flex:1;overflow-y:auto;padding:9px;display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;align-content:start}
+.pc{border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all 0.1s;background:#fff}
+.pc:hover{border-color:#aaa;box-shadow:var(--shadow)}
+.pthumb{height:50px}
+.pinfo{padding:5px 7px}
+.pname{font-size:11px;font-weight:600;color:var(--fg);line-height:1.3}
+.psub{font-size:10px;color:var(--fg3)}
+.no-r{font-size:12px;color:var(--fg4);text-align:center;padding:22px;grid-column:1/-1}
+.ref-picker-modal{width:510px;max-height:540px}
+.ref-picker-body{flex:1;overflow-y:auto;padding:14px;min-height:0}
+.ref-group{margin-bottom:15px}
+.ref-group-lbl{font-size:11px;font-weight:600;color:var(--fg2);margin-bottom:8px}
+.ref-pick-card{display:flex;align-items:center;gap:10px;padding:8px 11px;border-radius:var(--radius);border:1px solid var(--border2);cursor:pointer;margin-bottom:6px;transition:all 0.1s}
+.ref-pick-card:hover{background:var(--bg);border-color:#aaa}
+.ref-pick-card.picked{border-color:var(--fg);background:var(--bg2)}
+.ref-pick-thumb{width:46px;height:34px;border-radius:4px;background:var(--bg2);flex-shrink:0;object-fit:cover}
+.ref-pick-info h4{font-size:12px;font-weight:600;color:var(--fg)}
+.ref-pick-info p{font-size:11px;color:var(--fg3);margin-top:2px}
+.preview-modal{width:650px;max-height:700px}
+.preview-body{flex:1;overflow-y:auto;min-height:0;background:#d8d5d0}
+.pv-wrap{padding:12px;display:flex;flex-direction:column;gap:10px}
+.pv-pg{background:#fff;font-family:'Noto Sans KR',sans-serif;padding:20px 24px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+.pv-pg-hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:10px;border-bottom:1.5px solid #1a1a1a;margin-bottom:13px}
+.pv-title-inp{font-size:17px;font-weight:700;color:#1a1a1a;border:none;outline:none;background:transparent;width:100%;font-family:inherit}
+.pv-meta-inp{font-size:10px;color:#999;border:none;outline:none;background:transparent;margin-top:3px;display:block;width:100%;font-family:inherit}
+.pv-logo-inp{font-size:10px;color:#aaa;border:none;outline:none;text-align:right;background:transparent;width:80px;font-family:inherit}
+.pv-sp-name{font-size:12px;font-weight:700;color:#1a1a1a;margin-bottom:11px;letter-spacing:0.2px;text-transform:uppercase}
+.pv-top{display:grid;grid-template-columns:205px 1fr;gap:15px;margin-bottom:11px}
+.pv-slot{padding:7px 10px;background:#fafaf8;border-radius:4px;border:0.5px solid #e8e8e8;margin-bottom:7px}
+.pv-sl{font-size:9px;color:#aaa;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.6px;font-weight:600}
+.pv-sm{display:flex;align-items:flex-start;gap:7px;margin-bottom:5px}
+.pv-sw-wrap{flex-shrink:0}
+.pv-sw{width:42px;height:42px;border-radius:4px;border:0.5px solid rgba(0,0,0,0.08)}
+.pv-sw-imgs{display:grid;width:42px;border-radius:4px;overflow:hidden;border:0.5px solid rgba(0,0,0,0.08)}
+.pv-sw-imgs.n1{grid-template-rows:1fr;height:42px}.pv-sw-imgs.n2{grid-template-rows:1fr 1fr;height:42px}.pv-sw-imgs.n3{grid-template-rows:1fr 1fr 1fr;height:42px}
+.pv-sw-imgs img{width:100%;object-fit:cover}
+.pv-smn{font-size:11px;color:#1a1a1a;font-weight:600;line-height:1.3}
+.pv-smcat{font-size:10px;color:#aaa;display:block;margin-top:2px}
+.pv-se{font-size:10px;color:#ccc;font-style:italic}
+.pv-proj-imgs{display:flex;flex-direction:column;gap:7px}
+.pv-proj-img-main{flex:1;background:#f0f0ee;border-radius:5px;overflow:hidden;border:0.5px solid #e0e0e0;min-height:104px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#bbb}
+.pv-proj-img-main img{width:100%;height:100%;object-fit:cover}
+.pv-proj-det-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.pv-proj-det{height:54px;background:#f0f0ee;border-radius:3px;overflow:hidden;border:0.5px solid #e0e0e0}
+.pv-proj-det img{width:100%;height:100%;object-fit:cover}
+.pv-ex-imgs{margin-top:9px}
+.pv-ex-lbl{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;font-weight:600}
+.pv-ex-grid{display:grid;gap:7px}
+.pv-ex-grid.n1{grid-template-columns:1fr}.pv-ex-grid.n2{grid-template-columns:1fr 1fr}.pv-ex-grid.n3{grid-template-columns:1fr 1fr 1fr}
+.pv-ex-card{border:0.5px solid #eee;border-radius:4px;overflow:hidden}
+.pv-ex-img{height:90px;background:#f0f0ee;overflow:hidden}
+.pv-ex-img img{width:100%;height:100%;object-fit:cover}
+.pv-ex-info{padding:5px 8px;background:#fafafa}
+.pv-ex-name{font-size:10px;font-weight:600;color:#333}
+.pv-ex-sub{font-size:9px;color:#888;margin-top:1px}
+.pv-refs{margin-top:9px}
+.pv-ref-lbl{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;font-weight:600}
+.pv-ref-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.pv-ref-card{border:0.5px solid #eee;border-radius:4px;overflow:hidden}
+.pv-ref-img{height:60px;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:9px;color:#bbb}
+.pv-ref-img img{width:100%;height:100%;object-fit:cover}
+.pv-ref-info{padding:5px 7px}
+.pv-ref-title{font-size:10px;font-weight:600;color:#333}
+.pv-ref-desc{font-size:9px;color:#888;margin-top:1px}
+.pv-foot-inp{font-size:9px;color:#ccc;border:none;outline:none;background:transparent;text-align:center;width:100%;margin-top:11px;display:block;font-family:inherit}
+.cat-modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:1100}
+.cat-modal-ov.show{display:flex}
+.cat-modal{background:#fff;border-radius:var(--radius-lg);border:1px solid var(--border2);width:310px;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,0.16)}
+.cat-modal h3{font-size:14px;font-weight:600;margin-bottom:13px;letter-spacing:-0.2px}
+.cml{font-size:11px;color:var(--fg2);margin-bottom:5px;font-weight:600}
+.cmi{width:100%;padding:7px 10px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--fg);font-size:12px;margin-bottom:12px;font-family:var(--font-sans)}
+.cmi:focus{outline:none;border-color:#aaa}
+#toast{display:none;position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--fg);color:#fff;padding:9px 18px;border-radius:var(--radius);font-size:12px;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-weight:500}
+</style>
+</head>
+<body>
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">유타건축 재료 마감 리스트</h2>
+<div class="app">
+  <div class="sidebar">
+    <div class="logo"><h1>유타건축</h1><p>재료 마감 리스트</p></div>
+    <div class="nav-sec">
+      <div class="nav-lbl">관리</div>
+      <div class="nitem on" id="nav-db" onclick="switchMode('db')"><i class="ti ti-database"></i> 재료 DB</div>
+      <div class="nitem" id="nav-upload" onclick="switchMode('upload')"><i class="ti ti-cloud-upload"></i> 일괄 업로드</div>
+      <div class="nitem" id="nav-tmpl" onclick="switchMode('tmpl')"><i class="ti ti-template"></i> 템플릿</div>
+      <div class="nav-lbl" style="margin-top:6px">작업</div>
+      <div class="nitem" id="nav-proj" onclick="switchMode('proj')"><i class="ti ti-folder"></i> 프로젝트</div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="topbar">
+      <h2 id="topbar-title">재료 DB</h2>
+      <div class="sw" id="search-wrap"><i class="ti ti-search"></i><input class="si" id="search-inp" placeholder="재료 검색..." oninput="onSearch(this.value)"></div>
+      <div class="ta" id="topbar-actions"></div>
+    </div>
+    <div class="view db-view on" id="view-db">
+      <div class="db-left" id="db-left"></div>
+      <div class="db-main"><div style="font-size:11px;color:var(--fg3);margin-bottom:10px" id="db-desc"></div><div id="db-content"></div></div>
+    </div>
+    <div class="view upload-view" id="view-upload">
+      <div class="upload-rule-box">
+        <div class="upload-rule-title">파일명 규칙</div>
+        <table class="rule-table"><thead><tr><th>파일명</th><th>결과</th></tr></thead><tbody>
+          <tr><td>벽돌_삼한C1그레이토담.jpg</td><td class="ok">✓ 카테고리: 벽돌 / 재료명: 삼한C1 그레이토담</td></tr>
+          <tr><td>석재_모카크림_라임스톤.jpg</td><td class="ok">✓ 카테고리: 석재 / 재료명: 모카크림 / 설명: 라임스톤</td></tr>
+          <tr><td>몰딩_마이너스몰딩_1.jpg</td><td class="ok">✓ "몰딩" 새 카테고리 자동 생성</td></tr>
+          <tr><td>석재_모카크림_라임스톤_2.jpg</td><td class="ok">✓ 기존 재료에 2번째 이미지 추가</td></tr>
+          <tr><td>마이너스몰딩.jpg</td><td class="err">✗ 언더바 없음 → 오류</td></tr>
+        </tbody></table>
+      </div>
+      <div class="upload-zone"><input type="file" accept="image/*" multiple onchange="handleUlFiles(this.files)" id="ul-input"><i class="ti ti-cloud-upload"></i><p>클릭하거나 이미지를 드래그하세요</p><span>여러 파일 동시 선택 가능 (Ctrl+A) · jpg, png, webp</span></div>
+      <div class="ul-preview" id="ul-preview">
+        <div class="ul-preview-hdr"><div style="font-size:12px;font-weight:600;color:var(--fg2)" id="ul-preview-title"></div><div class="schips" id="ul-chips"></div></div>
+        <div id="ul-groups"></div><div id="ul-errs"></div>
+        <div class="ul-action"><span style="font-size:11px;color:var(--fg3)" id="ul-note"></span><div style="display:flex;gap:6px"><button class="btn" onclick="resetUl()"><i class="ti ti-refresh"></i> 다시 선택</button><button class="btn btn-dark" id="ul-confirm-btn" onclick="confirmUl()"><i class="ti ti-database"></i> DB에 등록</button></div></div>
+      </div>
+      <div class="ul-result" id="ul-result"><div class="ul-result-title"><i class="ti ti-circle-check"></i> 등록 완료!</div><div id="ul-result-list"></div></div>
+    </div>
+    <div class="view tmpl-view" id="view-tmpl">
+      <div class="tmpl-section">
+        <div class="tmpl-sec-hdr"><div><div class="tmpl-sec-title">공통 템플릿</div><div class="tmpl-sec-desc">모든 프로젝트에서 사용하는 공유 템플릿</div></div><button class="btn btn-dark" onclick="openSaveTmpl('common')"><i class="ti ti-plus"></i> 새 템플릿</button></div>
+        <div class="tmpl-grid" id="common-tmpl-grid"></div>
+      </div>
+      <div class="tmpl-section">
+        <div class="tmpl-sec-hdr"><div><div class="tmpl-sec-title">프로젝트 템플릿</div><div class="tmpl-sec-desc">특정 프로젝트에서 저장한 공간 조합</div></div></div>
+        <div class="tmpl-grid" id="project-tmpl-grid"></div>
+      </div>
+    </div>
+    <div class="view proj-view" id="view-proj">
+      <div class="proj-panel">
+        <div class="proj-sa">
+          <div class="psrow"><i class="ti ti-search"></i><input class="psi" id="proj-si" placeholder="프로젝트 검색..." oninput="renderProjList()"></div>
+          <div class="fchips" id="fchips"></div>
+        </div>
+        <div class="proj-scroll"><div class="pcnt" id="pcnt"></div><div id="proj-items"></div><div class="add-proj" onclick="openNewProj()"><i class="ti ti-plus"></i> 새 프로젝트</div></div>
+      </div>
+      <div class="proj-editor">
+        <div class="sp-hdr"><h3 id="proj-editor-title">프로젝트를 선택하세요</h3><div class="sp-hdr-btns" id="sp-hdr-btns" style="display:none"><button class="btn" onclick="openSaveTmpl('project')"><i class="ti ti-device-floppy"></i> 템플릿 저장</button><button class="btn" onclick="openApplyTmpl()"><i class="ti ti-template"></i> 템플릿 적용</button><button class="btn btn-dark" onclick="openLayoutPicker()"><i class="ti ti-plus"></i> 공간 추가</button></div></div>
+        <div id="proj-infobar"></div>
+        <div class="spaces-grid" id="spaces-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ov-wrap" id="ov-layout" onclick="if(event.target.id==='ov-layout')closeOv('ov-layout')">
+  <div class="modal" style="width:510px"><div class="modal-top"><h3>공간 추가 — 레이아웃 선택</h3><button class="btn" onclick="closeOv('ov-layout')" style="padding:4px 8px"><i class="ti ti-x"></i></button></div><div class="mbody"><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:13px" id="layout-cards"></div><div class="frow"><div class="flbl">공간 이름</div><input class="finput" id="new-space-name" placeholder="예) 지붕, 외부계단, 1F 거실" onkeydown="if(event.key==='Enter')saveNewSpace()"></div></div><div class="modal-foot"><span style="font-size:11px;color:var(--fg4)">나중에 변경 가능</span><div style="display:flex;gap:6px"><button class="btn" onclick="closeOv('ov-layout')">취소</button><button class="btn btn-dark" onclick="saveNewSpace()">공간 추가</button></div></div></div>
+</div>
+
+<div class="ov-wrap" id="ov-picker" onclick="if(event.target.id==='ov-picker')closePicker()">
+  <div class="modal picker-modal"><div class="modal-top"><h3 id="picker-title">재료 선택</h3><div class="sw" style="max-width:155px"><i class="ti ti-search"></i><input class="si" id="psearch" placeholder="검색..." oninput="renderPGrid(curPCat,this.value)"></div><button class="btn" onclick="closePicker()" style="padding:4px 8px"><i class="ti ti-x"></i></button></div><div class="picker-body"><div class="pcats" id="pcats"></div><div class="pgrid" id="pgrid"></div></div></div>
+</div>
+
+<div class="ov-wrap" id="ov-ref" onclick="if(event.target.id==='ov-ref')closeOv('ov-ref')">
+  <div class="modal ref-picker-modal"><div class="modal-top"><h3 id="ref-picker-title">참고 페이지 연결</h3><button class="btn" onclick="closeOv('ov-ref')" style="padding:4px 8px"><i class="ti ti-x"></i></button></div><div class="ref-picker-body" id="ref-picker-body"></div><div class="modal-foot"><span style="font-size:11px;color:var(--fg4)">클릭하여 선택/해제</span><button class="btn btn-dark" onclick="saveRefLinks()">확인</button></div></div>
+</div>
+
+<div class="ov-wrap" id="ov-preview" onclick="if(event.target.id==='ov-preview')closeOv('ov-preview')">
+  <div class="modal preview-modal"><div class="modal-top"><h3>미리보기 <span style="font-size:11px;font-weight:400;color:var(--fg3)">— 텍스트 클릭해서 수정 가능</span></h3><button class="btn" onclick="closeOv('ov-preview')" style="padding:4px 8px"><i class="ti ti-x"></i></button></div><div class="preview-body"><div class="pv-wrap" id="pv-content"></div></div><div class="modal-foot"><span style="font-size:11px;color:var(--fg4)"><i class="ti ti-info-circle"></i> 인쇄 → A4 가로 → PDF로 저장</span><div style="display:flex;gap:6px"><button class="btn" onclick="closeOv('ov-preview')">닫기</button><button class="btn btn-dark" onclick="doPrint()"><i class="ti ti-printer"></i> 인쇄/PDF</button></div></div></div>
+</div>
+
+<div class="ov-wrap" id="ov-newproj" onclick="if(event.target.id==='ov-newproj')closeOv('ov-newproj')">
+  <div class="modal" style="width:410px"><div class="modal-top"><h3>새 프로젝트</h3><button class="btn" onclick="closeOv('ov-newproj')" style="padding:4px 8px"><i class="ti ti-x"></i></button></div><div class="mbody"><div class="frow"><div class="flbl">프로젝트 이름 *</div><input class="finput" id="np-name" placeholder="예) 양평 단독주택"></div><div class="frow"><div class="flbl">주소</div><input class="finput" id="np-addr" placeholder="예) 경기도 양평군"></div><div class="frow"><div class="flbl">용도</div><div class="type-chips" id="type-chips"></div><input class="finput" id="np-custom" placeholder="기타 — 직접 입력" style="margin-top:7px;display:none"></div><div class="frow"><div class="flbl">메모</div><input class="finput" id="np-memo" placeholder="간단한 메모"></div></div><div class="modal-foot"><span style="font-size:11px;color:var(--fg4)">* 필수</span><div style="display:flex;gap:6px"><button class="btn" onclick="closeOv('ov-newproj')">취소</button><button class="btn btn-dark" onclick="saveNewProj()">만들기</button></div></div></div>
+</div>
+
+<div class="ov-wrap" id="ov-save-tmpl" onclick="if(event.target.id==='ov-save-tmpl')closeOv('ov-save-tmpl')">
+  <div class="modal" style="width:450px;max-height:600px"><div class="modal-top"><h3><i class="ti ti-device-floppy"></i> 템플릿으로 저장</h3><button class="btn" onclick="closeOv('ov-save-tmpl')" style="padding:4px 8px"><i class="ti ti-x"></i></button></div><div class="mbody"><div class="frow"><div class="flbl">템플릿 이름 *</div><input class="finput" id="tmpl-name-inp" placeholder="예) 단독주택 기본 세트"></div><div class="frow"><div class="flbl">설명</div><input class="finput" id="tmpl-desc-inp" placeholder="어떤 상황에 쓰는 템플릿인지"></div><div class="frow"><div class="flbl">저장 위치</div><div class="radio-row"><div class="radio-opt on" id="tmpl-type-common" onclick="selTmplType('common')"><i class="ti ti-world"></i> 공통 템플릿<div style="font-size:10px;font-weight:400;margin-top:2px;color:var(--fg3)">모든 프로젝트에서 사용</div></div><div class="radio-opt" id="tmpl-type-project" onclick="selTmplType('project')"><i class="ti ti-folder"></i> 프로젝트 템플릿<div style="font-size:10px;font-weight:400;margin-top:2px;color:var(--fg3)">이 프로젝트에서만</div></div></div></div><div class="frow"><div class="flbl">포함할 공간</div><div id="save-space-list"></div></div></div><div class="modal-foot"><span style="font-size:11px;color:var(--fg4)">재료 세팅까지 저장됩니다</span><div style="display:flex;gap:6px"><button class="btn" onclick="closeOv('ov-save-tmpl')">취소</button><button class="btn btn-dark" onclick="saveTmpl()"><i class="ti ti-device-floppy"></i> 저장</button></div></div></div>
+</div>
+
+<div class="ov-wrap" id="ov-apply-tmpl" onclick="if(event.target.id==='ov-apply-tmpl')closeOv('ov-apply-tmpl')">
+  <div class="modal" style="width:530px;max-height:600px"><div class="modal-top"><h3><i class="ti ti-template"></i> 템플릿 적용</h3><button class="btn" onclick="closeOv('ov-apply-tmpl')" style="padding:4px 8px"><i class="ti ti-x"></i></button></div><div class="mbody"><div style="font-size:11px;font-weight:600;color:var(--fg2);margin-bottom:8px">공통 템플릿</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px" id="apply-common-grid"></div><div style="font-size:11px;font-weight:600;color:var(--fg2);margin-bottom:8px">프로젝트 템플릿</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px" id="apply-project-grid"></div><div id="apply-preview-wrap" style="display:none"><div style="background:var(--bg);border-radius:var(--radius);padding:11px 13px;border:1px solid var(--border2)"><div style="font-size:10px;color:var(--fg4);margin-bottom:8px;font-weight:600">적용될 공간 미리보기</div><div id="apply-preview-list"></div></div></div></div><div class="modal-foot"><span style="font-size:11px;color:var(--fg4)" id="apply-note">템플릿을 선택하세요</span><div style="display:flex;gap:6px"><button class="btn" onclick="closeOv('ov-apply-tmpl')">취소</button><button class="btn btn-dark" id="apply-btn" onclick="applyTmpl()" disabled><i class="ti ti-template"></i> 적용</button></div></div></div>
+</div>
+
+<div class="cat-modal-ov" id="ov-cat" onclick="if(event.target.id==='ov-cat')closeOv('ov-cat')">
+  <div class="cat-modal"><h3 id="cat-title">카테고리 추가</h3><div class="cml">이름</div><input class="cmi" id="cat-inp" onkeydown="if(event.key==='Enter')saveCat()"><div style="display:flex;gap:6px;justify-content:flex-end"><button class="btn" onclick="closeOv('ov-cat')">취소</button><button class="btn btn-dark" onclick="saveCat()">추가</button></div></div>
+</div>
+
+<div id="toast"></div>
+<script>
+const USE_TYPES=['단독주택','다가구주택','상가주택','근린생활시설','문화시설','종교시설','업무시설','카페','기타'];
+const LAYOUTS={A:{name:'재료 이미지형',desc:'바닥/벽/천정 + 스업이미지'},B:{name:'텍스트 스펙형',desc:'TYPE/SIZE/COLOR 텍스트'},C:{name:'다중 항목형',desc:'A/B/C 부위별 구분'},D:{name:'비교 선택형',desc:'옵션 이미지 나열'},E:{name:'표 형식형',desc:'항목 비교표'}};
+const COLORS=["#c8c0b8","#e8e0d8","#d0cec8","#707070","#c0a060","#b8b8b8","#808080","#e0d8c0","#c09080","#f0ede8","#d0b888","#a8a8a4","#b09060","#a88848","#c0c0bc","#505050","#806040","#909090","#404040","#b89050"];
+let cidx=0;function nextColor(){return COLORS[cidx++%COLORS.length];}
+const DB={
+  "벽돌":[{id:"b1",name:"삼한C1 미장토담",sub:"베이지",color:"#e8e0d8",exImgs:[]},{id:"b2",name:"삼한C1 그레이토담",sub:"그레이",color:"#c8c0b8",exImgs:[]},{id:"b3",name:"공간세라믹 아리아화이트",sub:"화이트",color:"#f0ede8",exImgs:[]},{id:"b4",name:"서창 SC블랑쉬100",sub:"아이보리",color:"#e8e0d0",exImgs:[]},{id:"b5",name:"두라스택 베이직그레이",sub:"시멘트",color:"#b8b8b8",exImgs:[]},{id:"b6",name:"두라스택 빈티지블랙",sub:"시멘트",color:"#505050",exImgs:[]},{id:"b7",name:"MK세라믹 전벽돌",sub:"전통전돌",color:"#806040",exImgs:[]}],
+  "석재":[{id:"s1",name:"화강석 잔다듬",sub:"포천석/마천석",color:"#d0cec8",exImgs:[]},{id:"s2",name:"트라버틴",sub:"라임스톤",color:"#e0d8c0",exImgs:[]},{id:"s3",name:"모카크림",sub:"라임스톤",color:"#d8c8a8",exImgs:[]},{id:"s4",name:"바살티나",sub:"화산석",color:"#808080",exImgs:[]}],
+  "타일":[{id:"t1",name:"윤현상재 DEEPSTONE IRON",sub:"600x1200",color:"#707070",exImgs:[]},{id:"t2",name:"윤현상재 BEREN SAND",sub:"600x1200",color:"#c8b890",exImgs:[]},{id:"t3",name:"가이타일 ARCTIC WHITE",sub:"박판타일",color:"#f4f4f2",exImgs:[]}],
+  "도장":[{id:"p1",name:"벤자민무어 스커프엑스",sub:"에그쉘/백색",color:"#f8f8f6",exImgs:[]},{id:"p2",name:"노루 펜톤 시리즈",sub:"지정색",color:"#e0e0e0",exImgs:[]},{id:"p3",name:"STO 지정색",sub:"파인/러프",color:"#d8d4ce",exImgs:[]}],
+  "금속":[{id:"m1",name:"갈바륨강판 칼라도장",sub:"짙은 그레이",color:"#707878",exImgs:[]},{id:"m2",name:"알루미늄징크",sub:"지정색",color:"#909090",exImgs:[]},{id:"m3",name:"구로철판",sub:"무도장/발수제",color:"#404040",exImgs:[]}],
+  "목재":[{id:"w1",name:"애쉬우드 합판",sub:"포인트 천정",color:"#d0b888",exImgs:[]},{id:"w2",name:"하드우드 데크",sub:"외부 테라스",color:"#b09060",exImgs:[]},{id:"w3",name:"솔리드 집성목",sub:"계단 디딤판",color:"#c8a870",exImgs:[]}],
+  "마루":[{id:"f1",name:"지복득 BARAM 17S",sub:"원목마루",color:"#c0a060",exImgs:[]},{id:"f2",name:"이건 라르고솔레150",sub:"원목마루",color:"#b89050",exImgs:[]},{id:"f3",name:"이건 강마루",sub:"강마루",color:"#a88848",exImgs:[]}],
+  "콘크리트":[{id:"c1",name:"콘크리트 폴리싱",sub:"투명 무광",color:"#b8b8b4",exImgs:[]},{id:"c2",name:"콘크리트 메이크업",sub:"벽면 마감",color:"#c0c0bc",exImgs:[]},{id:"c3",name:"노출콘크리트",sub:"발수제",color:"#a8a8a4",exImgs:[]}],
+};
+const REF_PAGES={"계단 참고":[{id:"r1",title:"RC구조 계단",desc:"콘크리트 구조",img:null},{id:"r2",title:"철골구조 계단",desc:"오픈 계단",img:null},{id:"r3",title:"목구조 계단",desc:"단독주택 내부",img:null},{id:"r4",title:"디딤판O 챌판X",desc:"오픈형",img:null},{id:"r5",title:"디딤판O 챌판O",desc:"일반형",img:null},{id:"r6",title:"투시형 금속 난간",desc:"평철/환봉",img:null},{id:"r7",title:"솔리드 난간",desc:"유리/금속판",img:null}]};
+let projects=[];
+let commonTemplates=[
+  {id:"ct1",name:"단독주택 기본 세트",desc:"외벽·지붕·주차장·계단·거실",type:"common",savedFrom:"기본 제공",savedAt:"2025.06",spaces:[
+    {name:"외벽",layout:"A",floor:[],wall:["b2"],ceiling:[],repImg:null,detailImgs:[],refLinks:[]},
+    {name:"경사지붕",layout:"B",specs:[{label:"경사지붕",items:[{key:"TYPE",val:"칼라강판 (거멀접기)"},{key:"COLOR",val:"짙은 그레이 계열"}]}],repImg:null,refLinks:[]},
+    {name:"필로티 주차장",layout:"C",items:[{id:"i1",label:"천정",badge:"A",floor:[],wall:[],ceiling:["p1"],repImg:null},{id:"i2",label:"바닥",badge:"B",floor:["c1"],wall:[],ceiling:[],repImg:null}],refLinks:[]},
+    {name:"외부계단",layout:"A",floor:["s1"],wall:[],ceiling:[],repImg:null,detailImgs:[],refLinks:["r1","r4","r6"]},
+    {name:"1F 거실",layout:"A",floor:["f1"],wall:["p1"],ceiling:["p1"],repImg:null,detailImgs:[],refLinks:[]},
+  ]},
+  {id:"ct2",name:"근린생활시설 외부",desc:"외벽·평지붕·주차장",type:"common",savedFrom:"기본 제공",savedAt:"2025.06",spaces:[
+    {name:"외벽",layout:"A",floor:[],wall:["b5"],ceiling:[],repImg:null,detailImgs:[],refLinks:[]},
+    {name:"평지붕",layout:"B",specs:[{label:"평지붕",items:[{key:"TYPE",val:"25mm 파쇄석 / 무근콘크리트"},{key:"방수",val:"우레탄 방수"}]}],repImg:null,refLinks:[]},
+    {name:"옥외주차장",layout:"C",items:[{id:"i1",label:"바닥",badge:"A",floor:["c1"],wall:[],ceiling:[],repImg:null}],refLinks:[]},
+  ]},
+];
+let projectTemplates=[];
+let curMode='db',curDbCat='벽돌',curDbSec='mat',curProjId=null,pickerTarget=null,curPCat='벽돌',refPickTarget=null,tempRefPicks=[],activeTypeFilter=null,newProjTypes=[],selLayout='A',selTmplTypeVal='common',selTmplSpaces=new Set(),selApplyTmpl=null,ulParsed=[];
+
+function getMat(id){for(const v of Object.values(DB)){const m=v.find(m=>m.id===id);if(m)return m;}return null;}
+function getRef(id){for(const v of Object.values(REF_PAGES)){const r=v.find(r=>r.id===id);if(r)return r;}return null;}
+function getCatOf(id){for(const[c,ms]of Object.entries(DB)){if(ms.find(m=>m.id===id))return c;}return '';}
+function curProj(){return projects.find(p=>p.id===curProjId);}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2500);}
+function closeOv(id){document.getElementById(id).classList.remove('show');}
+
+function thumbHtml(m,h=80){if(m.exImgs&&m.exImgs.length){const n=Math.min(m.exImgs.length,3);return `<div class="mthumb-imgs n${n}" style="height:${h}px">${m.exImgs.slice(0,n).map(s=>`<img src="${s}" alt="">`).join('')}</div>`;}return `<div class="mthumb" style="background:${m.color};height:${h}px">${m.name}</div>`;}
+function pthumbHtml(m){if(m.exImgs&&m.exImgs.length){const n=Math.min(m.exImgs.length,3);return `<div style="display:grid;grid-template-columns:repeat(${n},1fr);gap:1px;height:50px">${m.exImgs.slice(0,n).map(s=>`<img src="${s}" style="width:100%;height:100%;object-fit:cover" alt="">`).join('')}</div>`;}return `<div style="height:50px;background:${m.color}"></div>`;}
+
+function renderDbLeft(){
+  let h='<div class="db-sec-lbl">재료</div>';
+  h+=Object.keys(DB).map(c=>`<div class="dcat ${c===curDbCat&&curDbSec==='mat'?'on':''}" onclick="selDbCat('${c}')">${c}<span class="cnt">${DB[c].length}</span></div>`).join('');
+  h+=`<div class="dcat dcat-add" onclick="openCatModal('mat')"><i class="ti ti-plus" style="font-size:12px"></i> 카테고리 추가</div>`;
+  h+=`<div class="db-sec-lbl" style="margin-top:6px">참고 페이지</div>`;
+  h+=Object.keys(REF_PAGES).map(g=>`<div class="dcat ${g===curDbCat&&curDbSec==='ref'?'on':''}" onclick="selRefGroup('${g}')">${g}<span class="cnt">${REF_PAGES[g].length}</span></div>`).join('');
+  h+=`<div class="dcat dcat-add" onclick="openCatModal('ref')"><i class="ti ti-plus" style="font-size:12px"></i> 그룹 추가</div>`;
+  document.getElementById('db-left').innerHTML=h;
+}
+function selDbCat(cat){curDbCat=cat;curDbSec='mat';renderDbLeft();renderDbGrid(cat,document.getElementById('search-inp').value);}
+function selRefGroup(g){curDbCat=g;curDbSec='ref';renderDbLeft();document.getElementById('db-desc').textContent=g+' — '+REF_PAGES[g].length+'개';renderRefGrid(g);}
+function renderDbGrid(cat,q=''){
+  const mats=q?Object.entries(DB).flatMap(([c,ms])=>ms.filter(m=>m.name.includes(q)||m.sub.includes(q)||c.includes(q)).map(m=>({...m,_cat:c}))):DB[cat].map(m=>({...m,_cat:cat}));
+  document.getElementById('db-desc').textContent=q?`"${q}" 검색 결과 — ${mats.length}개`:`${cat} — ${DB[cat].length}개`;
+  document.getElementById('db-content').innerHTML=`<div class="db-grid">${mats.map(m=>`<div class="mcard"><div class="mcard-thumb-wrap">${thumbHtml(m)}<div class="mcard-img-btn"><i class="ti ti-camera"></i>이미지<input type="file" accept="image/*" multiple onchange="uploadMatEx('${m._cat||cat}','${m.id}',this)"></div></div><div class="minfo"><div class="mname">${m.name}</div><div class="msub">${m.sub}</div><span class="mtag">${m._cat||cat}</span>${m.exImgs&&m.exImgs.length?`<div class="mimg-cnt"><i class="ti ti-photo" style="font-size:11px"></i>${m.exImgs.length}장</div>`:''}</div></div>`).join('')}<div class="dashed-card" onclick="addMat('${cat}')"><i class="ti ti-plus" style="font-size:18px"></i>재료 추가</div></div>`;
+}
+function uploadMatEx(cat,id,input){const files=Array.from(input.files);if(!files.length)return;const m=DB[cat]?.find(m=>m.id===id);if(!m||!m.exImgs)return;const slots=3-m.exImgs.length;let done=0;files.slice(0,slots).forEach(f=>{const r=new FileReader();r.onload=e=>{m.exImgs.push(e.target.result);done++;if(done===Math.min(files.length,slots))renderDbGrid(cat,document.getElementById('search-inp').value);};r.readAsDataURL(f);});}
+function renderRefGrid(g){document.getElementById('db-content').innerHTML=`<div class="ref-grid">${REF_PAGES[g].map(r=>`<div class="ref-card"><div class="ref-card-img">${r.img?`<img src="${r.img}" alt="">`:`<span>${r.title}</span>`}<input type="file" accept="image/*" class="ref-card-img-up" onchange="uploadRefImg('${g}','${r.id}',this)"></div><div class="ref-card-body"><div class="ref-card-title">${r.title}</div><div class="ref-card-desc">${r.desc}</div></div></div>`).join('')}<div class="ref-add" onclick="addRefCard('${g}')"><i class="ti ti-plus" style="font-size:20px"></i>카드 추가</div></div>`;}
+function uploadRefImg(g,id,input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{REF_PAGES[g].find(x=>x.id===id).img=e.target.result;renderRefGrid(g);};r.readAsDataURL(f);}
+function addRefCard(g){const t=prompt('제목');if(!t)return;REF_PAGES[g].push({id:'r'+Date.now(),title:t,desc:prompt('설명')||'',img:null});renderRefGrid(g);renderDbLeft();}
+function onSearch(q){if(curMode==='db'){if(curDbSec==='mat')renderDbGrid(curDbCat,q);}else if(curMode==='proj')renderSpaces();}
+function addMat(cat){const name=prompt(`${cat}에 추가할 재료`);if(!name)return;DB[cat].push({id:'x'+Date.now(),name,sub:prompt('설명')||'',color:nextColor(),exImgs:[]});selDbCat(cat);}
+function openCatModal(type){document.getElementById('cat-title').textContent=type==='mat'?'새 재료 카테고리':'새 참고 그룹';document.getElementById('cat-inp').value='';document.getElementById('cat-inp').dataset.type=type;document.getElementById('ov-cat').classList.add('show');setTimeout(()=>document.getElementById('cat-inp').focus(),100);}
+function saveCat(){const name=document.getElementById('cat-inp').value.trim();const type=document.getElementById('cat-inp').dataset.type;if(!name)return;if(type==='mat'){if(DB[name])return;DB[name]=[];selDbCat(name);}else{if(REF_PAGES[name])return;REF_PAGES[name]=[];selRefGroup(name);}closeOv('ov-cat');renderDbLeft();}
+
+function parseUlName(filename){const base=filename.replace(/\.[^.]+$/,'');const parts=base.split('_');if(parts.length<2)return null;const cat=parts[0];if(!cat)return null;const last=parts[parts.length-1];const isNum=/^\d+$/.test(last);let name,sub='',imgIndex=null;if(parts.length===2){if(isNum)return null;name=parts[1];}else if(parts.length===3){if(isNum){name=parts[1];imgIndex=parseInt(last);}else{name=parts[1];sub=parts[2];}}else{if(isNum){name=parts[1];sub=parts.slice(2,parts.length-1).join(' ');imgIndex=parseInt(last);}else{name=parts[1];sub=parts.slice(2).join(' ');}}if(!name)return null;return{cat,name,sub,imgIndex,original:filename};}
+function handleUlFiles(files){if(!files||!files.length)return;ulParsed=[];const arr=Array.from(files);let done=0;arr.forEach(file=>{const info=parseUlName(file.name);const reader=new FileReader();reader.onload=e=>{if(info){const cat=DB[info.cat];const mat=cat&&cat.find(m=>m.name===info.name);let status='new';if(mat&&mat.exImgs&&mat.exImgs.length>=3)status='full';else if(mat)status='add';ulParsed.push({...info,dataUrl:e.target.result,status});}else{ulParsed.push({original:file.name,status:'error'});}done++;if(done===arr.length)renderUlPreview();};reader.readAsDataURL(file);});}
+function renderUlPreview(){document.getElementById('ul-preview').style.display='block';document.getElementById('ul-result').classList.remove('show');const ok=ulParsed.filter(p=>p.status==='new'||p.status==='add');const errs=ulParsed.filter(p=>p.status==='error');const fulls=ulParsed.filter(p=>p.status==='full');document.getElementById('ul-preview-title').textContent=ulParsed.length+'개 파일 분석 결과';document.getElementById('ul-chips').innerHTML=`<span class="schip ok"><i class="ti ti-check"></i> 등록 ${ok.length}개</span>${fulls.length?`<span class="schip warn">꽉참 ${fulls.length}개</span>`:''}${errs.length?`<span class="schip err">오류 ${errs.length}개</span>`:''}`;const groups={};ok.forEach(p=>{if(!groups[p.cat])groups[p.cat]=[];groups[p.cat].push(p);});let html='';for(const[cat,items]of Object.entries(groups)){html+=`<div class="ul-group"><div class="ul-group-lbl"><i class="ti ti-tag"></i>${cat}${!DB[cat]?'<span class="new-badge">새 카테고리</span>':''}<span style="font-size:10px;color:var(--fg4)">${items.length}개</span></div><div class="ul-grid">${items.map(p=>`<div class="ul-card"><img class="ul-thumb" src="${p.dataUrl}" alt=""><div class="ul-info"><div class="ul-name">${p.name}</div><div class="ul-sub">${p.sub||'설명 없음'}</div><div class="ul-status ${p.status}"><i class="ti ti-${p.status==='new'?'plus':'photo'}" style="font-size:10px"></i>${p.status==='new'?'새 재료':'이미지 추가'}${p.imgIndex!==null?` (${p.imgIndex}번)`:''}</div></div></div>`).join('')}</div></div>`;}document.getElementById('ul-groups').innerHTML=html;let errHtml='';if(errs.length)errHtml=`<div class="ul-err-box"><div style="font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:5px"><i class="ti ti-alert-triangle"></i>파일명 형식 오류 — 건너뜀</div>${errs.map(e=>`<div style="font-family:var(--font-mono);margin-bottom:2px">${e.original}</div>`).join('')}</div>`;if(fulls.length)errHtml+=`<div style="margin-top:9px;padding:9px 12px;background:var(--yellow-bg);border:1px solid var(--yellow-border);border-radius:var(--radius);font-size:11px;color:var(--yellow)"><i class="ti ti-photo"></i> 이미 3장인 재료 건너뜀: ${fulls.map(f=>f.name).join(', ')}</div>`;document.getElementById('ul-errs').innerHTML=errHtml;document.getElementById('ul-note').textContent=`${ok.length}개 항목이 DB에 등록됩니다`;document.getElementById('ul-confirm-btn').disabled=ok.length===0;}
+function confirmUl(){const ok=ulParsed.filter(p=>p.status==='new'||p.status==='add');const newCats=[],newMats=[],addedImgs=[];ok.forEach(p=>{if(!DB[p.cat]){DB[p.cat]=[];newCats.push(p.cat);}let mat=DB[p.cat].find(m=>m.name===p.name);if(!mat){mat={id:'u'+Date.now()+Math.random().toString(36).slice(2),name:p.name,sub:p.sub||'',color:nextColor(),exImgs:[]};DB[p.cat].push(mat);newMats.push(`${p.cat} / ${p.name}`);}if(mat.exImgs.length<3){mat.exImgs.push(p.dataUrl);addedImgs.push(p.name);}});let html='';if(newCats.length)html+=newCats.map(c=>`<div class="ul-result-item"><i class="ti ti-folder-plus"></i> 새 카테고리: <strong>${c}</strong></div>`).join('');if(newMats.length)html+=newMats.map(n=>`<div class="ul-result-item"><i class="ti ti-plus"></i> 새 재료: <strong>${n}</strong></div>`).join('');html+=`<div class="ul-result-item"><i class="ti ti-photo"></i> 이미지 <strong>${addedImgs.length}장</strong> 등록 완료</div>`;document.getElementById('ul-result-list').innerHTML=html;document.getElementById('ul-result').classList.add('show');document.getElementById('ul-preview').style.display='none';renderDbLeft();toast('DB 등록 완료!');}
+function resetUl(){ulParsed=[];document.getElementById('ul-preview').style.display='none';document.getElementById('ul-result').classList.remove('show');document.getElementById('ul-input').value='';}
+
+function renderFilterChips(){const all=[...new Set(projects.flatMap(p=>p.types||[]))];document.getElementById('fchips').innerHTML=`<span class="fchip ${!activeTypeFilter?'on':''}" onclick="setFilter(null)">전체</span>`+all.map(t=>`<span class="fchip ${activeTypeFilter===t?'on':''}" onclick="setFilter('${t}')">${t}</span>`).join('');}
+function setFilter(t){activeTypeFilter=t;renderFilterChips();renderProjList();}
+function renderProjList(){const q=document.getElementById('proj-si').value.trim().toLowerCase();let list=projects;if(activeTypeFilter)list=list.filter(p=>(p.types||[]).includes(activeTypeFilter));if(q)list=list.filter(p=>p.name.toLowerCase().includes(q)||(p.addr||'').toLowerCase().includes(q)||(p.types||[]).some(t=>t.toLowerCase().includes(q)));document.getElementById('pcnt').textContent=list.length+'개 프로젝트';document.getElementById('proj-items').innerHTML=list.length?list.map(p=>`<div class="pitem ${p.id===curProjId?'on':''}" onclick="selectProj('${p.id}')"><h4>${p.name}</h4><div class="pitem-meta">${[p.addr,p.memo].filter(Boolean).join(' · ')}</div><div class="pitem-tags">${(p.types||[]).map(t=>`<span class="ptag ptag-type">${t}</span>`).join('')}<span class="ptag">${p.spaces.length}개 공간</span><span class="ptag ptag-copy" onclick="copyProj('${p.id}');event.stopPropagation()"><i class="ti ti-copy" style="font-size:9px"></i> 복사</span></div></div>`).join(''):`<div class="noproj">프로젝트가 없어요.<br>아래 버튼으로 만들어보세요!</div>`;}
+function copyProj(id){const src=projects.find(p=>p.id===id);if(!src)return;const newP=JSON.parse(JSON.stringify(src));newP.id='pj'+Date.now();newP.name=src.name+' (복사본)';newP.spaces=newP.spaces.map(sp=>({...sp,id:'sp'+Date.now()+Math.random().toString(36).slice(2)}));projects.push(newP);renderFilterChips();renderProjList();selectProj(newP.id);toast(`"${src.name}" 복사 완료!`);}
+function openNewProj(){newProjTypes=[];['np-name','np-addr','np-memo'].forEach(id=>document.getElementById(id).value='');document.getElementById('np-custom').style.display='none';document.getElementById('type-chips').innerHTML=USE_TYPES.map(t=>`<span class="tchip" onclick="toggleType(this,'${t}')">${t}</span>`).join('');document.getElementById('ov-newproj').classList.add('show');setTimeout(()=>document.getElementById('np-name').focus(),100);}
+function toggleType(el,t){if(t==='기타')document.getElementById('np-custom').style.display=el.classList.contains('on')?'none':'block';if(newProjTypes.includes(t)){newProjTypes=newProjTypes.filter(x=>x!==t);el.classList.remove('on');}else{newProjTypes.push(t);el.classList.add('on');}}
+function saveNewProj(){const name=document.getElementById('np-name').value.trim();if(!name)return;const addr=document.getElementById('np-addr').value.trim();const memo=document.getElementById('np-memo').value.trim();const custom=document.getElementById('np-custom').value.trim();let types=[...newProjTypes.filter(t=>t!=='기타')];if(custom)types.push(custom);const id='pj'+Date.now();projects.push({id,name,addr,types,memo,meta:{title:name,subtitle:[...types,addr].filter(Boolean).join(' · '),logo:'유타건축',footer:'유타건축 · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.'},spaces:[]});curProjId=id;closeOv('ov-newproj');renderFilterChips();renderProjList();selectProj(id);}
+function selectProj(id){curProjId=id;renderProjList();const p=curProj();document.getElementById('proj-editor-title').textContent=p.name;document.getElementById('sp-hdr-btns').style.display='';document.getElementById('topbar-title').textContent=p.name;document.getElementById('proj-infobar').innerHTML=(p.addr||p.types?.length||p.memo)?`<div class="proj-infobar">${p.addr?`<span><i class="ti ti-map-pin"></i> <strong>${p.addr}</strong></span>`:''} ${(p.types||[]).length?`<span><i class="ti ti-tag"></i> <strong>${p.types.join(', ')}</strong></span>`:''} ${p.memo?`<span><i class="ti ti-note"></i> ${p.memo}</span>`:''}</div>`:'';renderSpaces();}
+function renderSpaces(){const p=curProj();if(!p)return;const q=document.getElementById('search-inp').value.trim().toLowerCase();let spaces=p.spaces;if(q)spaces=spaces.filter(sp=>sp.name.toLowerCase().includes(q));document.getElementById('spaces-grid').innerHTML=spaces.map(sp=>`<div class="space-card"><div class="space-head"><span><span class="space-name-txt">${sp.name}</span><span class="layout-badge">${LAYOUTS[sp.layout]?.name||sp.layout}</span></span><div style="display:flex;gap:3px"><button class="ibtn" onclick="deleteSpace('${sp.id}')"><i class="ti ti-trash"></i></button></div></div>${renderSpaceBody(sp)}${renderRefLinks(sp)}</div>`).join('');if(!spaces.length)document.getElementById('spaces-grid').innerHTML=`<div style="font-size:12px;color:var(--fg4);padding:16px;text-align:center">${q?`"${q}" 없음`:'우측 상단 "공간 추가" 버튼을 눌러 시작하세요.'}</div>`;}
+function renderSpaceBody(sp){
+  if(sp.layout==='A'){const mkS=(key,lbl,icon)=>{const mats=(sp[key]||[]).map(mid=>{const m=getMat(mid);return m?`<div class="smat"><div class="smat-sw" style="background:${m.color}"></div><span class="smat-nm">${m.name}</span><span class="smat-del" onclick="removeMat('${sp.id}','${key}','${mid}')"><i class="ti ti-x"></i></span></div>`:''}).join('');return `<div class="slot"><div class="slot-lbl"><i class="ti ${icon}"></i>${lbl}</div><div>${mats}</div><div class="slot-add" onclick="openPicker('${sp.id}','${key}','${lbl}')"><i class="ti ti-plus" style="font-size:10px"></i> 추가</div></div>`;};const rep=sp.repImg?`<img src="${sp.repImg}" alt="">`:'' ;const details=(sp.detailImgs||[]).map(s=>`<div class="iup has-img" style="flex:1"><img src="${s}" alt=""></div>`).join('');const addD=(sp.detailImgs||[]).length<3?`<div class="iup" style="flex:1"><input type="file" accept="image/*" onchange="uploadDetail('${sp.id}',this)"><div class="iup-inner"><i class="ti ti-photo"></i>상세</div><img src="" alt=""></div>`:'';return `<div class="space-body-A">${mkS('floor','바닥','ti-arrow-down')}${mkS('wall','벽','ti-layout-sidebar')}${mkS('ceiling','천정','ti-arrow-up')}<div class="img-slot"><div class="img-slot-lbl"><i class="ti ti-photo"></i> 이미지</div><div class="iup ${sp.repImg?'has-img':''}" style="margin-bottom:3px"><input type="file" accept="image/*" onchange="uploadRep('${sp.id}',this)"><div class="iup-inner"><i class="ti ti-camera" style="font-size:14px"></i>대표</div>${rep}</div><div style="display:flex;gap:3px">${details}${addD}</div></div></div>`;}
+  if(sp.layout==='B'){const blocks=(sp.specs||[]).map((blk,bi)=>`<div class="spec-block"><div class="spec-block-lbl" contenteditable="true" onblur="updateSpecLbl('${sp.id}',${bi},this.textContent)">${blk.label}</div>${blk.items.map((item,ii)=>`<div class="spec-row"><span class="spec-key">${item.key}</span><textarea class="spec-val-inp" rows="1" oninput="updateSpecVal('${sp.id}',${bi},${ii},this.value)" placeholder="...">${item.val}</textarea></div>`).join('')}<span onclick="addSpecRow('${sp.id}',${bi})" style="font-size:10px;color:var(--fg4);cursor:pointer;margin-top:4px;display:inline-block"><i class="ti ti-plus" style="font-size:10px"></i> 항목 추가</span></div>`).join('');const rep=sp.repImg?`<img src="${sp.repImg}" alt="">`:'' ;return `<div class="space-body-B">${blocks}</div><div style="display:flex;gap:7px;padding:7px 12px;border-top:1px solid var(--border2)"><span onclick="addSpecBlock('${sp.id}')" style="font-size:10px;color:var(--fg4);cursor:pointer;font-weight:500"><i class="ti ti-plus" style="font-size:10px"></i> 블록 추가</span><div class="iup ${sp.repImg?'has-img':''}" style="margin-left:auto;width:82px"><input type="file" accept="image/*" onchange="uploadRep('${sp.id}',this)"><div class="iup-inner" style="min-height:30px;font-size:10px"><i class="ti ti-photo"></i>스업</div>${rep}</div></div>`;}
+  if(sp.layout==='C'){const items=(sp.items||[]).map(it=>{const mkS=(key,lbl,icon)=>{const mats=(it[key]||[]).map(mid=>{const m=getMat(mid);return m?`<div class="smat"><div class="smat-sw" style="background:${m.color}"></div><span class="smat-nm">${m.name}</span><span class="smat-del" onclick="removeCMat('${sp.id}','${it.id}','${key}','${mid}')"><i class="ti ti-x"></i></span></div>`:''}).join('');return `<div class="slot"><div class="slot-lbl"><i class="ti ${icon}"></i>${lbl}</div><div>${mats}</div><div class="slot-add" onclick="openPickerC('${sp.id}','${it.id}','${key}','${lbl}')"><i class="ti ti-plus" style="font-size:10px"></i> 추가</div></div>`;};const rep=it.repImg?`<img src="${it.repImg}" alt="">`:'' ;return `<div class="multi-item"><div class="multi-item-head"><span>${it.label}</span><span class="multi-item-badge">${it.badge}</span></div><div class="multi-item-body">${mkS('floor','바닥','ti-arrow-down')}${mkS('wall','벽','ti-layout-sidebar')}${mkS('ceiling','천정','ti-arrow-up')}<div class="img-slot" style="padding:5px 8px"><div class="iup ${it.repImg?'has-img':''}" style="height:100%"><input type="file" accept="image/*" onchange="uploadCItemImg('${sp.id}','${it.id}',this)"><div class="iup-inner" style="min-height:52px"><i class="ti ti-camera"></i></div>${rep}</div></div></div>`;}).join('');return `<div class="space-body-C">${items}<div class="add-multi" onclick="addMultiItem('${sp.id}')"><i class="ti ti-plus"></i> 항목 추가</div></div>`;}
+  if(sp.layout==='D'){const opts=(sp.options||[]).map((o,i)=>`<div class="cmp-card ${o.selected?'sel':''}" onclick="toggleOpt('${sp.id}',${i})"><div class="cmp-img">${o.img?`<img src="${o.img}" alt="">`:''}<input type="file" accept="image/*" onchange="uploadOpt('${sp.id}',${i},this)">${o.selected?'<div style="position:absolute;top:5px;right:5px;background:var(--fg);color:#fff;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600">선택</div>':''}</div><div class="cmp-info"><div class="cmp-title" contenteditable="true" onblur="updateOpt('${sp.id}',${i},'title',this.textContent)">${o.title}</div><div class="cmp-desc" contenteditable="true" onblur="updateOpt('${sp.id}',${i},'desc',this.textContent)">${o.desc}</div></div></div>`).join('');return `<div class="space-body-D"><div class="cmp-grid" style="grid-template-columns:repeat(${Math.min(Math.max((sp.options||[]).length,2),4)},1fr)">${opts}</div><div class="cmp-add" onclick="addOption('${sp.id}')"><i class="ti ti-plus"></i> 옵션 추가</div></div>`;}
+  if(sp.layout==='E'){const cols=sp.cols||[];const rows=sp.rows||[];return `<div class="space-body-E"><table class="spec-tbl"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th></th></tr></thead><tbody>${rows.map((row,ri)=>`<tr>${cols.map((c,ci)=>`<td><input value="${(row[ci]||'')}" onchange="updateTblCell('${sp.id}',${ri},${ci},this.value)" placeholder="..."></td>`).join('')}<td style="width:22px;text-align:center;cursor:pointer;color:var(--fg4)" onclick="removeTblRow('${sp.id}',${ri})"><i class="ti ti-x"></i></td></tr>`).join('')}</tbody></table><div class="tbl-add" onclick="addTblRow('${sp.id}')"><i class="ti ti-plus"></i> 행 추가</div></div>`;}
+  return '';
+}
+function renderRefLinks(sp){if(!sp.refLinks||!sp.refLinks.length)return `<div style="padding:6px 12px 8px;border-top:1px solid var(--border2)"><span class="ref-link-add" onclick="openRefPicker('${sp.id}')"><i class="ti ti-link"></i> 참고 페이지 연결</span></div>`;const tags=sp.refLinks.map(id=>{const r=getRef(id);return r?`<span class="ref-link-tag" onclick="openRefPicker('${sp.id}')">${r.title}</span>`:''}).join('');return `<div style="padding:6px 12px 8px;border-top:1px solid var(--border2);display:flex;align-items:center;gap:5px;flex-wrap:wrap"><i class="ti ti-link" style="font-size:13px;color:var(--fg4)"></i>${tags}<span class="ref-link-add" onclick="openRefPicker('${sp.id}')">수정</span></div>`;}
+function updateSpecLbl(sid,bi,val){curProj().spaces.find(s=>s.id===sid).specs[bi].label=val;}
+function updateSpecVal(sid,bi,ii,val){curProj().spaces.find(s=>s.id===sid).specs[bi].items[ii].val=val;}
+function addSpecRow(sid,bi){const sp=curProj().spaces.find(s=>s.id===sid);const key=prompt('항목 키 (TYPE/SIZE/COLOR 등)');if(!key)return;sp.specs[bi].items.push({key,val:''});renderSpaces();}
+function addSpecBlock(sid){const sp=curProj().spaces.find(s=>s.id===sid);sp.specs.push({label:'항목 '+(sp.specs.length+1),items:[{key:'TYPE',val:''},{key:'SIZE',val:''}]});renderSpaces();}
+function addMultiItem(sid){const sp=curProj().spaces.find(s=>s.id===sid);const label=prompt('항목 이름');if(!label)return;sp.items.push({id:'i'+Date.now(),label,badge:String.fromCharCode(65+sp.items.length),floor:[],wall:[],ceiling:[],repImg:null});renderSpaces();}
+function toggleOpt(sid,idx){curProj().spaces.find(s=>s.id===sid).options[idx].selected=!curProj().spaces.find(s=>s.id===sid).options[idx].selected;renderSpaces();}
+function updateOpt(sid,idx,key,val){curProj().spaces.find(s=>s.id===sid).options[idx][key]=val;}
+function addOption(sid){const sp=curProj().spaces.find(s=>s.id===sid);sp.options.push({id:'o'+Date.now(),title:'옵션 '+(sp.options.length+1),desc:'설명',img:null,selected:false});renderSpaces();}
+function uploadOpt(sid,idx,input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{curProj().spaces.find(s=>s.id===sid).options[idx].img=e.target.result;renderSpaces();};r.readAsDataURL(f);}
+function updateTblCell(sid,ri,ci,val){curProj().spaces.find(s=>s.id===sid).rows[ri][ci]=val;}
+function addTblRow(sid){const sp=curProj().spaces.find(s=>s.id===sid);sp.rows.push(new Array(sp.cols.length).fill(''));renderSpaces();}
+function removeTblRow(sid,ri){curProj().spaces.find(s=>s.id===sid).rows.splice(ri,1);renderSpaces();}
+function removeMat(sid,key,mid){const sp=curProj().spaces.find(s=>s.id===sid);sp[key]=sp[key].filter(id=>id!==mid);renderSpaces();}
+function removeCMat(sid,iid,key,mid){const sp=curProj().spaces.find(s=>s.id===sid);sp.items.find(i=>i.id===iid)[key]=sp.items.find(i=>i.id===iid)[key].filter(id=>id!==mid);renderSpaces();}
+function uploadRep(sid,input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{curProj().spaces.find(s=>s.id===sid).repImg=e.target.result;renderSpaces();};r.readAsDataURL(f);}
+function uploadDetail(sid,input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{const sp=curProj().spaces.find(s=>s.id===sid);if(!sp.detailImgs)sp.detailImgs=[];sp.detailImgs.push(e.target.result);renderSpaces();};r.readAsDataURL(f);}
+function uploadCItemImg(sid,iid,input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{curProj().spaces.find(s=>s.id===sid).items.find(i=>i.id===iid).repImg=e.target.result;renderSpaces();};r.readAsDataURL(f);}
+function deleteSpace(id){const p=curProj();p.spaces=p.spaces.filter(s=>s.id!==id);renderSpaces();renderProjList();}
+function openLayoutPicker(){selLayout='A';document.getElementById('new-space-name').value='';document.getElementById('layout-cards').innerHTML=Object.entries(LAYOUTS).map(([key,l])=>`<div class="radio-opt ${key==='A'?'on':''}" id="lp-${key}" onclick="selLp('${key}')" style="text-align:left"><div style="font-size:12px;font-weight:600">${l.name}</div><div style="font-size:10px;font-weight:400;margin-top:3px;color:var(--fg3)">${l.desc}</div></div>`).join('');document.getElementById('ov-layout').classList.add('show');setTimeout(()=>document.getElementById('new-space-name').focus(),100);}
+function selLp(key){selLayout=key;document.querySelectorAll('[id^="lp-"]').forEach(e=>e.classList.remove('on'));document.getElementById('lp-'+key).classList.add('on');}
+function saveNewSpace(){const name=document.getElementById('new-space-name').value.trim();if(!name){alert('공간 이름을 입력하세요');return;}const p=curProj();if(!p)return;const sp={id:'sp'+Date.now(),name,layout:selLayout,refLinks:[]};if(selLayout==='A'){sp.floor=[];sp.wall=[];sp.ceiling=[];sp.repImg=null;sp.detailImgs=[];}else if(selLayout==='B'){sp.specs=[{label:'항목 1',items:[{key:'TYPE',val:''},{key:'SIZE',val:''},{key:'COLOR',val:''}]}];sp.repImg=null;}else if(selLayout==='C'){sp.items=[{id:'i'+Date.now(),label:'항목 A',badge:'A',floor:[],wall:[],ceiling:[],repImg:null}];}else if(selLayout==='D'){sp.options=[];}else if(selLayout==='E'){sp.cols=['구분','업체명','모델명','규격','비고'];sp.rows=[[]];}p.spaces.push(sp);closeOv('ov-layout');renderSpaces();renderProjList();}
+function openPicker(sid,key,label){pickerTarget={sid,key,type:'A'};document.getElementById('picker-title').textContent=curProj().spaces.find(s=>s.id===sid).name+' — '+label;document.getElementById('psearch').value='';renderPCats();document.getElementById('ov-picker').classList.add('show');}
+function openPickerC(sid,iid,key,label){pickerTarget={sid,iid,key,type:'C'};document.getElementById('picker-title').textContent=label;document.getElementById('psearch').value='';renderPCats();document.getElementById('ov-picker').classList.add('show');}
+function renderPCats(){const cats=Object.keys(DB);curPCat=cats[0];document.getElementById('pcats').innerHTML=cats.map(c=>`<div class="pcat ${c===curPCat?'on':''}" onclick="selPCat(this,'${c}')">${c}</div>`).join('');renderPGrid(curPCat,'');}
+function selPCat(el,cat){curPCat=cat;document.querySelectorAll('.pcat').forEach(e=>e.classList.remove('on'));el.classList.add('on');renderPGrid(cat,document.getElementById('psearch').value);}
+function renderPGrid(cat,q=''){const mats=q.trim()?Object.values(DB).flat().filter(m=>m.name.includes(q)||m.sub.includes(q)):DB[cat]||[];document.getElementById('pgrid').innerHTML=mats.length?mats.map(m=>`<div class="pc" onclick="pickMat('${m.id}')">${pthumbHtml(m)}<div class="pinfo"><div class="pname">${m.name}</div><div class="psub">${m.sub}</div></div></div>`).join(''):`<div class="no-r">결과 없음</div>`;}
+function pickMat(mid){if(!pickerTarget)return;const p=curProj();if(pickerTarget.type==='A'){const sp=p.spaces.find(s=>s.id===pickerTarget.sid);if(!sp[pickerTarget.key].includes(mid))sp[pickerTarget.key].push(mid);}else{const sp=p.spaces.find(s=>s.id===pickerTarget.sid);const it=sp.items.find(i=>i.id===pickerTarget.iid);if(!it[pickerTarget.key].includes(mid))it[pickerTarget.key].push(mid);}closePicker();renderSpaces();}
+function closePicker(){closeOv('ov-picker');pickerTarget=null;}
+function openRefPicker(sid){refPickTarget=sid;const sp=curProj().spaces.find(s=>s.id===sid);tempRefPicks=[...(sp.refLinks||[])];document.getElementById('ref-picker-title').textContent=sp.name+' — 참고 페이지';let h='';for(const[g,items]of Object.entries(REF_PAGES)){h+=`<div class="ref-group"><div class="ref-group-lbl">${g}</div>${items.map(r=>`<div class="ref-pick-card ${tempRefPicks.includes(r.id)?'picked':''}" id="rpc-${r.id}" onclick="toggleRefPick('${r.id}')"><div class="ref-pick-thumb">${r.img?`<img src="${r.img}" style="width:100%;height:100%;object-fit:cover" alt="">`:''}</div><div class="ref-pick-info"><h4>${r.title}</h4><p>${r.desc}</p></div>${tempRefPicks.includes(r.id)?'<i class="ti ti-check" style="font-size:15px;color:var(--fg);margin-left:auto"></i>':''}</div>`).join('')}</div>`;}document.getElementById('ref-picker-body').innerHTML=h;document.getElementById('ov-ref').classList.add('show');}
+function toggleRefPick(id){if(tempRefPicks.includes(id))tempRefPicks=tempRefPicks.filter(x=>x!==id);else tempRefPicks.push(id);document.querySelectorAll('[id^="rpc-"]').forEach(el=>{const rid=el.id.replace('rpc-','');el.classList.toggle('picked',tempRefPicks.includes(rid));const chk=el.querySelector('.ti-check');if(tempRefPicks.includes(rid)&&!chk)el.insertAdjacentHTML('beforeend','<i class="ti ti-check" style="font-size:15px;color:var(--fg);margin-left:auto"></i>');else if(!tempRefPicks.includes(rid)&&chk)chk.remove();});}
+function saveRefLinks(){curProj().spaces.find(s=>s.id===refPickTarget).refLinks=tempRefPicks;closeOv('ov-ref');renderSpaces();}
+function renderTmplGrids(){document.getElementById('common-tmpl-grid').innerHTML=commonTemplates.map(t=>renderTCard(t)).join('')+`<div class="tmpl-add-card" onclick="openSaveTmpl('common')"><i class="ti ti-plus" style="font-size:22px"></i>새 공통 템플릿</div>`;document.getElementById('project-tmpl-grid').innerHTML=projectTemplates.map(t=>renderTCard(t)).join('')+`<div class="tmpl-add-card" onclick="openSaveTmpl('project')"><i class="ti ti-plus" style="font-size:22px"></i>프로젝트에서 저장</div>`;}
+function renderTCard(t){const spaceRows=t.spaces.map(sp=>{const allIds=sp.layout==='A'?[...(sp.floor||[]),...(sp.wall||[]),...(sp.ceiling||[])]:sp.layout==='C'?(sp.items||[]).flatMap(it=>[...(it.floor||[]),...(it.wall||[]),...(it.ceiling||[])]):[];const mats=[...new Set(allIds)].map(getMat).filter(Boolean);return `<div class="tmpl-sp-row"><i class="ti ti-layout-sidebar" style="font-size:12px"></i><span style="flex:1;font-weight:600;color:var(--fg)">${sp.name}</span><span class="tmpl-sp-badge">${LAYOUTS[sp.layout]?.name||sp.layout}</span></div>${mats.length?`<div class="tmpl-mat-chips">${mats.map(m=>`<span class="tmpl-mat-chip"><span class="tmpl-mat-dot" style="background:${m.color}"></span>${m.name}</span>`).join('')}</div>`:''}`}).join('');return `<div class="tmpl-card"><div class="tmpl-card-head"><div><div class="tmpl-card-title">${t.name}</div><div class="tmpl-card-desc">${t.desc||''}</div></div><span class="tmpl-type-badge ${t.type}">${t.type==='common'?'공통':'프로젝트'}</span></div><div class="tmpl-spaces">${spaceRows}</div><div class="tmpl-card-foot"><span class="tmpl-card-foot-info"><i class="ti ti-clock" style="font-size:11px"></i> ${t.savedAt} · ${t.spaces.length}개 공간</span><div style="display:flex;gap:5px"><button class="btn" style="padding:4px 8px;font-size:11px" onclick="applyTmplDirect('${t.id}')"><i class="ti ti-template"></i> 적용</button><button class="btn btn-danger" style="padding:4px 8px;font-size:11px" onclick="deleteTmpl('${t.id}')"><i class="ti ti-trash"></i></button></div></div></div>`;}
+function openSaveTmpl(type){selTmplSpaces=new Set();selTmplTypeVal=type||'common';document.getElementById('tmpl-name-inp').value='';document.getElementById('tmpl-desc-inp').value='';selTmplType(selTmplTypeVal);const p=curProj();if(p){document.getElementById('save-space-list').innerHTML=p.spaces.map(sp=>{const allIds=sp.layout==='A'?[...(sp.floor||[]),...(sp.wall||[]),...(sp.ceiling||[])]:[];const mats=allIds.map(getMat).filter(Boolean);return `<div class="space-check-item on" id="schk-${sp.id}" onclick="toggleSpChk('${sp.id}')"><div class="space-chkbox on" id="schkbox-${sp.id}"><i class="ti ti-check" style="font-size:10px;color:#fff"></i></div><div><div style="font-size:12px;font-weight:600">${sp.name} <span class="tmpl-sp-badge">${LAYOUTS[sp.layout]?.name||sp.layout}</span></div><div style="font-size:10px;color:var(--fg3);margin-top:2px">${mats.length?mats.map(m=>m.name).join(', '):'재료 세팅 없음'}</div></div></div>`;}).join('');p.spaces.forEach(sp=>selTmplSpaces.add(sp.id));}else{document.getElementById('save-space-list').innerHTML=`<div style="font-size:11px;color:var(--fg4)">프로젝트를 먼저 선택하세요</div>`;}document.getElementById('ov-save-tmpl').classList.add('show');setTimeout(()=>document.getElementById('tmpl-name-inp').focus(),100);}
+function selTmplType(type){selTmplTypeVal=type;document.getElementById('tmpl-type-common').classList.toggle('on',type==='common');document.getElementById('tmpl-type-project').classList.toggle('on',type==='project');}
+function toggleSpChk(id){if(selTmplSpaces.has(id)){selTmplSpaces.delete(id);document.getElementById('schk-'+id).classList.remove('on');document.getElementById('schkbox-'+id).classList.remove('on');document.getElementById('schkbox-'+id).innerHTML='';}else{selTmplSpaces.add(id);document.getElementById('schk-'+id).classList.add('on');document.getElementById('schkbox-'+id).classList.add('on');document.getElementById('schkbox-'+id).innerHTML='<i class="ti ti-check" style="font-size:10px;color:#fff"></i>';}}
+function saveTmpl(){const name=document.getElementById('tmpl-name-inp').value.trim();if(!name){alert('템플릿 이름을 입력하세요');return;}const desc=document.getElementById('tmpl-desc-inp').value.trim();const p=curProj();if(!p){alert('프로젝트를 먼저 선택하세요');return;}const spaces=p.spaces.filter(sp=>selTmplSpaces.has(sp.id)).map(sp=>JSON.parse(JSON.stringify(sp)));if(!spaces.length){alert('공간을 1개 이상 선택하세요');return;}const tmpl={id:'t'+Date.now(),name,desc,type:selTmplTypeVal,savedFrom:p.name,savedAt:new Date().getFullYear()+'.'+String(new Date().getMonth()+1).padStart(2,'0'),spaces};if(selTmplTypeVal==='common')commonTemplates.push(tmpl);else projectTemplates.push(tmpl);closeOv('ov-save-tmpl');renderTmplGrids();toast(`"${name}" 템플릿 저장 완료!`);}
+function deleteTmpl(id){if(!confirm('이 템플릿을 삭제할까요?'))return;commonTemplates=commonTemplates.filter(t=>t.id!==id);projectTemplates=projectTemplates.filter(t=>t.id!==id);renderTmplGrids();toast('템플릿 삭제됨');}
+function openApplyTmpl(){selApplyTmpl=null;renderApplyGrids();document.getElementById('apply-preview-wrap').style.display='none';document.getElementById('apply-note').textContent='템플릿을 선택하세요';document.getElementById('apply-btn').disabled=true;document.getElementById('ov-apply-tmpl').classList.add('show');}
+function renderApplyGrids(){const rg=(list,elId)=>{document.getElementById(elId).innerHTML=list.length?list.map(t=>`<div style="border:1px solid ${selApplyTmpl===t.id?'var(--fg)':'var(--border2)'};border-radius:var(--radius);padding:9px 11px;cursor:pointer;background:${selApplyTmpl===t.id?'var(--bg)':'#fff'};transition:all 0.1s" onclick="selApplyTmpl2('${t.id}')"><div style="font-size:12px;font-weight:600;color:var(--fg)">${t.name}</div><div style="font-size:10px;color:var(--fg3);margin-top:2px">${t.spaces.length}개 공간 · ${t.savedAt}</div></div>`).join(''):`<div style="font-size:11px;color:var(--fg4);padding:5px">없음</div>`;};rg(commonTemplates,'apply-common-grid');rg(projectTemplates,'apply-project-grid');}
+function selApplyTmpl2(id){selApplyTmpl=id;const all=[...commonTemplates,...projectTemplates];const t=all.find(t=>t.id===id);renderApplyGrids();if(t){document.getElementById('apply-preview-wrap').style.display='block';document.getElementById('apply-preview-list').innerHTML=t.spaces.map(sp=>{const allIds=sp.layout==='A'?[...(sp.floor||[]),...(sp.wall||[]),...(sp.ceiling||[])]:[];const mats=[...new Set(allIds)].map(getMat).filter(Boolean);return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border2);font-size:11px"><span style="font-weight:600;min-width:72px;color:var(--fg)">${sp.name}</span><span class="tmpl-sp-badge">${LAYOUTS[sp.layout]?.name||sp.layout}</span><div style="display:flex;flex-wrap:wrap;gap:3px">${mats.map(m=>`<span style="font-size:9px;padding:1px 6px;border-radius:20px;background:var(--bg2);color:var(--fg3);border:1px solid var(--border2);display:flex;align-items:center;gap:3px;font-weight:500"><span style="width:8px;height:8px;border-radius:2px;background:${m.color};flex-shrink:0;display:inline-block"></span>${m.name}</span>`).join('')}</div></div>`;}).join('');document.getElementById('apply-note').textContent=`${t.spaces.length}개 공간이 추가됩니다`;document.getElementById('apply-btn').disabled=false;}}
+function applyTmpl(){if(!selApplyTmpl)return;const all=[...commonTemplates,...projectTemplates];const t=all.find(t=>t.id===selApplyTmpl);if(!t||!curProj())return;t.spaces.forEach(sp=>{const ns=JSON.parse(JSON.stringify(sp));ns.id='sp'+Date.now()+Math.random().toString(36).slice(2);curProj().spaces.push(ns);});closeOv('ov-apply-tmpl');renderSpaces();renderProjList();toast(`"${t.name}" 적용 완료 — ${t.spaces.length}개 공간 추가`);}
+function applyTmplDirect(id){selApplyTmpl=id;if(!curProj()){switchMode('proj');toast('프로젝트를 먼저 선택하세요');return;}applyTmpl();}
+function buildPv(p){const m=p.meta;return p.spaces.map((sp,i)=>{const hdr=i===0?`<div><input class="pv-title-inp" value="${m.title}" oninput="updateMeta('title',this.value)"><input class="pv-meta-inp" value="${m.subtitle}" oninput="updateMeta('subtitle',this.value)"></div><div style="text-align:right"><input class="pv-logo-inp" value="${m.logo}" oninput="updateMeta('logo',this.value)"></div>`:`<div><div style="font-size:15px;font-weight:700;color:#1a1a1a">${m.title}</div><div style="font-size:10px;color:#999;margin-top:2px">${m.subtitle}</div></div><div style="font-size:10px;color:#aaa;text-align:right">${m.logo}</div>`;const foot=i===0?`<input class="pv-foot-inp" value="${m.footer}" oninput="updateMeta('footer',this.value)">`:`<div style="font-size:9px;color:#ccc;text-align:center;margin-top:11px">${m.footer}</div>`;let body='';if(sp.layout==='A'){const mkS=(key,lbl)=>`<div class="pv-slot"><div class="pv-sl">${lbl}</div>${(sp[key]||[]).length?(sp[key]||[]).map(id=>{const mat=getMat(id);return mat?`<div class="pv-sm"><div class="pv-sw-wrap">${mat.exImgs&&mat.exImgs.length?`<div class="pv-sw-imgs n${Math.min(mat.exImgs.length,3)}">${mat.exImgs.slice(0,3).map(s=>`<img src="${s}" alt="">`).join('')}</div>`:`<div class="pv-sw" style="background:${mat.color}"></div>`}</div><div><div class="pv-smn">${mat.name}</div><span class="pv-smcat">${getCatOf(mat.id)} · ${mat.sub}</span></div></div>`:''}).join(''):`<div class="pv-se">-</div>`}</div>`;const exMats=[...new Set([...(sp.floor||[]),...(sp.wall||[]),...(sp.ceiling||[])])].map(getMat).filter(m=>m&&m.exImgs&&m.exImgs.length);body=`<div class="pv-top"><div>${mkS('floor','바닥')}${mkS('wall','벽')}${mkS('ceiling','천정')}</div><div class="pv-proj-imgs"><div class="pv-proj-img-main">${sp.repImg?`<img src="${sp.repImg}" alt="">`:'스업 / 렌더링 이미지'}</div>${(sp.detailImgs||[]).length?`<div class="pv-proj-det-row">${sp.detailImgs.map(s=>`<div class="pv-proj-det"><img src="${s}" alt=""></div>`).join('')}</div>`:''}</div></div>${exMats.length?`<div class="pv-ex-imgs"><div class="pv-ex-lbl">재료 예시 이미지</div><div class="pv-ex-grid n${Math.min(exMats.length,3)}">${exMats.slice(0,3).map(mat=>`<div class="pv-ex-card"><div class="pv-ex-img">${mat.exImgs[0]?`<img src="${mat.exImgs[0]}" alt="">`:''}</div><div class="pv-ex-info"><div class="pv-ex-name">${mat.name}</div><div class="pv-ex-sub">${getCatOf(mat.id)} · ${mat.sub}</div></div></div>`).join('')}</div></div>`:''}`;}else if(sp.layout==='B'){body=`<div style="display:grid;grid-template-columns:1fr ${sp.repImg?'165px':'0fr'};gap:15px"><div>${(sp.specs||[]).map(blk=>`<div style="border:0.5px solid #eee;border-radius:4px;padding:10px 12px;margin-bottom:8px"><div style="font-size:10px;font-weight:700;color:#555;margin-bottom:8px">${blk.label}</div>${blk.items.map(item=>`<div style="display:flex;gap:8px;margin-bottom:5px"><span style="font-size:9px;color:#aaa;width:50px;flex-shrink:0;text-transform:uppercase;letter-spacing:0.3px;padding-top:1px">${item.key}</span><span style="font-size:11px;color:#1a1a1a;flex:1;line-height:1.5">${item.val||'-'}</span></div>`).join('')}</div>`).join('')}</div>${sp.repImg?`<div style="background:#f0f0ee;border-radius:5px;overflow:hidden;border:0.5px solid #e0e0e0"><img src="${sp.repImg}" style="width:100%;height:100%;object-fit:cover" alt=""></div>`:''}</div>`;}else if(sp.layout==='C'){body=(sp.items||[]).map(it=>{const mkS=(key,lbl)=>`<div style="padding:5px 8px;background:#fafaf8;border-radius:3px;border:0.5px solid #eee;margin-bottom:4px"><div style="font-size:9px;color:#aaa;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.3px">${lbl}</div>${(it[key]||[]).length?(it[key]||[]).map(id=>{const mat=getMat(id);return mat?`<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><div style="width:12px;height:12px;border-radius:2px;background:${mat.color};flex-shrink:0;border:0.5px solid rgba(0,0,0,0.08)"></div><span style="font-size:10px;color:#333">${mat.name}</span></div>`:''}).join(''):`<div style="font-size:10px;color:#ccc">-</div>`}</div>`;return `<div style="margin-bottom:8px;border:0.5px solid #eee;border-radius:4px;overflow:hidden"><div style="padding:5px 10px;background:#f5f5f3;display:flex;align-items:center;justify-content:space-between"><span style="font-size:11px;font-weight:700">${it.label}</span><span style="font-size:10px;font-weight:700;background:#1a1a1a;color:#fff;padding:1px 6px;border-radius:3px">${it.badge}</span></div><div style="display:grid;grid-template-columns:1fr 1fr 1fr ${it.repImg?'105px':'0fr'};padding:7px 10px;gap:8px">${mkS('floor','바닥')}${mkS('wall','벽')}${mkS('ceiling','천정')}${it.repImg?`<div style="border-radius:3px;overflow:hidden"><img src="${it.repImg}" style="width:100%;height:100%;object-fit:cover" alt=""></div>`:''}</div></div>`;}).join('');}else if(sp.layout==='D'){body=`<div style="display:grid;grid-template-columns:repeat(${Math.min(Math.max((sp.options||[]).length,2),4)},1fr);gap:9px">${(sp.options||[]).map(o=>`<div style="border:${o.selected?'2px solid #1a1a1a':'0.5px solid #eee'};border-radius:5px;overflow:hidden">${o.img?`<div style="height:82px;overflow:hidden"><img src="${o.img}" style="width:100%;height:100%;object-fit:cover" alt=""></div>`:`<div style="height:82px;background:#f5f5f3;display:flex;align-items:center;justify-content:center;font-size:10px;color:#bbb">${o.title}</div>`}<div style="padding:6px 8px;background:${o.selected?'#f8f8f6':'#fff'}"><div style="font-size:11px;font-weight:600;color:#1a1a1a">${o.title}${o.selected?` <span style="font-size:9px;background:#1a1a1a;color:#fff;padding:1px 5px;border-radius:3px">선택</span>`:''}</div><div style="font-size:10px;color:#888;margin-top:1px">${o.desc}</div></div></div>`).join('')}</div>`;}else if(sp.layout==='E'){body=`<table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr>${(sp.cols||[]).map(c=>`<th style="font-size:9px;color:#aaa;font-weight:600;padding:5px 8px;border-bottom:0.5px solid #ddd;text-align:left">${c}</th>`).join('')}</tr></thead><tbody>${(sp.rows||[]).map(row=>`<tr>${(sp.cols||[]).map((c,ci)=>`<td style="padding:6px 8px;border-bottom:0.5px solid #f0f0ee;color:#333">${row[ci]||'-'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;}const refs=sp.refLinks&&sp.refLinks.length?`<div class="pv-refs"><div class="pv-ref-lbl">참고 페이지</div><div class="pv-ref-cards">${sp.refLinks.map(id=>{const r=getRef(id);return r?`<div class="pv-ref-card">${r.img?`<div class="pv-ref-img"><img src="${r.img}" alt=""></div>`:`<div class="pv-ref-img">${r.title}</div>`}<div class="pv-ref-info"><div class="pv-ref-title">${r.title}</div><div class="pv-ref-desc">${r.desc}</div></div></div>`:''}).join('')}</div></div>`:'';return `<div class="pv-pg"><div class="pv-pg-hdr">${hdr}</div><div class="pv-sp-name">${sp.name}</div>${body}${refs}${foot}</div>`;}).join('');}
+function updateMeta(key,val){const p=curProj();if(p)p.meta[key]=val;}
+function openPreview(){const p=curProj();if(!p){toast('프로젝트를 먼저 선택하세요');return;}document.getElementById('pv-content').innerHTML=buildPv(p);document.getElementById('ov-preview').classList.add('show');}
+function doPrint(){const p=curProj();if(!p)return;const html=buildPv(p).replace(/oninput="[^"]*"/g,'').replace(/<input([^>]*?)class="pv-title-inp"([^>]*?)value="([^"]*)"[^>]*>/g,'<div style="font-size:18px;font-weight:700;color:#1a1a1a">$3</div>').replace(/<input([^>]*?)class="pv-meta-inp"([^>]*?)value="([^"]*)"[^>]*>/g,'<div style="font-size:10px;color:#999;margin-top:3px">$3</div>').replace(/<input([^>]*?)class="pv-logo-inp"([^>]*?)value="([^"]*)"[^>]*>/g,'<div style="font-size:10px;color:#aaa;text-align:right">$3</div>').replace(/<input([^>]*?)class="pv-foot-inp"([^>]*?)value="([^"]*)"[^>]*>/g,'<div style="font-size:9px;color:#ccc;text-align:center;margin-top:11px">$3</div>');const w=window.open('','_blank','width=1200,height=800');w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${p.meta.title} 재료마감리스트</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0;font-family:'Noto Sans KR',sans-serif}body{background:#fff}.pv-pg{width:297mm;min-height:208mm;padding:12mm 15mm;page-break-after:always;display:flex;flex-direction:column;gap:9px}.pv-pg:last-child{page-break-after:avoid}.pv-pg-hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:9px;border-bottom:2px solid #1a1a1a;margin-bottom:12px}.pv-sp-name{font-size:12px;font-weight:700;color:#1a1a1a;margin-bottom:10px;letter-spacing:0.3px;text-transform:uppercase}.pv-top{display:grid;grid-template-columns:212px 1fr;gap:15px;flex:1}.pv-slot{padding:7px 10px;background:#fafaf8;border-radius:4px;border:0.5px solid #e8e8e8;margin-bottom:6px}.pv-sl{font-size:9px;color:#aaa;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.6px;font-weight:600}.pv-sm{display:flex;align-items:flex-start;gap:7px;margin-bottom:5px}.pv-sw-wrap{flex-shrink:0}.pv-sw{width:44px;height:44px;border-radius:4px;border:0.5px solid rgba(0,0,0,0.08)}.pv-sw-imgs{display:grid;width:44px;border-radius:4px;overflow:hidden;border:0.5px solid rgba(0,0,0,0.08)}.pv-sw-imgs.n1{grid-template-rows:1fr;height:44px}.pv-sw-imgs.n2{grid-template-rows:1fr 1fr;height:44px}.pv-sw-imgs.n3{grid-template-rows:1fr 1fr 1fr;height:44px}.pv-sw-imgs img{width:100%;object-fit:cover}.pv-smn{font-size:12px;color:#1a1a1a;font-weight:600}.pv-smcat{font-size:10px;color:#aaa;display:block;margin-top:2px}.pv-se{font-size:10px;color:#ccc;font-style:italic}.pv-proj-imgs{display:flex;flex-direction:column;gap:7px}.pv-proj-img-main{flex:1;background:#f0f0ee;border-radius:5px;overflow:hidden;border:0.5px solid #e0e0e0;min-height:112px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#bbb}.pv-proj-img-main img{width:100%;height:100%;object-fit:cover}.pv-proj-det-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.pv-proj-det{height:62px;background:#f0f0ee;border-radius:3px;overflow:hidden;border:0.5px solid #e0e0e0}.pv-proj-det img{width:100%;height:100%;object-fit:cover}.pv-ex-imgs{margin-top:9px}.pv-ex-lbl{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;font-weight:600}.pv-ex-grid{display:grid;gap:7px}.pv-ex-grid.n1{grid-template-columns:1fr}.pv-ex-grid.n2{grid-template-columns:1fr 1fr}.pv-ex-grid.n3{grid-template-columns:1fr 1fr 1fr}.pv-ex-card{border:0.5px solid #eee;border-radius:4px;overflow:hidden}.pv-ex-img{height:92px;background:#f0f0ee;overflow:hidden}.pv-ex-img img{width:100%;height:100%;object-fit:cover}.pv-ex-info{padding:5px 8px;background:#fafafa}.pv-ex-name{font-size:10px;font-weight:600;color:#333}.pv-ex-sub{font-size:9px;color:#888;margin-top:1px}.pv-refs{margin-top:9px}.pv-ref-lbl{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;font-weight:600}.pv-ref-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.pv-ref-card{border:0.5px solid #eee;border-radius:4px;overflow:hidden}.pv-ref-img{height:62px;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:9px;color:#bbb}.pv-ref-img img{width:100%;height:100%;object-fit:cover}.pv-ref-info{padding:5px 7px}.pv-ref-title{font-size:10px;font-weight:600;color:#333}.pv-ref-desc{font-size:9px;color:#888;margin-top:1px}@page{size:A4 landscape;margin:0}@media print{.pv-pg{page-break-after:always}}</style></head><body>${html}</body></html>`);w.document.close();setTimeout(()=>{w.focus();w.print();},600);}
+function switchMode(mode){curMode=mode;['db','upload','tmpl','proj'].forEach(m=>{document.getElementById('view-'+m).classList.toggle('on',m===mode);document.getElementById('nav-'+m).classList.toggle('on',m===mode);});const sw=document.getElementById('search-wrap');sw.style.display=(mode==='db'||mode==='proj')?'':'none';const ta=document.getElementById('topbar-actions');if(mode==='proj'){ta.innerHTML=`<button class="btn" onclick="openPreview()"><i class="ti ti-eye"></i> 미리보기</button><button class="btn btn-dark" onclick="doPrint()"><i class="ti ti-file-export"></i> PDF 출력</button>`;document.getElementById('topbar-title').textContent=curProj()?.name||'프로젝트';renderFilterChips();renderProjList();if(curProjId)selectProj(curProjId);}else if(mode==='db'){ta.innerHTML='';document.getElementById('topbar-title').textContent='재료 DB';renderDbLeft();renderDbGrid(curDbCat);}else if(mode==='upload'){ta.innerHTML='';document.getElementById('topbar-title').textContent='일괄 업로드';}else if(mode==='tmpl'){ta.innerHTML='';document.getElementById('topbar-title').textContent='템플릿 관리';renderTmplGrids();}document.getElementById('search-inp').value='';}
+renderDbLeft();renderDbGrid('벽돌');
+</script>
+</body>
+</html>
