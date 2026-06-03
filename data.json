@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-06-03T09:03:18.035Z",
+  "savedAt": "2026-06-03T09:13:40.970Z",
   "DB": {
     "벽돌": [
       {
@@ -283,7 +283,107 @@
         "logo": "유타건축",
         "footer": "유타건축 · 본 문서는 시공사 견적요청을 위한 기준 자료입니다."
       },
-      "spaces": []
+      "spaces": [
+        {
+          "name": "외벽",
+          "layout": "A",
+          "floor": [],
+          "wall": [
+            "b2"
+          ],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": [],
+          "refLinks": [],
+          "id": "sp1780478017486mz1440rwd5t"
+        },
+        {
+          "name": "경사지붕",
+          "layout": "B",
+          "specs": [
+            {
+              "label": "경사지붕",
+              "items": [
+                {
+                  "key": "TYPE",
+                  "val": "칼라강판 (거멀접기)"
+                },
+                {
+                  "key": "COLOR",
+                  "val": "짙은 그레이 계열"
+                }
+              ]
+            }
+          ],
+          "repImg": null,
+          "refLinks": [],
+          "id": "sp1780478017486snr5r7ab44"
+        },
+        {
+          "name": "필로티 주차장",
+          "layout": "C",
+          "items": [
+            {
+              "id": "i1",
+              "label": "천정",
+              "badge": "A",
+              "floor": [],
+              "wall": [],
+              "ceiling": [
+                "p1"
+              ],
+              "repImg": null
+            },
+            {
+              "id": "i2",
+              "label": "바닥",
+              "badge": "B",
+              "floor": [
+                "c1"
+              ],
+              "wall": [],
+              "ceiling": [],
+              "repImg": null
+            }
+          ],
+          "refLinks": [],
+          "id": "sp1780478017486x1nxpfbbrbe"
+        },
+        {
+          "name": "외부계단",
+          "layout": "A",
+          "floor": [
+            "s1"
+          ],
+          "wall": [],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": [],
+          "refLinks": [
+            "r1",
+            "r4",
+            "r6"
+          ],
+          "id": "sp1780478017486khag6zuo49"
+        },
+        {
+          "name": "1F 거실",
+          "layout": "A",
+          "floor": [
+            "f1"
+          ],
+          "wall": [
+            "p1"
+          ],
+          "ceiling": [
+            "p1"
+          ],
+          "repImg": null,
+          "detailImgs": [],
+          "refLinks": [],
+          "id": "sp1780478017486a92m5rta7tt"
+        }
+      ]
     }
   ],
   "commonTemplates": [
