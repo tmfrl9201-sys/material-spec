@@ -344,6 +344,25 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
 .cmi{width:100%;padding:7px 10px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--fg);font-size:12px;margin-bottom:12px;font-family:var(--font-sans)}
 .cmi:focus{outline:none;border-color:#aaa}
 #toast{display:none;position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--fg);color:#fff;padding:9px 18px;border-radius:var(--radius);font-size:12px;z-index:9999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2);font-weight:500}
+/* GitHub 저장 */
+.save-status{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--fg4);padding:4px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:#fff;font-weight:500;white-space:nowrap;cursor:default}
+.save-status.saving{color:var(--blue);border-color:var(--blue-border);background:var(--blue-bg)}
+.save-status.saved{color:var(--green);border-color:var(--green-border);background:var(--green-bg)}
+.save-status.error{color:var(--red);border-color:var(--red-border);background:var(--red-bg)}
+.github-setup-modal{width:500px}
+.github-setup-body{padding:16px;flex:1;overflow-y:auto}
+.gh-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
+.gh-step-num{width:22px;height:22px;border-radius:50%;background:var(--fg);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.gh-step-txt{font-size:12px;color:var(--fg2);line-height:1.6;flex:1}
+.gh-step-txt strong{color:var(--fg);font-weight:700}
+.gh-field{margin-bottom:10px}
+.gh-field label{font-size:11px;color:var(--fg2);font-weight:600;display:block;margin-bottom:4px}
+.gh-field input{width:100%;padding:7px 10px;border-radius:var(--radius);border:1px solid var(--border);background:#fff;color:var(--fg);font-size:12px;font-family:var(--font-sans)}
+.gh-field input:focus{outline:none;border-color:#aaa}
+.gh-mono{font-family:var(--font-mono)}
+.gh-test-result{margin-top:8px;padding:8px 12px;border-radius:var(--radius);font-size:11px;display:none}
+.gh-test-result.ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);display:block}
+.gh-test-result.err{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);display:block}
 /* 사용법 가이드 모달 */
 .guide-modal{width:820px;max-height:700px}
 .guide-body{flex:1;overflow:hidden;display:flex;min-height:0}
@@ -454,6 +473,10 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
       <h2 id="topbar-title">재료 DB</h2>
       <div class="sw" id="search-wrap"><i class="ti ti-search"></i><input class="si" id="search-inp" placeholder="재료 검색..." oninput="onSearch(this.value)"></div>
       <div class="ta" id="topbar-actions"></div>
+      <div id="save-status-wrap" style="display:flex;align-items:center;gap:6px;margin-left:4px;flex-shrink:0">
+        <div class="save-status" id="save-status" onclick="openGithubSetup()" style="cursor:pointer" title="GitHub 저장 설정"><i class="ti ti-brand-github"></i> <span id="save-status-txt">저장 설정</span></div>
+        <button class="btn btn-dark" id="save-btn" onclick="saveToGithub()" style="display:none"><i class="ti ti-device-floppy"></i> 저장</button>
+      </div>
       <button class="btn" onclick="openGuide()" style="margin-left:4px;flex-shrink:0;border-color:#bbb"><i class="ti ti-help-circle"></i> 사용법</button>
     </div>
     <div class="view db-view on" id="view-db">
@@ -564,6 +587,42 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
 </div>
 
 <div class="cat-modal-ov" id="ov-cat" onclick="if(event.target.id==='ov-cat')closeOv('ov-cat')">  <div class="cat-modal"><h3 id="cat-title">카테고리 추가</h3><div class="cml">이름</div><input class="cmi" id="cat-inp" onkeydown="if(event.key==='Enter')saveCat()"><div style="display:flex;gap:6px;justify-content:flex-end"><button class="btn" onclick="closeOv('ov-cat')">취소</button><button class="btn btn-dark" onclick="saveCat()">추가</button></div></div>
+</div>
+
+<!-- GitHub 저장 설정 모달 -->
+<div class="ov-wrap" id="ov-github-setup" onclick="if(event.target.id==='ov-github-setup')closeOv('ov-github-setup')">
+  <div class="modal github-setup-modal">
+    <div class="modal-top">
+      <h3><i class="ti ti-brand-github" style="margin-right:5px"></i> GitHub 자동 저장 설정</h3>
+      <button class="btn" onclick="closeOv('ov-github-setup')" style="padding:4px 8px"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="github-setup-body">
+      <div style="background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--radius);padding:10px 13px;margin-bottom:14px;font-size:11px;color:#1d4ed8;line-height:1.6">
+        <i class="ti ti-info-circle" style="margin-right:4px"></i>설정하면 <strong>"저장"</strong> 버튼 클릭 시 GitHub 저장소에 자동으로 데이터가 저장돼요. 다음에 앱을 열면 자동으로 불러와요.
+      </div>
+
+      <div style="font-size:12px;font-weight:700;color:var(--fg);margin-bottom:10px">Step 1 — Personal Access Token 발급</div>
+      <div class="gh-step"><div class="gh-step-num">1</div><div class="gh-step-txt">github.com → 우측 상단 프로필 → <strong>Settings</strong></div></div>
+      <div class="gh-step"><div class="gh-step-num">2</div><div class="gh-step-txt">왼쪽 맨 아래 <strong>Developer settings → Personal access tokens → Tokens (classic)</strong></div></div>
+      <div class="gh-step"><div class="gh-step-num">3</div><div class="gh-step-txt"><strong>Generate new token (classic)</strong> 클릭</div></div>
+      <div class="gh-step"><div class="gh-step-num">4</div><div class="gh-step-txt">Note: <code class="gh-mono">material-spec</code>, Expiration: <strong>No expiration</strong>, 권한: <strong>repo 체크</strong> → Generate</div></div>
+      <div class="gh-step"><div class="gh-step-num">5</div><div class="gh-step-txt">토큰 복사 (다시 볼 수 없으니 꼭 저장!)</div></div>
+
+      <hr style="border:none;border-top:1px solid var(--border2);margin:14px 0">
+      <div style="font-size:12px;font-weight:700;color:var(--fg);margin-bottom:10px">Step 2 — 저장소 정보 입력</div>
+      <div class="gh-field"><label>GitHub 사용자명 (계정 ID)</label><input id="gh-owner" placeholder="예) tmfrl9201-sys" value=""></div>
+      <div class="gh-field"><label>저장소 이름</label><input id="gh-repo" placeholder="예) material-spec" value="material-spec"></div>
+      <div class="gh-field"><label>Personal Access Token</label><input id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"></div>
+      <div class="gh-test-result" id="gh-test-result"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="testGithubConnection()"><i class="ti ti-plug"></i> 연결 테스트</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn" onclick="closeOv('ov-github-setup')">취소</button>
+        <button class="btn btn-dark" onclick="saveGithubSettings()"><i class="ti ti-check"></i> 저장 설정 완료</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- 사용법 가이드 모달 -->
@@ -948,6 +1007,105 @@ function renderRefGrid(g){document.getElementById('db-content').innerHTML=`<div 
 function uploadRefImg(g,id,input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{REF_PAGES[g].find(x=>x.id===id).img=e.target.result;renderRefGrid(g);};r.readAsDataURL(f);}
 function addRefCard(g){const t=prompt('제목');if(!t)return;REF_PAGES[g].push({id:'r'+Date.now(),title:t,desc:prompt('설명')||'',img:null});renderRefGrid(g);renderDbLeft();}
 function onSearch(q){if(curMode==='db'){if(curDbSec==='mat')renderDbGrid(curDbCat,q);}else if(curMode==='proj')renderSpaces();}
+// ── GitHub 저장 ──
+let ghSettings={owner:'',repo:'',token:''};
+const DATA_FILE='data.json';
+
+function loadGhSettings(){try{const s=JSON.parse(localStorage.getItem('gh_settings')||'{}');if(s.owner&&s.repo&&s.token){ghSettings=s;updateSaveStatus('ready');}}catch(e){}}
+
+function openGithubSetup(){
+  document.getElementById('gh-owner').value=ghSettings.owner||'';
+  document.getElementById('gh-repo').value=ghSettings.repo||'material-spec';
+  document.getElementById('gh-token').value=ghSettings.token||'';
+  document.getElementById('gh-test-result').className='gh-test-result';
+  document.getElementById('ov-github-setup').classList.add('show');
+}
+
+function saveGithubSettings(){
+  const owner=document.getElementById('gh-owner').value.trim();
+  const repo=document.getElementById('gh-repo').value.trim();
+  const token=document.getElementById('gh-token').value.trim();
+  if(!owner||!repo||!token){alert('모든 항목을 입력해주세요');return;}
+  ghSettings={owner,repo,token};
+  localStorage.setItem('gh_settings',JSON.stringify(ghSettings));
+  closeOv('ov-github-setup');
+  updateSaveStatus('ready');
+  toast('GitHub 저장 설정 완료! 저장 버튼을 눌러보세요.');
+}
+
+async function testGithubConnection(){
+  const owner=document.getElementById('gh-owner').value.trim();
+  const repo=document.getElementById('gh-repo').value.trim();
+  const token=document.getElementById('gh-token').value.trim();
+  if(!owner||!repo||!token){alert('모든 항목을 입력해주세요');return;}
+  const res=document.getElementById('gh-test-result');
+  res.className='gh-test-result';
+  res.textContent='연결 확인 중...';res.style.display='block';
+  try{
+    const r=await fetch(`https://api.github.com/repos/${owner}/${repo}`,{headers:{'Authorization':`token ${token}`,'Accept':'application/vnd.github.v3+json'}});
+    if(r.ok){const d=await r.json();res.className='gh-test-result ok';res.innerHTML=`<i class="ti ti-circle-check"></i> 연결 성공! 저장소: ${d.full_name}`;}
+    else{res.className='gh-test-result err';res.innerHTML=`<i class="ti ti-alert-circle"></i> 연결 실패 (${r.status}). 사용자명/저장소명/토큰을 확인해주세요.`;}
+  }catch(e){res.className='gh-test-result err';res.innerHTML=`<i class="ti ti-alert-circle"></i> 네트워크 오류: ${e.message}`;}
+}
+
+function updateSaveStatus(state,msg){
+  const s=document.getElementById('save-status');
+  const t=document.getElementById('save-status-txt');
+  const btn=document.getElementById('save-btn');
+  s.className='save-status';
+  if(state==='ready'){s.classList.add('saved');t.textContent='저장 준비됨';btn.style.display='';}
+  else if(state==='saving'){s.classList.add('saving');t.textContent='저장 중...';}
+  else if(state==='saved'){s.classList.add('saved');t.textContent=msg||'저장됨';}
+  else if(state==='error'){s.classList.add('error');t.textContent='저장 실패';}
+  else{t.textContent='저장 설정';btn.style.display='none';}
+}
+
+function buildSaveData(){
+  return JSON.stringify({version:1,savedAt:new Date().toISOString(),DB,REF_PAGES,projects,commonTemplates,projectTemplates,favorites:[...favorites]},null,2);
+}
+
+async function saveToGithub(){
+  if(!ghSettings.token){openGithubSetup();return;}
+  updateSaveStatus('saving');
+  try{
+    const content=buildSaveData();
+    const b64=btoa(unescape(encodeURIComponent(content)));
+    // 기존 파일 SHA 확인
+    let sha='';
+    try{
+      const r=await fetch(`https://api.github.com/repos/${ghSettings.owner}/${ghSettings.repo}/contents/${DATA_FILE}`,{headers:{'Authorization':`token ${ghSettings.token}`,'Accept':'application/vnd.github.v3+json'}});
+      if(r.ok){const d=await r.json();sha=d.sha;}
+    }catch(e){}
+    // 저장
+    const body={message:`데이터 저장 — ${new Date().toLocaleString('ko-KR')}`,content:b64};
+    if(sha)body.sha=sha;
+    const res=await fetch(`https://api.github.com/repos/${ghSettings.owner}/${ghSettings.repo}/contents/${DATA_FILE}`,{method:'PUT',headers:{'Authorization':`token ${ghSettings.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'},body:JSON.stringify(body)});
+    if(res.ok){const now=new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});updateSaveStatus('saved',`저장됨 ${now}`);toast('GitHub에 저장 완료!');}
+    else{const err=await res.json();updateSaveStatus('error');toast(`저장 실패: ${err.message}`);}
+  }catch(e){updateSaveStatus('error');toast(`저장 오류: ${e.message}`);}
+}
+
+async function loadFromGithub(){
+  if(!ghSettings.token)return;
+  try{
+    const r=await fetch(`https://api.github.com/repos/${ghSettings.owner}/${ghSettings.repo}/contents/${DATA_FILE}`,{headers:{'Authorization':`token ${ghSettings.token}`,'Accept':'application/vnd.github.v3+json'}});
+    if(!r.ok)return;
+    const d=await r.json();
+    const content=JSON.parse(decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))));
+    // 데이터 복원
+    if(content.DB)Object.assign(DB,content.DB);
+    if(content.REF_PAGES)Object.assign(REF_PAGES,content.REF_PAGES);
+    if(content.projects)projects.splice(0,projects.length,...content.projects);
+    if(content.commonTemplates)commonTemplates.splice(0,commonTemplates.length,...content.commonTemplates);
+    if(content.projectTemplates)projectTemplates.splice(0,projectTemplates.length,...content.projectTemplates);
+    if(content.favorites)content.favorites.forEach(id=>favorites.add(id));
+    updateSaveStatus('saved','불러옴');
+    renderDbLeft();renderDbGrid('벽돌');renderFilterChips();renderProjList();renderTmplGrids();
+    toast('GitHub에서 데이터를 불러왔어요!');
+  }catch(e){console.log('불러오기 실패(첫 실행일 수 있음):',e.message);}
+}
+
+// ── GitHub 저장 끝 ──
 function openGuide(){document.getElementById('ov-guide').classList.add('show');}
 function showGuide(sec){document.querySelectorAll('.guide-section').forEach(el=>el.classList.remove('on'));document.querySelectorAll('.guide-nav-item').forEach(el=>el.classList.remove('on'));document.getElementById('gs-'+sec).classList.add('on');event.currentTarget.classList.add('on');}
 function toggleFavCard(id,cat,e){e.stopPropagation();if(favorites.has(id))favorites.delete(id);else favorites.add(id);renderDbGrid(cat,document.getElementById('search-inp').value);}
@@ -1198,6 +1356,8 @@ function openPreview(){const p=curProj();if(!p){toast('프로젝트를 먼저 �
 function doPrint(){const p=curProj();if(!p)return;const html=buildPv(p).replace(/oninput="[^"]*"/g,'').replace(/<input([^>]*?)class="pv-title-inp"([^>]*?)value="([^"]*)"[^>]*>/g,'<div style="font-size:18px;font-weight:700;color:#1a1a1a">$3</div>').replace(/<input([^>]*?)class="pv-meta-inp"([^>]*?)value="([^"]*)"[^>]*>/g,'<div style="font-size:10px;color:#999;margin-top:3px">$3</div>').replace(/<input([^>]*?)class="pv-logo-inp"([^>]*?)value="([^"]*)"[^>]*>/g,'<div style="font-size:10px;color:#aaa;text-align:right">$3</div>').replace(/<input([^>]*?)class="pv-foot-inp"([^>]*?)value="([^"]*)"[^>]*>/g,'<div style="font-size:9px;color:#ccc;text-align:center;margin-top:11px">$3</div>');const w=window.open('','_blank','width=1200,height=800');w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${p.meta.title} 재료마감리스트</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0;font-family:'Noto Sans KR',sans-serif}body{background:#fff}.pv-pg{width:297mm;min-height:208mm;padding:12mm 15mm;page-break-after:always;display:flex;flex-direction:column;gap:9px}.pv-pg:last-child{page-break-after:avoid}.pv-pg-hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:9px;border-bottom:2px solid #1a1a1a;margin-bottom:12px}.pv-sp-name{font-size:12px;font-weight:700;color:#1a1a1a;margin-bottom:10px;letter-spacing:0.3px;text-transform:uppercase}.pv-top{display:grid;grid-template-columns:212px 1fr;gap:15px;flex:1}.pv-slot{padding:7px 10px;background:#fafaf8;border-radius:4px;border:0.5px solid #e8e8e8;margin-bottom:6px}.pv-sl{font-size:9px;color:#aaa;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.6px;font-weight:600}.pv-sm{display:flex;align-items:flex-start;gap:7px;margin-bottom:5px}.pv-sw-wrap{flex-shrink:0}.pv-sw{width:44px;height:44px;border-radius:4px;border:0.5px solid rgba(0,0,0,0.08)}.pv-sw-imgs{display:grid;width:44px;border-radius:4px;overflow:hidden;border:0.5px solid rgba(0,0,0,0.08)}.pv-sw-imgs.n1{grid-template-rows:1fr;height:44px}.pv-sw-imgs.n2{grid-template-rows:1fr 1fr;height:44px}.pv-sw-imgs.n3{grid-template-rows:1fr 1fr 1fr;height:44px}.pv-sw-imgs img{width:100%;object-fit:cover}.pv-smn{font-size:12px;color:#1a1a1a;font-weight:600}.pv-smcat{font-size:10px;color:#aaa;display:block;margin-top:2px}.pv-se{font-size:10px;color:#ccc;font-style:italic}.pv-proj-imgs{display:flex;flex-direction:column;gap:7px}.pv-proj-img-main{flex:1;background:#f0f0ee;border-radius:5px;overflow:hidden;border:0.5px solid #e0e0e0;min-height:112px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#bbb}.pv-proj-img-main img{width:100%;height:100%;object-fit:cover}.pv-proj-det-row{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.pv-proj-det{height:62px;background:#f0f0ee;border-radius:3px;overflow:hidden;border:0.5px solid #e0e0e0}.pv-proj-det img{width:100%;height:100%;object-fit:cover}.pv-ex-imgs{margin-top:9px}.pv-ex-lbl{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;font-weight:600}.pv-ex-grid{display:grid;gap:7px}.pv-ex-grid.n1{grid-template-columns:1fr}.pv-ex-grid.n2{grid-template-columns:1fr 1fr}.pv-ex-grid.n3{grid-template-columns:1fr 1fr 1fr}.pv-ex-card{border:0.5px solid #eee;border-radius:4px;overflow:hidden}.pv-ex-img{height:92px;background:#f0f0ee;overflow:hidden}.pv-ex-img img{width:100%;height:100%;object-fit:cover}.pv-ex-info{padding:5px 8px;background:#fafafa}.pv-ex-name{font-size:10px;font-weight:600;color:#333}.pv-ex-sub{font-size:9px;color:#888;margin-top:1px}.pv-refs{margin-top:9px}.pv-ref-lbl{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;font-weight:600}.pv-ref-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.pv-ref-card{border:0.5px solid #eee;border-radius:4px;overflow:hidden}.pv-ref-img{height:62px;background:#f0f0ee;display:flex;align-items:center;justify-content:center;font-size:9px;color:#bbb}.pv-ref-img img{width:100%;height:100%;object-fit:cover}.pv-ref-info{padding:5px 7px}.pv-ref-title{font-size:10px;font-weight:600;color:#333}.pv-ref-desc{font-size:9px;color:#888;margin-top:1px}@page{size:A4 landscape;margin:0}@media print{.pv-pg{page-break-after:always}}</style></head><body>${html}</body></html>`);w.document.close();setTimeout(()=>{w.focus();w.print();},600);}
 function switchMode(mode){curMode=mode;['db','upload','tmpl','proj'].forEach(m=>{document.getElementById('view-'+m).classList.toggle('on',m===mode);document.getElementById('nav-'+m).classList.toggle('on',m===mode);});const sw=document.getElementById('search-wrap');sw.style.display=(mode==='db'||mode==='proj')?'':'none';const ta=document.getElementById('topbar-actions');if(mode==='proj'){ta.innerHTML=`<button class="btn" onclick="openPreview()"><i class="ti ti-eye"></i> 미리보기</button><button class="btn btn-dark" onclick="doPrint()"><i class="ti ti-file-export"></i> PDF 출력</button>`;document.getElementById('topbar-title').textContent=curProj()?.name||'프로젝트';renderFilterChips();renderProjList();if(curProjId)selectProj(curProjId);}else if(mode==='db'){ta.innerHTML='';document.getElementById('topbar-title').textContent='재료 DB';renderDbLeft();renderDbGrid(curDbCat);}else if(mode==='upload'){ta.innerHTML='';document.getElementById('topbar-title').textContent='일괄 업로드';}else if(mode==='tmpl'){ta.innerHTML='';document.getElementById('topbar-title').textContent='템플릿 관리';renderTmplGrids();}document.getElementById('search-inp').value='';}
 renderDbLeft();renderDbGrid('벽돌');
+loadGhSettings();
+if(ghSettings.token){loadFromGithub();}
 </script>
 </body>
 </html>
