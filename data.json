@@ -1,0 +1,458 @@
+{
+  "version": 1,
+  "savedAt": "2026-06-03T09:03:18.035Z",
+  "DB": {
+    "벽돌": [
+      {
+        "id": "b1",
+        "name": "삼한C1 미장토담",
+        "sub": "베이지",
+        "color": "#e8e0d8",
+        "exImgs": []
+      },
+      {
+        "id": "b2",
+        "name": "삼한C1 그레이토담",
+        "sub": "그레이",
+        "color": "#c8c0b8",
+        "exImgs": []
+      },
+      {
+        "id": "b3",
+        "name": "공간세라믹 아리아화이트",
+        "sub": "화이트",
+        "color": "#f0ede8",
+        "exImgs": []
+      },
+      {
+        "id": "b4",
+        "name": "서창 SC블랑쉬100",
+        "sub": "아이보리",
+        "color": "#e8e0d0",
+        "exImgs": []
+      },
+      {
+        "id": "b5",
+        "name": "두라스택 베이직그레이",
+        "sub": "시멘트",
+        "color": "#b8b8b8",
+        "exImgs": []
+      },
+      {
+        "id": "b6",
+        "name": "두라스택 빈티지블랙",
+        "sub": "시멘트",
+        "color": "#505050",
+        "exImgs": []
+      },
+      {
+        "id": "b7",
+        "name": "MK세라믹 전벽돌",
+        "sub": "전통전돌",
+        "color": "#806040",
+        "exImgs": []
+      }
+    ],
+    "석재": [
+      {
+        "id": "s1",
+        "name": "화강석 잔다듬",
+        "sub": "포천석/마천석",
+        "color": "#d0cec8",
+        "exImgs": []
+      },
+      {
+        "id": "s2",
+        "name": "트라버틴",
+        "sub": "라임스톤",
+        "color": "#e0d8c0",
+        "exImgs": []
+      },
+      {
+        "id": "s3",
+        "name": "모카크림",
+        "sub": "라임스톤",
+        "color": "#d8c8a8",
+        "exImgs": []
+      },
+      {
+        "id": "s4",
+        "name": "바살티나",
+        "sub": "화산석",
+        "color": "#808080",
+        "exImgs": []
+      }
+    ],
+    "타일": [
+      {
+        "id": "t1",
+        "name": "윤현상재 DEEPSTONE IRON",
+        "sub": "600x1200",
+        "color": "#707070",
+        "exImgs": []
+      },
+      {
+        "id": "t2",
+        "name": "윤현상재 BEREN SAND",
+        "sub": "600x1200",
+        "color": "#c8b890",
+        "exImgs": []
+      },
+      {
+        "id": "t3",
+        "name": "가이타일 ARCTIC WHITE",
+        "sub": "박판타일",
+        "color": "#f4f4f2",
+        "exImgs": []
+      }
+    ],
+    "도장": [
+      {
+        "id": "p1",
+        "name": "벤자민무어 스커프엑스",
+        "sub": "에그쉘/백색",
+        "color": "#f8f8f6",
+        "exImgs": []
+      },
+      {
+        "id": "p2",
+        "name": "노루 펜톤 시리즈",
+        "sub": "지정색",
+        "color": "#e0e0e0",
+        "exImgs": []
+      },
+      {
+        "id": "p3",
+        "name": "STO 지정색",
+        "sub": "파인/러프",
+        "color": "#d8d4ce",
+        "exImgs": []
+      }
+    ],
+    "금속": [
+      {
+        "id": "m1",
+        "name": "갈바륨강판 칼라도장",
+        "sub": "짙은 그레이",
+        "color": "#707878",
+        "exImgs": []
+      },
+      {
+        "id": "m2",
+        "name": "알루미늄징크",
+        "sub": "지정색",
+        "color": "#909090",
+        "exImgs": []
+      },
+      {
+        "id": "m3",
+        "name": "구로철판",
+        "sub": "무도장/발수제",
+        "color": "#404040",
+        "exImgs": []
+      }
+    ],
+    "목재": [
+      {
+        "id": "w1",
+        "name": "애쉬우드 합판",
+        "sub": "포인트 천정",
+        "color": "#d0b888",
+        "exImgs": []
+      },
+      {
+        "id": "w2",
+        "name": "하드우드 데크",
+        "sub": "외부 테라스",
+        "color": "#b09060",
+        "exImgs": []
+      },
+      {
+        "id": "w3",
+        "name": "솔리드 집성목",
+        "sub": "계단 디딤판",
+        "color": "#c8a870",
+        "exImgs": []
+      }
+    ],
+    "마루": [
+      {
+        "id": "f1",
+        "name": "지복득 BARAM 17S",
+        "sub": "원목마루",
+        "color": "#c0a060",
+        "exImgs": []
+      },
+      {
+        "id": "f2",
+        "name": "이건 라르고솔레150",
+        "sub": "원목마루",
+        "color": "#b89050",
+        "exImgs": []
+      },
+      {
+        "id": "f3",
+        "name": "이건 강마루",
+        "sub": "강마루",
+        "color": "#a88848",
+        "exImgs": []
+      }
+    ],
+    "콘크리트": [
+      {
+        "id": "c1",
+        "name": "콘크리트 폴리싱",
+        "sub": "투명 무광",
+        "color": "#b8b8b4",
+        "exImgs": []
+      },
+      {
+        "id": "c2",
+        "name": "콘크리트 메이크업",
+        "sub": "벽면 마감",
+        "color": "#c0c0bc",
+        "exImgs": []
+      },
+      {
+        "id": "c3",
+        "name": "노출콘크리트",
+        "sub": "발수제",
+        "color": "#a8a8a4",
+        "exImgs": []
+      }
+    ]
+  },
+  "REF_PAGES": {
+    "계단 참고": [
+      {
+        "id": "r1",
+        "title": "RC구조 계단",
+        "desc": "콘크리트 구조",
+        "img": null
+      },
+      {
+        "id": "r2",
+        "title": "철골구조 계단",
+        "desc": "오픈 계단",
+        "img": null
+      },
+      {
+        "id": "r3",
+        "title": "목구조 계단",
+        "desc": "단독주택 내부",
+        "img": null
+      },
+      {
+        "id": "r4",
+        "title": "디딤판O 챌판X",
+        "desc": "오픈형",
+        "img": null
+      },
+      {
+        "id": "r5",
+        "title": "디딤판O 챌판O",
+        "desc": "일반형",
+        "img": null
+      },
+      {
+        "id": "r6",
+        "title": "투시형 금속 난간",
+        "desc": "평철/환봉",
+        "img": null
+      },
+      {
+        "id": "r7",
+        "title": "솔리드 난간",
+        "desc": "유리/금속판",
+        "img": null
+      }
+    ]
+  },
+  "projects": [
+    {
+      "id": "pj1780477394043",
+      "name": "반곡동 2001-3",
+      "addr": "원주 반곡동 2001-1",
+      "types": [
+        "단독주택"
+      ],
+      "memo": "이슬기, 성영은",
+      "meta": {
+        "title": "반곡동 2001-3",
+        "subtitle": "단독주택 · 원주 반곡동 2001-1",
+        "logo": "유타건축",
+        "footer": "유타건축 · 본 문서는 시공사 견적요청을 위한 기준 자료입니다."
+      },
+      "spaces": []
+    }
+  ],
+  "commonTemplates": [
+    {
+      "id": "ct1",
+      "name": "단독주택 기본 세트",
+      "desc": "외벽·지붕·주차장·계단·거실",
+      "type": "common",
+      "savedFrom": "기본 제공",
+      "savedAt": "2025.06",
+      "spaces": [
+        {
+          "name": "외벽",
+          "layout": "A",
+          "floor": [],
+          "wall": [
+            "b2"
+          ],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": [],
+          "refLinks": []
+        },
+        {
+          "name": "경사지붕",
+          "layout": "B",
+          "specs": [
+            {
+              "label": "경사지붕",
+              "items": [
+                {
+                  "key": "TYPE",
+                  "val": "칼라강판 (거멀접기)"
+                },
+                {
+                  "key": "COLOR",
+                  "val": "짙은 그레이 계열"
+                }
+              ]
+            }
+          ],
+          "repImg": null,
+          "refLinks": []
+        },
+        {
+          "name": "필로티 주차장",
+          "layout": "C",
+          "items": [
+            {
+              "id": "i1",
+              "label": "천정",
+              "badge": "A",
+              "floor": [],
+              "wall": [],
+              "ceiling": [
+                "p1"
+              ],
+              "repImg": null
+            },
+            {
+              "id": "i2",
+              "label": "바닥",
+              "badge": "B",
+              "floor": [
+                "c1"
+              ],
+              "wall": [],
+              "ceiling": [],
+              "repImg": null
+            }
+          ],
+          "refLinks": []
+        },
+        {
+          "name": "외부계단",
+          "layout": "A",
+          "floor": [
+            "s1"
+          ],
+          "wall": [],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": [],
+          "refLinks": [
+            "r1",
+            "r4",
+            "r6"
+          ]
+        },
+        {
+          "name": "1F 거실",
+          "layout": "A",
+          "floor": [
+            "f1"
+          ],
+          "wall": [
+            "p1"
+          ],
+          "ceiling": [
+            "p1"
+          ],
+          "repImg": null,
+          "detailImgs": [],
+          "refLinks": []
+        }
+      ]
+    },
+    {
+      "id": "ct2",
+      "name": "근린생활시설 외부",
+      "desc": "외벽·평지붕·주차장",
+      "type": "common",
+      "savedFrom": "기본 제공",
+      "savedAt": "2025.06",
+      "spaces": [
+        {
+          "name": "외벽",
+          "layout": "A",
+          "floor": [],
+          "wall": [
+            "b5"
+          ],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": [],
+          "refLinks": []
+        },
+        {
+          "name": "평지붕",
+          "layout": "B",
+          "specs": [
+            {
+              "label": "평지붕",
+              "items": [
+                {
+                  "key": "TYPE",
+                  "val": "25mm 파쇄석 / 무근콘크리트"
+                },
+                {
+                  "key": "방수",
+                  "val": "우레탄 방수"
+                }
+              ]
+            }
+          ],
+          "repImg": null,
+          "refLinks": []
+        },
+        {
+          "name": "옥외주차장",
+          "layout": "C",
+          "items": [
+            {
+              "id": "i1",
+              "label": "바닥",
+              "badge": "A",
+              "floor": [
+                "c1"
+              ],
+              "wall": [],
+              "ceiling": [],
+              "repImg": null
+            }
+          ],
+          "refLinks": []
+        }
+      ]
+    }
+  ],
+  "projectTemplates": [],
+  "favorites": []
+}
