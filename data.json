@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-06-04T15:02:53.524Z",
+  "savedAt": "2026-06-04T15:04:57.703Z",
   "DB": {
     "벽돌": [
       {
@@ -297,22 +297,6 @@
           "ceiling": [],
           "repImg": null,
           "detailImgs": []
-        },
-        {
-          "id": "sp1780585367059",
-          "name": "선룸",
-          "layout": "F",
-          "refLinks": [],
-          "blocks": [
-            {
-              "type": "text",
-              "text": ""
-            },
-            {
-              "type": "image",
-              "img": null
-            }
-          ]
         }
       ]
     }
