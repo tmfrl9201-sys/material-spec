@@ -1010,10 +1010,10 @@ function uploadRefImg(g,id,input){const f=input.files[0];if(!f)return;const r=ne
 function addRefCard(g){const t=prompt('제목');if(!t)return;REF_PAGES[g].push({id:'r'+Date.now(),title:t,desc:prompt('설명')||'',img:null});renderRefGrid(g);renderDbLeft();}
 function onSearch(q){if(curMode==='db'){if(curDbSec==='mat')renderDbGrid(curDbCat,q);}else if(curMode==='proj')renderSpaces();}
 // ── GitHub 저장 ──
-let ghSettings={owner:'tmfrl9201-sys',repo:'material-spec',token:'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'};
+let ghSettings={owner:'tmfrl9201-sys',repo:'material-spec',token:''};
 const DATA_FILE='data.json';
 
-function loadGhSettings(){updateSaveStatus('ready');}
+function loadGhSettings(){try{const s=JSON.parse(localStorage.getItem('gh_settings')||'{}');if(s.token){ghSettings.token=s.token;}if(ghSettings.token){updateSaveStatus('ready');}}catch(e){}}
 
 function openGithubSetup(){
   document.getElementById('gh-owner').value=ghSettings.owner||'';
