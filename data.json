@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-06-05T13:26:42.757Z",
+  "savedAt": "2026-06-05T13:33:12.504Z",
   "DB": {
     "벽돌": [
       {
@@ -268,7 +268,34 @@
       }
     ]
   },
-  "projects": [],
+  "projects": [
+    {
+      "id": "pj1780666389484",
+      "name": "반곡동 단독",
+      "addr": "강원도 원주",
+      "types": [
+        "단독주택"
+      ],
+      "memo": "",
+      "meta": {
+        "title": "반곡동 단독",
+        "subtitle": "단독주택 · 강원도 원주",
+        "logo": "유타건축",
+        "footer": "유타건축 · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
+        "notice": "유타건축 · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
+        "cover": {
+          "enabled": true,
+          "date": "",
+          "img": null
+        },
+        "subcover": {
+          "enabled": false,
+          "img": null
+        }
+      },
+      "spaces": []
+    }
+  ],
   "commonTemplates": [
     {
       "id": "ct1",
