@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-06-06T11:33:19.777Z",
+  "savedAt": "2026-06-06T11:33:59.300Z",
   "DB": {
     "벽돌": [
       {
@@ -291,7 +291,34 @@
           "img": null
         }
       },
-      "spaces": []
+      "spaces": [
+        {
+          "id": "sp1780745636291",
+          "name": "Ddd",
+          "layout": "B",
+          "refLinks": [],
+          "specs": [
+            {
+              "label": "항목 1",
+              "items": [
+                {
+                  "key": "TYPE",
+                  "val": ""
+                },
+                {
+                  "key": "SIZE",
+                  "val": ""
+                },
+                {
+                  "key": "COLOR",
+                  "val": ""
+                }
+              ]
+            }
+          ],
+          "repImg": null
+        }
+      ]
     }
   ],
   "commonTemplates": [
