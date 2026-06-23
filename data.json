@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-06-06T11:33:59.300Z",
+  "savedAt": "2026-06-23T01:32:29.561Z",
   "DB": {
     "벽돌": [
       {
@@ -270,14 +270,16 @@
   },
   "projects": [
     {
-      "id": "pj1780745596749",
-      "name": "Ruytif",
-      "addr": "",
-      "types": [],
-      "memo": "",
+      "id": "pj1782178227755",
+      "name": "자곡",
+      "addr": "자곡동 424-9",
+      "types": [
+        "근린생활시설"
+      ],
+      "memo": "이슬기, 성영은",
       "meta": {
-        "title": "Ruytif",
-        "subtitle": "",
+        "title": "자곡",
+        "subtitle": "근린생활시설 · 자곡동 424-9",
         "logo": "유타건축",
         "footer": "유타건축 · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
         "notice": "유타건축 · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
@@ -293,30 +295,31 @@
       },
       "spaces": [
         {
-          "id": "sp1780745636291",
-          "name": "Ddd",
-          "layout": "B",
+          "id": "sp1782178237255",
+          "name": "주요외장재",
+          "layout": "A",
           "refLinks": [],
-          "specs": [
-            {
-              "label": "항목 1",
-              "items": [
-                {
-                  "key": "TYPE",
-                  "val": ""
-                },
-                {
-                  "key": "SIZE",
-                  "val": ""
-                },
-                {
-                  "key": "COLOR",
-                  "val": ""
-                }
-              ]
-            }
+          "floor": [],
+          "wall": [],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": []
+        },
+        {
+          "id": "sp1782178248793",
+          "name": "조명예시",
+          "layout": "E",
+          "refLinks": [],
+          "cols": [
+            "구분",
+            "업체명",
+            "모델명",
+            "규격",
+            "비고"
           ],
-          "repImg": null
+          "rows": [
+            []
+          ]
         }
       ]
     }
