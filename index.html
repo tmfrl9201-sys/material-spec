@@ -512,7 +512,7 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
       <div class="ta" id="topbar-actions"></div>
       <div id="save-status-wrap" style="display:flex;align-items:center;gap:6px;margin-left:4px;flex-shrink:0">
         <div class="save-status" id="save-status" onclick="openGithubSetup()" style="cursor:pointer" title="GitHub 저장 설정"><i class="ti ti-brand-github"></i> <span id="save-status-txt">저장 설정</span></div>
-        <button class="btn btn-dark" id="save-btn" onclick="saveToGithub()" style="display:none"><i class="ti ti-device-floppy"></i> 저장</button>
+        <button class="btn btn-dark" id="save-btn" onclick="saveToGithub()"><i class="ti ti-device-floppy"></i> 저장</button>
       </div>
       <button class="btn" onclick="openGuide()" style="margin-left:4px;flex-shrink:0;border-color:#bbb"><i class="ti ti-help-circle"></i> 사용법</button>
     </div>
@@ -1128,7 +1128,7 @@ function updateSaveStatus(state,msg){
   else if(state==='saving'){s.classList.add('saving');t.textContent='저장 중...';}
   else if(state==='saved'){s.classList.add('saved');t.textContent=msg||'저장됨';btn.style.display='';}
   else if(state==='error'){s.classList.add('error');t.textContent='저장 실패';}
-  else{t.textContent='저장 설정';btn.style.display='none';}
+  else{t.textContent='저장 설정';}
 }
 
 function buildSaveData(){
