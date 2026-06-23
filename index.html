@@ -594,8 +594,8 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
       <!-- 왼쪽: 선택 패널 -->
       <div style="width:260px;min-width:260px;border-right:1px solid var(--border2);padding:14px;display:flex;flex-direction:column;gap:8px;overflow-y:auto">
         <div style="padding-bottom:12px;border-bottom:1px solid var(--border2);margin-bottom:4px">
-          <div class="flbl">공간 이름</div>
-          <input class="finput" id="new-space-name" placeholder="예) 지붕, 외부계단, 1F 거실" onkeydown="if(event.key==='Enter')saveNewSpace()">
+          <div style="font-size:11px;font-weight:700;color:var(--fg);margin-bottom:5px;display:flex;align-items:center;gap:4px"><i class="ti ti-pencil" style="font-size:12px;color:var(--blue)"></i> 공간 이름 <span style="color:var(--red)">*</span></div>
+          <input class="finput" id="new-space-name" placeholder="예) 지붕, 외부계단, 1F 거실" onkeydown="if(event.key==='Enter')saveNewSpace()" style="border-color:var(--blue);border-width:1.5px;font-size:13px">
         </div>
         <div style="font-size:10px;color:var(--fg4);font-weight:600;letter-spacing:0.4px;text-transform:uppercase;margin-bottom:2px">레이아웃 선택</div>
         <div id="layout-cards" style="display:flex;flex-direction:column;gap:6px"></div>
@@ -1430,6 +1430,23 @@ const LAYOUT_PREVIEWS={
             <tr><td style="padding:5px 7px;color:#ccc;font-size:10px;font-style:italic" colspan="5">+ 행 추가...</td></tr>
           </tbody>
         </table>
+      </div>
+    </div>`
+  },
+  F:{
+    desc:'텍스트 블록과 이미지를 자유롭게 추가하는 레이아웃이에요. 글상자와 이미지를 원하는 만큼 추가할 수 있어요.',
+    html:`<div style="padding:10px 12px">
+      <div style="font-size:9px;color:#aaa;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px">자유 형식형 미리보기</div>
+      <div style="border:1px dashed #ddd;border-radius:5px;padding:8px 10px;background:#fafaf8;margin-bottom:7px">
+        <div style="font-size:8px;color:#aaa;margin-bottom:3px;display:flex;align-items:center;gap:3px"><i class="ti ti-text-size" style="font-size:10px"></i> 글상자</div>
+        <div style="font-size:10px;color:#555;line-height:1.6">원하는 텍스트를 자유롭게 입력할 수 있어요.</div>
+      </div>
+      <div style="border:1px dashed #ddd;border-radius:5px;height:55px;background:#f0f0ee;display:flex;align-items:center;justify-content:center;gap:5px;color:#bbb;font-size:10px;margin-bottom:7px">
+        <i class="ti ti-photo" style="font-size:16px"></i> 이미지 블록
+      </div>
+      <div style="display:flex;gap:5px">
+        <span style="font-size:9px;color:#aaa;border:1px dashed #ddd;padding:2px 8px;border-radius:20px;display:flex;align-items:center;gap:3px"><i class="ti ti-text-size" style="font-size:10px"></i> 글상자 추가</span>
+        <span style="font-size:9px;color:#aaa;border:1px dashed #ddd;padding:2px 8px;border-radius:20px;display:flex;align-items:center;gap:3px"><i class="ti ti-photo" style="font-size:10px"></i> 이미지 추가</span>
       </div>
     </div>`
   },
