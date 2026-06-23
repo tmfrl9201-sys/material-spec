@@ -700,7 +700,7 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
         <div class="guide-nav-item" onclick="showGuide('layout')"><i class="ti ti-layout"></i> 레이아웃 5종</div>
         <div class="guide-nav-item" onclick="showGuide('pdf')"><i class="ti ti-file-export"></i> PDF 출력</div>
         <div class="guide-nav-sep">기타</div>
-        <div class="guide-nav-item" onclick="showGuide('tips')"><i class="ti ti-bulb"></i> 팁 &amp; FAQ</div>
+        <div class="guide-nav-item" onclick="showGuide('save')"><i class="ti ti-device-floppy"></i> 저장 &amp; 공유</div><div class="guide-nav-item" onclick="showGuide('tips')"><i class="ti ti-bulb"></i> 팁 &amp; FAQ</div>
       </div>
       <div class="guide-content">
 
@@ -714,7 +714,7 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
           <div class="guide-steps">
             <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-txt"><strong>재료 DB 세팅</strong> — 자주 쓰는 재료를 카테고리별로 등록하고 예시이미지를 붙여두세요. 한 번만 하면 모든 프로젝트에서 써먹을 수 있어요.</div></div>
             <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-txt"><strong>프로젝트 생성</strong> — 프로젝트 이름, 주소, 용도를 입력해서 새 프로젝트를 만들어요.</div></div>
-            <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-txt"><strong>공간 추가</strong> — 외벽, 지붕, 거실 등 공간을 만들고 맞는 레이아웃을 선택해요 (5가지 제공).</div></div>
+            <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-txt"><strong>공간 추가</strong> — 외벽, 지붕, 거실 등 공간을 만들고 맞는 레이아웃을 선택해요 (6가지 제공).</div></div>
             <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-txt"><strong>재료 배치</strong> — DB에서 재료를 골라 바닥/벽/천정 슬롯에 배치하고, 스업/렌더링 이미지를 업로드해요.</div></div>
             <div class="guide-step"><div class="guide-step-num">5</div><div class="guide-step-txt"><strong>PDF 출력</strong> — 미리보기로 확인 후 A4 가로 형식으로 출력. 공간 1개당 1페이지로 자동 분리돼요.</div></div>
           </div>
@@ -725,7 +725,7 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
             <div class="guide-card"><span class="guide-card-icon">📋</span><div class="guide-card-title">템플릿</div><div class="guide-card-desc">자주 쓰는 공간 조합을 템플릿으로 저장. 새 프로젝트에 한 번에 적용.</div></div>
             <div class="guide-card"><span class="guide-card-icon">📁</span><div class="guide-card-title">프로젝트</div><div class="guide-card-desc">공간을 만들고 재료를 배치. 이미지 업로드 후 PDF 출력.</div></div>
           </div>
-          <div class="guide-tip"><i class="ti ti-info-circle"></i><div>지금은 새로고침하면 데이터가 사라져요. 곧 GitHub 자동 저장 기능이 추가될 예정이에요. 그 전까지는 중요한 작업 후 JSON 내보내기를 활용하세요.</div></div>
+          <div class="guide-tip"><i class="ti ti-info-circle"></i><div>데이터는 <strong>저장 버튼</strong>을 누르면 GitHub에 저장돼요. 다른 PC에서도 동일하게 불러올 수 있어요. 처음 사용하는 PC에서는 상단 <strong>"저장 설정"</strong>에서 토큰을 한 번 입력해야 해요.</div></div>
         </div>
 
         <!-- 재료 DB -->
@@ -821,6 +821,9 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
             <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-txt">용도에 없는 항목은 <strong>"기타"</strong> 선택 후 직접 입력 가능</div></div>
           </div>
 
+          <div class="guide-h2"><i class="ti ti-pencil"></i> 프로젝트 편집</div>
+          <div class="guide-p">프로젝트 목록에서 <span class="guide-badge" style="background:#e8f0ff;color:#3b5bdb;border:1px solid #c5d3f0">편집</span> 버튼 클릭 → 이름, 주소, 용도, 메모를 수정할 수 있어요.</div>
+
           <div class="guide-h2"><i class="ti ti-copy"></i> 프로젝트 복사</div>
           <div class="guide-p">프로젝트 목록에서 <span class="guide-badge b">복사</span> 버튼 클릭 → 공간/재료 세팅이 그대로 복사된 "(복사본)" 프로젝트 생성. 비슷한 프로젝트 빠르게 시작할 때 활용!</div>
 
@@ -829,25 +832,29 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
 
           <div class="guide-h2"><i class="ti ti-layout-sidebar"></i> 공간 추가</div>
           <div class="guide-steps">
-            <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-txt">우측 상단 <strong>"공간 추가"</strong> 클릭 → 레이아웃 선택 (오른쪽 미리보기 확인)</div></div>
-            <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-txt">공간 이름 입력 (예: 외벽, 1F 거실, 필로티 주차장)</div></div>
-            <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-txt">바닥/벽/천정 슬롯에서 <strong>"추가"</strong> 클릭 → DB에서 재료 선택</div></div>
-            <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-txt">대표 이미지(스업/렌더링) + 상세 이미지 최대 3장 업로드</div></div>
-            <div class="guide-step"><div class="guide-step-num">5</div><div class="guide-step-txt">필요하면 <strong>"참고 페이지 연결"</strong>로 계단 구조 등 참고 자료 연결</div></div>
+            <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-txt">우측 상단 <strong>"공간 추가"</strong> 클릭</div></div>
+            <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-txt"><strong>공간 이름 입력</strong> (예: 외벽, 1F 거실, 필로티 주차장) — 필수 항목이에요</div></div>
+            <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-txt">레이아웃 선택 → 오른쪽 미리보기로 어떤 형태인지 확인 가능</div></div>
+            <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-txt"><strong>"공간 추가"</strong> 클릭 → 슬라이드 편집화면에서 재료 배치 시작</div></div>
+            <div class="guide-step"><div class="guide-step-num">5</div><div class="guide-step-txt">바닥/벽/천정 슬롯에서 <strong>"추가"</strong> 클릭 → DB에서 재료 선택</div></div>
+            <div class="guide-step"><div class="guide-step-num">6</div><div class="guide-step-txt">대표 이미지(스업/렌더링) + 상세 이미지 최대 3장 업로드</div></div>
+            <div class="guide-step"><div class="guide-step-num">7</div><div class="guide-step-txt">필요하면 <strong>"참고 페이지 연결"</strong>로 계단 구조 등 참고 자료 연결</div></div>
           </div>
+          <div class="guide-tip"><i class="ti ti-pencil"></i><div>공간 이름은 슬라이드 편집화면에서도 클릭해서 바로 수정할 수 있어요. 프로젝트 이름/주소/용도는 프로젝트 카드의 <strong>"편집"</strong> 버튼으로 수정 가능해요.</div></div>
           <div class="guide-tip"><i class="ti ti-arrows-exchange"></i><div>재료는 DB 카테고리 상관없이 어느 공간, 어느 슬롯에도 자유롭게 배치할 수 있어요. 예를 들어 벽돌을 외벽 벽에도, 계단 바닥 디딤판에도 쓸 수 있어요.</div></div>
         </div>
 
         <!-- 레이아웃 5종 -->
         <div class="guide-section" id="gs-layout">
-          <div class="guide-h1"><i class="ti ti-layout"></i> 레이아웃 5종</div>
+          <div class="guide-h1"><i class="ti ti-layout"></i> 레이아웃 6종</div>
           <div class="guide-p">공간을 추가할 때 페이지 레이아웃을 선택해요. 공간의 성격에 맞는 레이아웃을 고르면 돼요. 레이아웃 선택 시 오른쪽에 실제 미리보기가 표시돼요.</div>
           <div class="guide-layout-grid">
             <div class="guide-layout-card"><div class="guide-layout-name">A — 재료 이미지형</div><div class="guide-layout-desc">바닥/벽/천정 재료 슬롯 + 스업 이미지 + 상세 이미지 3장. 가장 기본적인 레이아웃.</div><div class="guide-layout-tag">→ 외벽, 실내 각 공간, 주차장 단일 부위</div></div>
             <div class="guide-layout-card"><div class="guide-layout-name">B — 텍스트 스펙형</div><div class="guide-layout-desc">TYPE/SIZE/COLOR 등 텍스트 스펙을 직접 입력. 여러 항목 블록을 추가할 수 있어요.</div><div class="guide-layout-tag">→ 지붕, 난간, 창호, 후레싱</div></div>
             <div class="guide-layout-card"><div class="guide-layout-name">C — 다중 항목형</div><div class="guide-layout-desc">한 공간 안에 A/B/C로 부위를 구분. 각각 바닥/벽/천정 슬롯과 이미지 별도 관리.</div><div class="guide-layout-tag">→ 필로티 주차장, 외부계단, 실내계단</div></div>
             <div class="guide-layout-card"><div class="guide-layout-name">D — 비교 선택형</div><div class="guide-layout-desc">여러 옵션을 이미지 카드로 나열하고 선택 표시. 클릭으로 선택/해제.</div><div class="guide-layout-tag">→ 계단 구조/마감/난간 참고, 창호 타입 비교</div></div>
-            <div class="guide-layout-card" style="grid-column:1/3"><div class="guide-layout-name">E — 표 형식형</div><div class="guide-layout-desc">구분/업체명/모델명/규격/비고 등 열을 행 단위로 정리. 행 추가/삭제 가능.</div><div class="guide-layout-tag">→ 조명 목록, 창호 비교표, 스위치 사양표</div></div>
+            <div class="guide-layout-card"><div class="guide-layout-name">E — 표 형식형</div><div class="guide-layout-desc">구분/업체명/모델명/규격/비고 등 열을 행 단위로 정리. 행 추가/삭제 가능.</div><div class="guide-layout-tag">→ 조명 목록, 창호 비교표, 스위치 사양표</div></div>
+            <div class="guide-layout-card"><div class="guide-layout-name">F — 자유 형식형</div><div class="guide-layout-desc">글상자와 이미지 블록을 원하는 만큼 자유롭게 추가. 파워포인트 글상자처럼 텍스트와 이미지를 조합할 수 있어요.</div><div class="guide-layout-tag">→ 자유 기술 페이지, 특이사항 정리, 이미지 중심 설명</div></div>
           </div>
           <div class="guide-warn"><i class="ti ti-alert-triangle"></i><div>레이아웃은 공간 추가 후에도 변경할 수 있지만, 기존에 입력한 재료/스펙 데이터는 초기화될 수 있어요. 처음부터 맞는 레이아웃을 선택하는 게 좋아요.</div></div>
         </div>
@@ -883,12 +890,35 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
           <div class="guide-tip"><i class="ti ti-sparkles"></i><div>재료 DB에 예시이미지를 미리 등록해두면 별도 작업 없이 PDF 하단에 자동으로 삽입돼요!</div></div>
         </div>
 
+        <!-- 저장 & 공유 -->
+        <div class="guide-section" id="gs-save">
+          <div class="guide-h1"><i class="ti ti-device-floppy"></i> 저장 &amp; 공유</div>
+          <div class="guide-p">모든 데이터(재료 DB, 프로젝트, 템플릿)는 GitHub에 저장돼요. 저장하면 다른 PC에서도 동일하게 볼 수 있어요.</div>
+
+          <div class="guide-h2"><i class="ti ti-settings"></i> 처음 사용하는 PC 설정</div>
+          <div class="guide-steps">
+            <div class="guide-step"><div class="guide-step-num">1</div><div class="guide-step-txt">상단 오른쪽 <strong>"저장 설정"</strong> 클릭</div></div>
+            <div class="guide-step"><div class="guide-step-num">2</div><div class="guide-step-txt">슬기에게 받은 <strong>토큰(Token)</strong> 입력 (사용자명/저장소는 이미 입력되어 있어요)</div></div>
+            <div class="guide-step"><div class="guide-step-num">3</div><div class="guide-step-txt"><strong>"연결 테스트"</strong> 클릭 → 성공 확인 후 <strong>"저장 설정 완료"</strong></div></div>
+            <div class="guide-step"><div class="guide-step-num">4</div><div class="guide-step-txt">이후엔 이 PC에서 자동으로 데이터를 불러오고 저장해요</div></div>
+          </div>
+          <div class="guide-tip"><i class="ti ti-info-circle"></i><div>토큰은 PC의 브라우저에 저장되는 인증키예요. 한 번 입력하면 다시 입력할 필요 없어요. 다른 사람에게 공유하지 마세요.</div></div>
+
+          <div class="guide-h2"><i class="ti ti-device-floppy"></i> 저장 방법</div>
+          <div class="guide-steps">
+            <div class="guide-step"><div class="guide-step-num">✓</div><div class="guide-step-txt"><strong>자동 저장</strong> — 재료 추가, 프로젝트 생성 등 변경이 생기면 3초 후 자동으로 저장돼요</div></div>
+            <div class="guide-step"><div class="guide-step-num">✓</div><div class="guide-step-txt"><strong>수동 저장</strong> — 상단 <strong>"저장"</strong> 버튼 클릭. 미저장 변경이 있으면 버튼이 빨간색으로 표시돼요</div></div>
+          </div>
+          <div class="guide-warn"><i class="ti ti-alert-triangle"></i><div>저장 설정이 안 된 상태에서는 새로고침하면 데이터가 사라져요. 반드시 저장 설정을 먼저 완료하세요!</div></div>
+        </div>
+
         <!-- 팁 & FAQ -->
         <div class="guide-section" id="gs-tips">
           <div class="guide-h1"><i class="ti ti-bulb"></i> 팁 &amp; FAQ</div>
 
           <div class="guide-h2">Q. 새로고침하면 데이터가 사라져요</div>
-          <div class="guide-p">현재는 브라우저 메모리에만 저장돼요. GitHub 저장 기능이 추가될 예정이에요. 그 전까지는 작업이 끝나면 바로 PDF로 저장해두세요.</div>
+          <div class="guide-p">상단 <strong>"저장"</strong> 버튼을 눌러야 GitHub에 저장돼요. 저장하지 않으면 새로고침 시 사라지니, 작업 후 꼭 저장 버튼을 누르세요. 변경사항이 생기면 버튼이 빨간색으로 바뀌고 3초 후 자동 저장되기도 해요.</div>
+          <div class="guide-tip" style="margin-top:6px"><i class="ti ti-info-circle"></i><div>처음 사용하는 PC에서는 상단 <strong>"저장 설정"</strong> 클릭 → 슬기에게 받은 토큰 입력 → 저장 설정 완료. 이후엔 자동으로 불러와요.</div></div>
 
           <div class="guide-h2">Q. 재료를 여러 공간에 같이 쓸 수 있나요?</div>
           <div class="guide-p">네! DB에서 한 번 등록한 재료는 어느 공간, 어느 슬롯에도 자유롭게 배치할 수 있어요. 예를 들어 벽돌을 외벽 벽에도, 계단 디딤판에도 쓸 수 있어요.</div>
@@ -904,6 +934,18 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
 
           <div class="guide-h2">Q. 참고 페이지는 어디에 쓰나요?</div>
           <div class="guide-p">계단 구조/마감/난간처럼 모든 프로젝트에 공통으로 보여주는 예시 이미지 모음이에요. DB 메뉴 > 참고 페이지에서 그룹별로 카드를 만들어두면, 공간에 연결해서 PDF에 자동 삽입돼요.</div>
+
+          <div class="guide-h2">Q. 프로젝트 이름/주소/용도를 수정하고 싶어요</div>
+          <div class="guide-p">프로젝트 목록에서 <span class="guide-badge b">편집</span> 버튼을 클릭하면 이름, 주소, 용도, 메모를 수정할 수 있어요.</div>
+
+          <div class="guide-h2">Q. 공간 이름을 나중에 바꾸고 싶어요</div>
+          <div class="guide-p">슬라이드 편집화면에서 공간 이름 텍스트를 클릭하면 바로 수정할 수 있어요. Enter 또는 다른 곳 클릭 시 저장돼요.</div>
+
+          <div class="guide-h2">Q. 표지/서브표지를 넣고 싶어요</div>
+          <div class="guide-p">프로젝트 편집화면 상단의 <strong>"표지"</strong> 버튼을 누르면 UTAA 로고 + 프로젝트명 + 날짜가 첫 페이지로 추가돼요. <strong>"서브표지"</strong>는 투시도/조감도 이미지를 전면에 넣는 페이지예요. 필요한 것만 선택해서 사용하면 돼요.</div>
+
+          <div class="guide-h2">Q. 다른 PC에서도 같은 데이터를 볼 수 있나요?</div>
+          <div class="guide-p">네! 저장 버튼을 눌러 GitHub에 저장해두면 어느 PC에서든 동일한 데이터가 보여요. 단, 처음 사용하는 PC에서는 <strong>"저장 설정"</strong>에서 토큰을 한 번 입력해야 해요 (슬기에게 문의).</div>
 
           <div class="guide-h2">Q. 사용법 페이지는 최신 상태인가요?</div>
           <div class="guide-p">기능이 추가/수정/삭제될 때마다 이 가이드도 함께 업데이트돼요. 언제든 이 버튼을 눌러 확인하세요.</div>
