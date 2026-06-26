@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-06-26T07:55:40.478Z",
+  "savedAt": "2026-06-26T07:55:54.314Z",
   "DB": {
     "벽돌": [
       {
@@ -312,6 +312,32 @@
     {
       "id": "pj1782460537472",
       "name": "양평",
+      "addr": "123-123",
+      "types": [
+        "상가주택"
+      ],
+      "memo": "",
+      "meta": {
+        "title": "양평",
+        "subtitle": "상가주택 · 123-123",
+        "logo": "유타건축",
+        "footer": "UTAA · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
+        "notice": "UTAA · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
+        "cover": {
+          "enabled": true,
+          "date": "",
+          "img": null
+        },
+        "subcover": {
+          "enabled": false,
+          "img": null
+        }
+      },
+      "spaces": []
+    },
+    {
+      "id": "pj1782460551305",
+      "name": "양평 (복사본)",
       "addr": "123-123",
       "types": [
         "상가주택"
