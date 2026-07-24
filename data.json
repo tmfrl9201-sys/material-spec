@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T05:20:07.327Z",
+  "savedAt": "2026-07-24T05:22:24.674Z",
   "DB": {
     "벽돌": [
       {
@@ -408,6 +408,17 @@
             "u1784869951893pkv0xe3ouy",
             "u1784868875141l20fs94gsaj"
           ],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": []
+        },
+        {
+          "id": "sp1784870541662",
+          "name": "공용계단",
+          "layout": "A",
+          "refLinks": [],
+          "floor": [],
+          "wall": [],
           "ceiling": [],
           "repImg": null,
           "detailImgs": []
