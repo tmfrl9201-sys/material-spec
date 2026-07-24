@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T06:05:00.933Z",
+  "savedAt": "2026-07-24T06:05:28.446Z",
   "DB": {
     "벽돌": [
       {
@@ -455,8 +455,23 @@
               "label": "항목 A",
               "badge": "A",
               "floor": [],
+              "wall": [
+                "b6"
+              ],
+              "ceiling": [
+                "b5"
+              ],
+              "repImg": null
+            },
+            {
+              "id": "i1784873113545",
+              "label": "칼라강판",
+              "badge": "B",
+              "floor": [],
               "wall": [],
-              "ceiling": [],
+              "ceiling": [
+                "u1784868875141l20fs94gsaj"
+              ],
               "repImg": null
             }
           ]
@@ -477,7 +492,15 @@
           "name": "경사지붕",
           "layout": "D",
           "refLinks": [],
-          "options": []
+          "options": [
+            {
+              "id": "o1784873102127",
+              "title": "옵션 1",
+              "desc": "설명",
+              "img": null,
+              "selected": false
+            }
+          ]
         }
       ]
     },
