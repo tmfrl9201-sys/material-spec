@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T00:59:59.942Z",
+  "savedAt": "2026-07-24T01:00:30.319Z",
   "DB": {
     "벽돌": [
       {
@@ -639,65 +639,6 @@
           "ceiling": [],
           "repImg": null,
           "detailImgs": []
-        },
-        {
-          "id": "sp1784854603372",
-          "name": "공용계단",
-          "layout": "D",
-          "refLinks": [
-            "r7",
-            "r6",
-            "r5",
-            "r4",
-            "r3",
-            "r2",
-            "r1"
-          ],
-          "options": [
-            {
-              "id": "o1784854649428",
-              "title": "옵션 1",
-              "desc": "설명",
-              "img": null,
-              "selected": true
-            },
-            {
-              "id": "o1784854656652",
-              "title": "옵션 2",
-              "desc": "설명",
-              "img": null,
-              "selected": true
-            },
-            {
-              "id": "o1784854687956",
-              "title": "옵션 3",
-              "desc": "설명",
-              "img": null,
-              "selected": true
-            },
-            {
-              "id": "o1784854689652",
-              "title": "옵션 4",
-              "desc": "설명",
-              "img": null,
-              "selected": false
-            }
-          ]
-        },
-        {
-          "id": "sp1784854796933",
-          "name": "ㅇㅇ",
-          "layout": "D",
-          "refLinks": [],
-          "options": [
-            {
-              "id": "o1784854799844",
-              "title": "옵션 1",
-              "desc": "설명",
-              "img": null,
-              "selected": false
-            }
-          ]
         }
       ]
     }
