@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T00:50:17.865Z",
+  "savedAt": "2026-07-24T00:53:48.387Z",
   "DB": {
     "벽돌": [
       {
@@ -628,6 +628,17 @@
           "detailImgs": [],
           "refLinks": [],
           "id": "sp1784853873388f4ls3k01rvm"
+        },
+        {
+          "id": "sp1784854425373",
+          "name": "외벽",
+          "layout": "A",
+          "refLinks": [],
+          "floor": [],
+          "wall": [],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": []
         }
       ]
     }
