@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T05:34:17.192Z",
+  "savedAt": "2026-07-24T05:34:32.061Z",
   "DB": {
     "벽돌": [
       {
@@ -480,23 +480,6 @@
             "r6"
           ],
           "id": "sp1784871245238vxz03qibhc"
-        },
-        {
-          "name": "1F 거실",
-          "layout": "A",
-          "floor": [
-            "f1"
-          ],
-          "wall": [
-            "p1"
-          ],
-          "ceiling": [
-            "p1"
-          ],
-          "repImg": null,
-          "detailImgs": [],
-          "refLinks": [],
-          "id": "sp1784871245238nvfhepx9wsk"
         }
       ]
     }
