@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T06:03:16.247Z",
+  "savedAt": "2026-07-24T06:05:00.933Z",
   "DB": {
     "벽돌": [
       {
@@ -471,6 +471,13 @@
           "ceiling": [],
           "repImg": null,
           "detailImgs": []
+        },
+        {
+          "id": "sp1784873097913",
+          "name": "경사지붕",
+          "layout": "D",
+          "refLinks": [],
+          "options": []
         }
       ]
     },
