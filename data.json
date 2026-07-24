@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T05:22:24.674Z",
+  "savedAt": "2026-07-24T05:24:09.647Z",
   "DB": {
     "벽돌": [
       {
@@ -415,6 +415,17 @@
         {
           "id": "sp1784870541662",
           "name": "공용계단",
+          "layout": "A",
+          "refLinks": [],
+          "floor": [],
+          "wall": [],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": []
+        },
+        {
+          "id": "sp1784870646646",
+          "name": "ㅇㅇ",
           "layout": "A",
           "refLinks": [],
           "floor": [],
