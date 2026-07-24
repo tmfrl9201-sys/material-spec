@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T00:31:42.414Z",
+  "savedAt": "2026-07-24T00:43:54.837Z",
   "DB": {
     "벽돌": [
       {
@@ -399,6 +399,105 @@
           "detailImgs": [],
           "refLinks": [],
           "id": "sp1784853099412fyp0xzr4fe9"
+        },
+        {
+          "name": "외벽",
+          "layout": "A",
+          "floor": [],
+          "wall": [
+            "b2"
+          ],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": [],
+          "refLinks": [],
+          "id": "sp1784853103196ytifzapvfz"
+        },
+        {
+          "name": "경사지붕",
+          "layout": "B",
+          "specs": [
+            {
+              "label": "경사지붕",
+              "items": [
+                {
+                  "key": "TYPE",
+                  "val": "칼라강판 (거멀접기)"
+                },
+                {
+                  "key": "COLOR",
+                  "val": "짙은 그레이 계열"
+                }
+              ]
+            }
+          ],
+          "repImg": null,
+          "refLinks": [],
+          "id": "sp178485310319604zgrx8owgo6"
+        },
+        {
+          "name": "필로티 주차장",
+          "layout": "C",
+          "items": [
+            {
+              "id": "i1",
+              "label": "천정",
+              "badge": "A",
+              "floor": [],
+              "wall": [],
+              "ceiling": [
+                "p1"
+              ],
+              "repImg": null
+            },
+            {
+              "id": "i2",
+              "label": "바닥",
+              "badge": "B",
+              "floor": [
+                "c1"
+              ],
+              "wall": [],
+              "ceiling": [],
+              "repImg": null
+            }
+          ],
+          "refLinks": [],
+          "id": "sp1784853103196lulxrmeq0qq"
+        },
+        {
+          "name": "외부계단",
+          "layout": "A",
+          "floor": [
+            "s1"
+          ],
+          "wall": [],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": [],
+          "refLinks": [
+            "r1",
+            "r4",
+            "r6"
+          ],
+          "id": "sp17848531031965vvzk9dyiul"
+        },
+        {
+          "name": "1F 거실",
+          "layout": "A",
+          "floor": [
+            "f1"
+          ],
+          "wall": [
+            "p1"
+          ],
+          "ceiling": [
+            "p1"
+          ],
+          "repImg": null,
+          "detailImgs": [],
+          "refLinks": [],
+          "id": "sp1784853103196uenc6x7f7d"
         }
       ]
     },
@@ -418,6 +517,32 @@
         "notice": "UTAA · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
         "cover": {
           "enabled": false,
+          "date": "",
+          "img": null
+        },
+        "subcover": {
+          "enabled": false,
+          "img": null
+        }
+      },
+      "spaces": []
+    },
+    {
+      "id": "pj1784853831829",
+      "name": "갈현동 854-1 다가구주택 신축공사",
+      "addr": "경기도 과천시 갈현동 854-1",
+      "types": [
+        "다가구주택"
+      ],
+      "memo": "",
+      "meta": {
+        "title": "갈현동 854-1 다가구주택 신축공사",
+        "subtitle": "다가구주택 · 경기도 과천시 갈현동 854-1",
+        "logo": "유타건축",
+        "footer": "UTAA · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
+        "notice": "UTAA · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
+        "cover": {
+          "enabled": true,
           "date": "",
           "img": null
         },
