@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T05:36:21.043Z",
+  "savedAt": "2026-07-24T05:36:33.271Z",
   "DB": {
     "벽돌": [
       {
@@ -493,70 +493,6 @@
             "r6"
           ],
           "id": "sp1784871245238vxz03qibhc"
-        },
-        {
-          "name": "필로티 주차장",
-          "layout": "C",
-          "items": [
-            {
-              "id": "i1",
-              "label": "천정",
-              "badge": "A",
-              "floor": [],
-              "wall": [],
-              "ceiling": [
-                "p1"
-              ],
-              "repImg": null
-            },
-            {
-              "id": "i2",
-              "label": "바닥",
-              "badge": "B",
-              "floor": [
-                "c1"
-              ],
-              "wall": [],
-              "ceiling": [],
-              "repImg": null
-            }
-          ],
-          "refLinks": [],
-          "id": "sp1784871346310j36f5glkwbh"
-        },
-        {
-          "name": "외부계단",
-          "layout": "A",
-          "floor": [
-            "s1"
-          ],
-          "wall": [],
-          "ceiling": [],
-          "repImg": null,
-          "detailImgs": [],
-          "refLinks": [
-            "r1",
-            "r4",
-            "r6"
-          ],
-          "id": "sp1784871346310652xw6fsay3"
-        },
-        {
-          "name": "1F 거실",
-          "layout": "A",
-          "floor": [
-            "f1"
-          ],
-          "wall": [
-            "p1"
-          ],
-          "ceiling": [
-            "p1"
-          ],
-          "repImg": null,
-          "detailImgs": [],
-          "refLinks": [],
-          "id": "sp178487134631004y8oslgkkva"
         }
       ]
     }
