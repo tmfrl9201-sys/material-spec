@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T05:19:51.056Z",
+  "savedAt": "2026-07-24T05:20:00.568Z",
   "DB": {
     "벽돌": [
       {
@@ -404,7 +404,8 @@
           "refLinks": [],
           "floor": [],
           "wall": [
-            "u1784869951893fhxg9b017g5"
+            "u1784869951893fhxg9b017g5",
+            "u1784869951893pkv0xe3ouy"
           ],
           "ceiling": [],
           "repImg": null,
