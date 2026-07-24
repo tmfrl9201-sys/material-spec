@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T05:18:06.136Z",
+  "savedAt": "2026-07-24T05:18:22.663Z",
   "DB": {
     "벽돌": [
       {
@@ -387,7 +387,7 @@
         "footer": "UTAA · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
         "notice": "UTAA · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.",
         "cover": {
-          "enabled": false,
+          "enabled": true,
           "date": "2026.08",
           "img": null
         },
