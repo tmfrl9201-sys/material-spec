@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T06:01:00.877Z",
+  "savedAt": "2026-07-24T06:01:14.413Z",
   "DB": {
     "벽돌": [
       {
@@ -449,7 +449,16 @@
           "name": "ㅇㅇ",
           "layout": "F",
           "refLinks": [],
-          "blocks": []
+          "blocks": [
+            {
+              "type": "text",
+              "text": "ㅇㅇㅇㅇㅇㅇ"
+            },
+            {
+              "type": "image",
+              "img": null
+            }
+          ]
         }
       ]
     },
