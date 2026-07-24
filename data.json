@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T05:35:49.338Z",
+  "savedAt": "2026-07-24T05:36:08.184Z",
   "DB": {
     "벽돌": [
       {
@@ -493,19 +493,6 @@
             "r6"
           ],
           "id": "sp1784871245238vxz03qibhc"
-        },
-        {
-          "name": "외벽",
-          "layout": "A",
-          "floor": [],
-          "wall": [
-            "b2"
-          ],
-          "ceiling": [],
-          "repImg": null,
-          "detailImgs": [],
-          "refLinks": [],
-          "id": "sp1784871346310k4mv0y2pfcg"
         },
         {
           "name": "경사지붕",
