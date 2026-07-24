@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T05:43:49.607Z",
+  "savedAt": "2026-07-24T05:44:25.339Z",
   "DB": {
     "벽돌": [
       {
@@ -473,41 +473,24 @@
                   "val": ""
                 }
               ]
+            },
+            {
+              "label": "항목 3",
+              "items": [
+                {
+                  "key": "TYPE",
+                  "val": ""
+                },
+                {
+                  "key": "SIZE",
+                  "val": ""
+                }
+              ]
             }
           ],
           "repImg": null,
           "refLinks": [],
           "id": "sp1784871245238l3zhsuqth3"
-        },
-        {
-          "name": "필로티 주차장",
-          "layout": "C",
-          "items": [
-            {
-              "id": "i1",
-              "label": "천정",
-              "badge": "A",
-              "floor": [],
-              "wall": [],
-              "ceiling": [
-                "p1"
-              ],
-              "repImg": null
-            },
-            {
-              "id": "i2",
-              "label": "바닥",
-              "badge": "B",
-              "floor": [
-                "c1"
-              ],
-              "wall": [],
-              "ceiling": [],
-              "repImg": null
-            }
-          ],
-          "refLinks": [],
-          "id": "sp17848712452381r3tj7ssr6"
         },
         {
           "name": "공용계단",
