@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-24T05:17:49.829Z",
+  "savedAt": "2026-07-24T05:17:59.024Z",
   "DB": {
     "벽돌": [
       {
@@ -392,7 +392,7 @@
           "img": null
         },
         "subcover": {
-          "enabled": false,
+          "enabled": true,
           "img": null
         }
       },
