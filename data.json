@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "savedAt": "2026-07-28T02:53:01.862Z",
+  "savedAt": "2026-07-28T02:53:19.657Z",
   "DB": {
     "벽돌": [
       {
@@ -933,7 +933,19 @@
           "img": null
         }
       },
-      "spaces": []
+      "spaces": [
+        {
+          "id": "sp1785207196644",
+          "name": "주요외장재",
+          "layout": "A",
+          "refLinks": [],
+          "floor": [],
+          "wall": [],
+          "ceiling": [],
+          "repImg": null,
+          "detailImgs": []
+        }
+      ]
     }
   ],
   "commonTemplates": [
