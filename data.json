@@ -1,61 +1,10 @@
 {
   "version": 1,
-  "savedAt": "2026-07-28T02:42:58.416Z",
+  "savedAt": "2026-07-28T02:44:23.454Z",
   "DB": {
     "벽돌": [],
-    "석재": [
-      {
-        "id": "s1",
-        "name": "화강석 잔다듬",
-        "sub": "포천석/마천석",
-        "color": "#d0cec8",
-        "exImgs": []
-      },
-      {
-        "id": "s2",
-        "name": "트라버틴",
-        "sub": "라임스톤",
-        "color": "#e0d8c0",
-        "exImgs": []
-      },
-      {
-        "id": "s3",
-        "name": "모카크림",
-        "sub": "라임스톤",
-        "color": "#d8c8a8",
-        "exImgs": []
-      },
-      {
-        "id": "s4",
-        "name": "바살티나",
-        "sub": "화산석",
-        "color": "#808080",
-        "exImgs": []
-      }
-    ],
-    "타일": [
-      {
-        "id": "t1",
-        "name": "윤현상재 DEEPSTONE IRON",
-        "sub": "600x1200",
-        "color": "#707070",
-        "exImgs": []
-      },
-      {
-        "id": "t2",
-        "name": "윤현상재 BEREN SAND",
-        "sub": "600x1200",
-        "color": "#c8b890",
-        "exImgs": []
-      },
-      {
-        "id": "t3",
-        "name": "가이타일 ARCTIC WHITE",
-        "sub": "박판타일",
-        "color": "#f4f4f2",
-        "exImgs": []
-      }
-    ],
+    "석재": [],
+    "타일": [],
     "도장": [
       {
         "id": "p1",
