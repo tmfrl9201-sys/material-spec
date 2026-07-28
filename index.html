@@ -241,14 +241,17 @@ body.mode-projects .rail{display:none}
 
 .sp-foot{font-size:9px;color:var(--fg4);text-align:center;padding-top:10px;margin-top:auto}
 
-/* 편집 전용 UI는 인쇄시 숨김 */
+/* 편집 전용 UI는 인쇄시 숨김 + 캔버스와 동일한 비율로 전체 페이지 인쇄 */
+@page{ size: 210.05mm 148.66mm; margin: 0; }
 @media print{
   .no-print{display:none!important}
-  .rail,.stage-top{display:none!important}
-  .canvas-wrap{padding:0;overflow:visible}
-  .page{box-shadow:none;width:100%}
+  .app,.app-header{display:none!important}
+  #print-all-pages{display:block!important}
+  .print-page{width:794px;height:562px;overflow:hidden;margin:0;page-break-after:always}
+  .print-page:last-child{page-break-after:auto}
   [contenteditable]:hover,[contenteditable]:focus{background:none;box-shadow:none}
 }
+#print-all-pages{display:none}
 
 /* ===== 재료 선택 오버레이 (선택 액션이라 모달 유지 — 결과물이 아니라 '고르는 동작'이므로 WYSIWYG 원칙과 무관) ===== */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;z-index:50}
@@ -316,6 +319,9 @@ html,body{height:100%}
     </div>
   </div>
 </div>
+
+<!-- 인쇄/PDF 전용: 프로젝트 전체 페이지를 한번에 렌더링 (평소엔 숨김) -->
+<div id="print-all-pages"></div>
 
 <!-- 페이지 템플릿 선택 오버레이 -->
 <div class="ov" id="ov-tmpl">
@@ -498,7 +504,7 @@ function renderTopBar(){
       <div class="spacer"></div>
       <button class="btn" onclick="openMatLibrary()"><i class="ti ti-palette"></i> 재료 라이브러리</button>
       <button class="btn" onclick="saveCurrentAsTemplate()"><i class="ti ti-stack"></i> 이 페이지를 템플릿으로 저장</button>
-      <button class="btn btn-dark" onclick="window.print()"><i class="ti ti-printer"></i> PDF로 내보내기</button>`;
+      <button class="btn btn-dark" onclick="printProject()"><i class="ti ti-printer"></i> PDF로 내보내기</button>`;
   }
 }
 
@@ -535,6 +541,14 @@ function goPage(i){ curPage=i; render(); }
 function renderPage(){
   const pg = pages()[curPage];
   document.getElementById('page-root').innerHTML = pg.type==='cover' ? coverHtml() : spaceHtml(pg.sp);
+}
+
+function printProject(){
+  if(mode!=='editor' || !curProj()){ toast('프로젝트를 연 상태에서만 PDF로 내보낼 수 있어요'); return; }
+  const allPages = pages();
+  const html = allPages.map(pg => `<div class="print-page">${pg.type==='cover' ? coverHtml() : spaceHtml(pg.sp)}</div>`).join('');
+  document.getElementById('print-all-pages').innerHTML = html;
+  window.print();
 }
 
 function esc(s){ return (s||'').replace(/</g,'&lt;'); }
