@@ -1390,7 +1390,7 @@ let _exitArmed = false, _exitTimer = null;
 window.addEventListener('beforeunload', e=>{
   // 저장 안 된 변경이 있을 때만 브라우저 확인창
   const st = document.getElementById('save-status');
-  if(st && st.classList.contains('error')){ e.preventDefault(); e.returnValue = ''; }
+  if(st && (st.classList.contains('error') || st.classList.contains('saving') || _saveBusy)){ e.preventDefault(); e.returnValue = ''; }
 });
 window.addEventListener('popstate', e=>{
   if(e.state && e.state.guard){
@@ -1886,7 +1886,7 @@ async function addMatPhotos(matId, fileList){
   if(!files.length){ toast('사진 파일만 넣을 수 있어요'); return; }
   const room = 3 - m.exImgs.length;
   if(room<=0){ toast('사진은 재료당 최대 3장이에요'); return; }
-  const urls = (await Promise.all(files.slice(0,room).map(f=>shrinkImage(f)))).filter(Boolean);
+  const urls = (await Promise.all(files.slice(0,room).map(f=>shrinkImage(f, 1200, 0.82)))).filter(Boolean);
   if(!urls.length){ toast('사진을 읽지 못했어요'); return; }
   const before = m.exImgs.length;
   const ok = applyOrRevert(()=>{ m.exImgs.push(...urls); }, ()=>{ m.exImgs.splice(before); });
@@ -2218,7 +2218,7 @@ function renderMatPhotoGrid(){
 }
 function uploadMatPhoto(idx, input){
   const f = input.files[0]; if(!f) return;
-  fileToDataUrl(f, url=>{ tempExImgs[idx] = url; renderMatPhotoGrid(); });
+  shrinkImage(f, 1200, 0.82).then(url=>{ if(url){ tempExImgs[idx] = url; renderMatPhotoGrid(); } });
 }
 function delMatPhoto(idx){ tempExImgs.splice(idx,1); renderMatPhotoGrid(); }
 function closeMatModal(){ document.getElementById('ov-mat').classList.remove('show'); }
@@ -2285,7 +2285,7 @@ async function handleBulkUpload(input){
   for(const f of files){
     const parsed = parseUlName(f.name);
     if(!parsed){ parsedList.push({status:'error', original:f.name}); continue; }
-    const dataUrl = (await shrinkImage(f, 1600, 0.85)) || await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); });
+    const dataUrl = (await shrinkImage(f, 1200, 0.82)) || await new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); });
     parsedList.push({...parsed, dataUrl});
   }
   const groups = {};
@@ -2684,7 +2684,7 @@ async function testGithubConnection(){
     else{ res.className='gh-test-result err'; res.innerHTML=`<i class="ti ti-alert-circle"></i> 연결 실패 (${r.status}). 사용자명/저장소명/토큰을 확인해주세요.`; }
   }catch(e){ res.className='gh-test-result err'; res.innerHTML=`<i class="ti ti-alert-circle"></i> 네트워크 오류: ${e.message}`; }
 }
-let _autoSaveTimer = null;
+let _autoSaveTimer = null, _dirtyAt = 0;
 function markDirty(){
   historyTouch(); updateHistButtons();   // 실행취소 기록용 (저장 로직과 무관)
   if(!ghSettings.token) return;
@@ -2693,6 +2693,7 @@ function markDirty(){
   btn.innerHTML='<i class="ti ti-device-floppy"></i> 저장 필요';
   const s = document.getElementById('save-status'); const t = document.getElementById('save-status-txt');
   s.className='save-status error'; t.textContent='미저장 변경 있음';
+  _dirtyAt = Date.now();
   clearTimeout(_autoSaveTimer);
   _autoSaveTimer = setTimeout(()=>saveToGithub(), 3000);
 }
@@ -2709,33 +2710,84 @@ function updateSaveStatus(state, msg){
 function buildSaveData(){
   return JSON.stringify({version:2, savedAt:new Date().toISOString(), DB, projects, PAGE_TEMPLATES, BRAND_LOGO, favorites:[], seeds:SEEDS});
 }
+/* ===== GitHub 저장 (튼튼하게, 2026.11.06 사용자 요청으로 저장 로직 보강) =====
+   - 한 번에 하나만: 저장 중에 또 바뀌면 끝난 뒤 최신 내용으로 한 번 더 저장 (_saveAgain)
+   - sha 충돌(409/422)·서버 오류(5xx)·요청 제한(429)·네트워크 오류 → 최신 sha 다시 받아 자동 재시도
+   - 그래도 실패하면 5초→15초→30초→60초 간격으로 계속 재시도, 인터넷 다시 연결되면 바로 저장
+   - 토큰 문제(401/403/404)는 재시도해도 소용없으니 멈추고 안내
+   - 저장 용량을 상태칸에 표시, 커지면 미리 경고 */
+const SAVE_WARN_MB = 12, SAVE_LIMIT_MB = 20;
+let _saveBusy = false, _saveAgain = false, _saveFails = 0, _saveRetryTimer = null, _lastSaveMB = null;
+const _sleep = ms => new Promise(r=>setTimeout(r, ms));
+async function fetchDataSha(){
+  const r = await fetch(`https://api.github.com/repos/${ghSettings.owner}/${ghSettings.repo}/contents/${DATA_FILE}?t=${Date.now()}`, {cache:'no-store', headers:{'Authorization':`token ${ghSettings.token}`,'Accept':'application/vnd.github.v3+json'}});
+  if(r.ok){ const d = await r.json(); return d.sha || ''; }
+  if(r.status===404) return '';
+  const e = new Error('sha '+r.status); e.status = r.status; throw e;
+}
+function scheduleSaveRetry(){
+  clearTimeout(_saveRetryTimer);
+  const waits = [5000, 15000, 30000, 60000];
+  const w = waits[Math.min(_saveFails-1, waits.length-1)];
+  _saveRetryTimer = setTimeout(()=>saveToGithub(), w);
+  const t = document.getElementById('save-status-txt');
+  if(t) t.textContent = `저장 실패 · ${Math.round(w/1000)}초 뒤 다시 시도`;
+}
 async function saveToGithub(){
   if(!ghSettings.token){ openGithubSetup(); return; }
+  if(_saveBusy){ _saveAgain = true; return; }          // 저장 중 → 끝나고 한 번 더
+  _saveBusy = true; _saveAgain = false;
+  const startedAt = Date.now();
+  clearTimeout(_saveRetryTimer);
+  clearTimeout(_autoSaveTimer);
   updateSaveStatus('saving');
+  let ok = false, fatal = '', lastErr = '', sizeMB = '0';
   try{
     const saveContent = buildSaveData();
     const b64 = btoa(unescape(encodeURIComponent(saveContent)));
-    const sizeMB = (b64.length/1024/1024).toFixed(1);
-    if(b64.length > 20*1024*1024){ updateSaveStatus('error'); toast(`저장 실패: 데이터가 너무 커요 (${sizeMB}MB). 이미지를 줄여주세요.`); return; }
-    let sha='';
-    try{
-      const r = await fetch(`https://api.github.com/repos/${ghSettings.owner}/${ghSettings.repo}/contents/${DATA_FILE}`, {headers:{'Authorization':`token ${ghSettings.token}`,'Accept':'application/vnd.github.v3+json'}});
-      if(r.ok){ const d=await r.json(); sha=d.sha||''; }
-    }catch(e){}
-    const body = {message:`데이터 저장 — ${new Date().toLocaleString('ko-KR')}`, content:b64};
-    if(sha) body.sha = sha;
-    const res = await fetch(`https://api.github.com/repos/${ghSettings.owner}/${ghSettings.repo}/contents/${DATA_FILE}`, {method:'PUT', headers:{'Authorization':`token ${ghSettings.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'}, body:JSON.stringify(body)});
-    if(res.ok){
-      const now = new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
-      updateSaveStatus('saved', `저장됨 ${now}`);
-      toast(`GitHub에 저장 완료! (${sizeMB}MB)`);
-    }else{
-      const err = await res.json();
-      updateSaveStatus('error');
-      toast(`저장 실패: ${err.message||res.status}`);
+    sizeMB = (b64.length*3/4/1048576).toFixed(1);
+    _lastSaveMB = parseFloat(sizeMB);
+    if(b64.length > SAVE_LIMIT_MB*4/3*1048576){
+      fatal = `데이터가 너무 커요 (${sizeMB}MB). 큰 사진을 줄이거나 지워주세요.`;
+    } else {
+      const body = {message:`데이터 저장 — ${new Date().toLocaleString('ko-KR')}`, content:b64};
+      for(let attempt=0; attempt<4 && !ok && !fatal; attempt++){
+        try{
+          const sha = await fetchDataSha();
+          const req = {...body}; if(sha) req.sha = sha;
+          const res = await fetch(`https://api.github.com/repos/${ghSettings.owner}/${ghSettings.repo}/contents/${DATA_FILE}`, {method:'PUT', headers:{'Authorization':`token ${ghSettings.token}`,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'}, body:JSON.stringify(req)});
+          if(res.ok){ ok = true; break; }
+          let msg = ''; try{ msg = (await res.json()).message || ''; }catch(_){}
+          lastErr = `${res.status} ${msg}`;
+          if(res.status===401 || res.status===404 || (res.status===403 && !/rate limit/i.test(msg))){ fatal = `GitHub 권한/토큰 문제예요 (${lastErr}). 저장 설정에서 토큰을 확인해주세요.`; break; }
+          await _sleep(800 * (attempt+1));              // 409/422 충돌, 5xx, 429 → 잠깐 쉬고 최신 sha로 다시
+        }catch(e){
+          if(e.status===401 || e.status===404){ fatal = `GitHub 권한/토큰 문제예요 (${e.status}). 저장 설정에서 토큰을 확인해주세요.`; break; }
+          lastErr = e.message; await _sleep(1000 * (attempt+1));   // 네트워크 오류
+        }
+      }
     }
-  }catch(e){ updateSaveStatus('error'); toast(`저장 오류: ${e.message}`); }
+  }catch(e){ lastErr = e.message; }
+  _saveBusy = false;
+  if(ok){
+    _saveFails = 0;
+    if(_saveAgain || _dirtyAt > startedAt){ clearTimeout(_autoSaveTimer); saveToGithub(); return; }   // 저장 중에 바뀐 내용 이어서 저장
+    const now = new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+    updateSaveStatus('saved', `저장됨 ${now} · ${sizeMB}MB`);
+    if(_lastSaveMB >= SAVE_WARN_MB) toast(`저장했어요. 데이터가 ${sizeMB}MB로 커지고 있어요 (한도 ${SAVE_LIMIT_MB}MB) — 안 쓰는 큰 사진을 정리해주세요`);
+    else toast(`GitHub에 저장 완료! (${sizeMB}MB)`);
+    return;
+  }
+  updateSaveStatus('error');
+  if(fatal){ toast('저장 실패: ' + fatal); return; }
+  _saveFails++;
+  scheduleSaveRetry();
+  if(_saveFails===1 || _saveFails%3===0) toast(`저장이 잠깐 실패했어요 (${lastErr}) — 자동으로 다시 저장할게요. 창을 닫지 마세요`);
 }
+window.addEventListener('online', ()=>{
+  const st = document.getElementById('save-status');
+  if(st && st.classList.contains('error') && ghSettings.token){ _saveFails = 0; saveToGithub(); }
+});
 async function loadFromGithub(){
   if(!ghSettings.token) return;
   try{
