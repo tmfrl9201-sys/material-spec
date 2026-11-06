@@ -31,6 +31,14 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
 .thumb-tool{width:17px;height:17px;display:flex;align-items:center;justify-content:center;border-radius:3px;cursor:pointer;color:var(--fg3);font-size:10px}
 .thumb-tool:hover{background:var(--bg);color:var(--fg)}
 .thumb-tool.danger:hover{background:#fdecea;color:#c0392b}
+.thumb.dragging{opacity:.35}
+.thumb.drop-before{box-shadow:0 -3px 0 0 var(--accent)}
+.thumb.drop-after{box-shadow:0 3px 0 0 var(--accent)}
+.thumb[draggable=true]{cursor:grab}
+.toast.undo-toast{display:flex;align-items:center;gap:12px;z-index:101}
+.toast.undo-toast.show{pointer-events:auto}
+.undo-toast button{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;cursor:pointer;font-family:var(--font-sans)}
+.undo-toast button:hover{background:rgba(255,255,255,.15)}
 .thumb-add{width:100%;aspect-ratio:794/562;border:1.5px dashed var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg4);font-size:11px;gap:4px}
 .thumb-add:hover{border-color:#999;color:var(--fg3);background:var(--bg)}
 
@@ -425,7 +433,7 @@ html,body{height:100%}
 <!-- 페이지 템플릿 선택 오버레이 -->
 <div class="ov" id="ov-tmpl">
   <div class="ov-box" style="width:480px">
-    <div class="ov-hdr"><b>페이지 추가</b><span class="ov-close" onclick="closeTmplPicker()"><i class="ti ti-x"></i></span></div>
+    <div class="ov-hdr"><b>페이지 추가</b><span id="tmpl-where" style="font-size:11px;color:var(--fg3)"></span><span class="ov-close" onclick="closeTmplPicker()"><i class="ti ti-x"></i></span></div>
     <div class="tmpl-grid" id="tmpl-grid"></div>
   </div>
 </div>
@@ -523,6 +531,7 @@ html,body{height:100%}
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="toast undo-toast no-print" id="undo-toast"><span id="undo-msg"></span><button onclick="undoLast()">되돌리기</button></div>
 
 <script>
 /* ===== 샘플 데이터 (실제 버전에서는 기존 GitHub data.json 그대로 사용) ===== */
@@ -616,16 +625,19 @@ function renderRail(){
   const ps = pages();
   document.getElementById('rail-thumbs').innerHTML = ps.map((pg,i)=>{
     const n = ps.length;
+    const sec = pg.type==='space' && isSection(pg.sp);
     const tools = pg.type==='space' ? `<div class="thumb-tools no-print" onclick="event.stopPropagation()">
-        ${i>1?`<div class="thumb-tool" onclick="moveSpace('${pg.sp.id}',-1)" title="앞으로"><i class="ti ti-chevron-up"></i></div>`:''}
-        ${i<n-1?`<div class="thumb-tool" onclick="moveSpace('${pg.sp.id}',1)" title="뒤로"><i class="ti ti-chevron-down"></i></div>`:''}
-        <div class="thumb-tool" onclick="duplicateSpace('${pg.sp.id}')" title="${isSection(pg.sp)?'섹션 전체 복제':'복제'}"><i class="ti ti-copy"></i></div>
-        <div class="thumb-tool danger" onclick="deleteSpace('${pg.sp.id}')" title="삭제"><i class="ti ti-trash"></i></div>
+        ${i>1?`<div class="thumb-tool" onclick="moveSpace('${pg.sp.id}',-1)" title="${sec?'섹션 전체를 앞으로':'앞으로'}"><i class="ti ti-chevron-up"></i></div>`:''}
+        ${i<n-1?`<div class="thumb-tool" onclick="moveSpace('${pg.sp.id}',1)" title="${sec?'섹션 전체를 뒤로':'뒤로'}"><i class="ti ti-chevron-down"></i></div>`:''}
+        <div class="thumb-tool" onclick="duplicateSpace('${pg.sp.id}')" title="${sec?'섹션 전체 복제':'복제'}"><i class="ti ti-copy"></i></div>
+        <div class="thumb-tool danger" onclick="deleteSpace('${pg.sp.id}')" title="${sec?'섹션 전체 삭제 (되돌리기 가능)':'삭제 (되돌리기 가능)'}"><i class="ti ti-trash"></i></div>
       </div>` : '';
-    return `<div class="thumb ${i===curPage?'active':''} ${pg.type==='space'&&isSection(pg.sp)?'section':''}" onclick="goPage(${i})">
+    const dnd = `ondragover="railDragOver(event,${i})" ondragleave="railDragLeave(event)" ondrop="railDrop(event,${i})"` +
+      (pg.type==='space' ? ` draggable="true" ondragstart="railDragStart(event,'${pg.sp.id}')" ondragend="railDragEnd()"` : '');
+    return `<div class="thumb ${i===curPage?'active':''} ${sec?'section':''}" ${dnd} onclick="goPage(${i})" title="${pg.type==='space'?'끌어서 순서를 바꿀 수 있어요':''}">
       ${miniHtml(pg)}<span class="thumb-num">${i+1}</span>${tools}
     </div>`;
-  }).join('') + `<div class="thumb-add" onclick="openTmplPicker()"><i class="ti ti-plus"></i> 공간</div>`;
+  }).join('') + `<div class="thumb-add" onclick="openTmplPicker()" title="지금 보고 있는 페이지 바로 뒤에 추가돼요"><i class="ti ti-plus"></i> 페이지</div>`;
 }
 
 function miniHtml(pg){
@@ -968,11 +980,18 @@ function startImgResize(e, containerId, bId){
   document.addEventListener('mouseup', onUp);
 }
 
+// 새 페이지는 지금 보고 있는 페이지 바로 뒤에 넣음 (섹션 중간에도 바로 끼워넣기 가능)
+// pages() 인덱스 = spaces 인덱스 + 1 이라서, 현재 페이지 뒤 = spaces[curPage] 자리
+function insertAfterCurrent(sp){
+  const spaces = curProj().spaces;
+  const at = Math.min(Math.max(curPage,0), spaces.length);
+  spaces.splice(at, 0, sp);
+  curPage = at + 1;
+}
 function addSpace(name, blocks){
   markDirty();
   const sp = {id:uid('sp'), name: name||'새 공간', blocks: blocks?JSON.parse(JSON.stringify(blocks)):[]};
-  curProj().spaces.push(sp);
-  curPage = pages().length-1;
+  insertAfterCurrent(sp);
   render();
 }
 
@@ -985,18 +1004,16 @@ function deleteSpace(spId){
   const idx = spaceIndex(spId);
   if(idx<0) return;
   const nm = spaces[idx].name || '이름 없는';
-  const msg = isSection(spaces[idx])
-    ? `섹션 표지 "${nm}"를 삭제할까요?\n(섹션 안의 페이지들은 지워지지 않고 앞 섹션에 합쳐져요)`
-    : `"${nm}" 페이지를 삭제할까요? 되돌릴 수 없어요.`;
-  if(!confirm(msg)) return;
-  spaces.splice(idx,1);
-  const pgIdx = idx+1;
-  if(curPage>pgIdx) curPage--;
-  else if(curPage===pgIdx) curPage = Math.max(0, pgIdx-1);
+  const count = isSection(spaces[idx]) ? 1 + sectionMembers(spId).length : 1;
+  snapshotForUndo();
+  spaces.splice(idx, count);
+  const first = idx+1, last = idx+count;
+  if(curPage>last) curPage -= count;
+  else if(curPage>=first) curPage = Math.max(0, first-1);
   curPage = Math.min(curPage, pages().length-1);
   render();
   markDirty();
-  toast('페이지가 삭제됐어요');
+  showUndo(count>1 ? `섹션 "${nm}" ${count}페이지를 삭제했어요` : `"${nm}" 페이지를 삭제했어요`);
 }
 
 function duplicateSpace(spId){
@@ -1017,6 +1034,7 @@ function duplicateSpace(spId){
 function moveSpace(spId, dir){
   const spaces = curProj().spaces;
   const idx = spaceIndex(spId);
+  if(idx>=0 && isSection(spaces[idx])){ moveSectionStep(spId, dir); return; }
   const to = idx+dir;
   if(idx<0 || to<0 || to>=spaces.length) return;
   [spaces[idx], spaces[to]] = [spaces[to], spaces[idx]];
@@ -1025,6 +1043,101 @@ function moveSpace(spId, dir){
   else if(curPage===dest) curPage = from;
   render();
   markDirty();
+}
+
+/* ===== 페이지 순서: 섹션 단위 이동 / 끌어서 옮기기 / 삭제 되돌리기 ===== */
+// spaces 안에서 "한 덩어리" 범위: 섹션 표지면 [표지..마지막 페이지], 아니면 그 페이지 하나
+function unitRange(idx){
+  const spaces = curProj().spaces;
+  if(!isSection(spaces[idx])) return [idx, idx+1];
+  let j = idx+1; while(j<spaces.length && !isSection(spaces[j])) j++;
+  return [idx, j];
+}
+// 어떤 페이지가 속한 섹션 덩어리 (섹션 밖이면 그 페이지 하나)
+function containingUnit(idx){
+  const spaces = curProj().spaces;
+  for(let k=idx;k>=0;k--) if(isSection(spaces[k])) return unitRange(k);
+  return [idx, idx+1];
+}
+function moveBlockTo(from, to, anchorId, after){
+  // spaces[from..to) 를 떼어내서 anchorId 앞(after=false) 또는 뒤(after=true)에 끼움. anchorId 없으면 맨 앞
+  const spaces = curProj().spaces;
+  const moving = spaces.splice(from, to-from);
+  let at = 0;
+  if(anchorId){ const a = spaces.findIndex(s=>s.id===anchorId); at = after ? a+1 : a; }
+  spaces.splice(at, 0, ...moving);
+  curPage = at + 1;
+  render();
+  markDirty();
+}
+function moveSectionStep(secId, dir){
+  const spaces = curProj().spaces;
+  const [s, e] = unitRange(spaceIndex(secId));
+  if(dir<0){
+    if(s===0) return;
+    const [ps] = containingUnit(s-1);               // 바로 앞 덩어리(앞 섹션 전체 또는 섹션 밖 페이지 하나)의 시작
+    moveBlockTo(s, e, spaces[ps].id, false);
+  } else {
+    if(e>=spaces.length) return;
+    const [, ne] = unitRange(e);
+    moveBlockTo(s, e, spaces[ne-1].id, true);
+  }
+}
+let _dragId = null;
+function railDragStart(e, spId){
+  _dragId = spId;
+  e.dataTransfer.effectAllowed = 'move';
+  try{ e.dataTransfer.setData('text/plain', spId); }catch(_){}
+  setTimeout(()=>{ const el = e.target.closest('.thumb'); if(el) el.classList.add('dragging'); }, 0);
+}
+function railDragEnd(){ _dragId = null; document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('dragging','drop-before','drop-after')); }
+function railDragLeave(e){ e.currentTarget.classList.remove('drop-before','drop-after'); }
+function railDragOver(e, i){
+  if(!_dragId) return;
+  e.preventDefault();
+  const el = e.currentTarget, r = el.getBoundingClientRect();
+  const after = i===0 || (e.clientY - r.top) > r.height/2;
+  el.classList.toggle('drop-after', after);
+  el.classList.toggle('drop-before', !after);
+}
+function railDrop(e, i){
+  e.preventDefault();
+  const el = e.currentTarget, r = el.getBoundingClientRect();
+  const after = i===0 || (e.clientY - r.top) > r.height/2;
+  const id = _dragId; railDragEnd();
+  if(!id) return;
+  const spaces = curProj().spaces;
+  const from = spaceIndex(id);
+  const [s, eIdx] = unitRange(from);                 // 섹션 표지를 끌면 섹션 전체가 같이 이동
+  if(i===0){ moveBlockTo(s, eIdx, null, false); return; }   // 표지 위에 놓으면 맨 앞
+  let t = i-1;                                       // 놓은 자리의 spaces 인덱스
+  if(t>=s && t<eIdx) return;                         // 자기 자신(덩어리) 위에 놓음
+  if(isSection(spaces[from])){
+    // 섹션은 다른 섹션 한가운데로 못 들어가게 섹션 경계로 맞춤
+    const [ts, te] = containingUnit(t);
+    if(isSection(spaces[ts])) { moveBlockTo(s, eIdx, after ? spaces[te-1].id : spaces[ts].id, after); return; }
+  }
+  moveBlockTo(s, eIdx, spaces[t].id, after);
+}
+
+let _undo = null, _undoTimer = null;
+function snapshotForUndo(){ _undo = {projId: curProjId, spaces: JSON.stringify(curProj().spaces), curPage}; }
+function showUndo(msg){
+  const t = document.getElementById('undo-toast');
+  document.getElementById('undo-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_undoTimer);
+  _undoTimer = setTimeout(()=>{ t.classList.remove('show'); }, 7000);
+}
+function undoLast(){
+  if(!_undo) return;
+  const p = projects.find(x=>x.id===_undo.projId);
+  if(p){ p.spaces = JSON.parse(_undo.spaces); if(curProjId===p.id) curPage = _undo.curPage; }
+  _undo = null;
+  document.getElementById('undo-toast').classList.remove('show');
+  render();
+  markDirty();
+  toast('되돌렸어요');
 }
 
 /* ===== 페이지 크기 (프로젝트별: 가로형 / A4 세로) ===== */
@@ -1118,8 +1231,7 @@ function addSectionCover(name){
   closeTmplPicker();
   ensureProjLine();
   const sp = {id:uid('sp'), kind:'section', name: name||'실내 : 임대세대', date: defaultDate(), blocks:[]};
-  curProj().spaces.push(sp);
-  curPage = pages().length-1;
+  insertAfterCurrent(sp);
   render();
   markDirty();
   toast('섹션 표지가 추가됐어요. 이 뒤에 넣는 페이지가 이 섹션에 묶여요');
@@ -1390,6 +1502,9 @@ function seedDagagu(){
 /* ===== 페이지 추가 / 템플릿 라이브러리 관리 ===== */
 function openTmplPicker(){
   renderTmplGrid();
+  const pg = pages()[curPage];
+  const where = pg.type==='cover' ? '표지' : `${curPage+1}쪽 "${pg.sp.name||''}"`;
+  document.getElementById('tmpl-where').textContent = `${where} 바로 뒤에 추가 (세트는 맨 끝)`;
   document.getElementById('ov-tmpl').classList.add('show');
 }
 function renderTmplGrid(){
