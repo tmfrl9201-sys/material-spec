@@ -35,6 +35,9 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
 .thumb.drop-before{box-shadow:0 -3px 0 0 var(--accent)}
 .thumb.drop-after{box-shadow:0 3px 0 0 var(--accent)}
 .thumb[draggable=true]{cursor:grab}
+.hist-btns{display:flex;gap:4px;margin-right:4px}
+.hist-btn{padding:5px 9px}
+.hist-btn:disabled{opacity:.35;cursor:default;background:#fff;border-color:var(--border)}
 .toast.undo-toast{display:flex;align-items:center;gap:12px;z-index:101}
 .toast.undo-toast.show{pointer-events:auto}
 .undo-toast button{background:none;border:1px solid rgba(255,255,255,.5);color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;cursor:pointer;font-family:var(--font-sans)}
@@ -405,6 +408,10 @@ html,body{height:100%}
 <div class="app-header">
   <div class="app-header-left"><i class="ti ti-clipboard-list"></i> 유타건축 재료 마감리스트</div>
   <div class="spacer"></div>
+  <div class="hist-btns">
+    <button class="btn hist-btn" id="undo-btn" onclick="historyUndo()" title="실행취소 (Ctrl+Z)" disabled><i class="ti ti-arrow-back-up"></i> 실행취소</button>
+    <button class="btn hist-btn" id="redo-btn" onclick="historyRedo()" title="다시실행 (Ctrl+Shift+Z / Ctrl+Y)" disabled><i class="ti ti-arrow-forward-up"></i></button>
+  </div>
   <div class="save-status" id="save-status" onclick="openGithubSetup()" title="GitHub 저장 설정"><i class="ti ti-brand-github"></i> <span id="save-status-txt">저장 설정</span></div>
   <button class="btn btn-dark" id="save-btn" onclick="saveToGithub()" style="display:none"><i class="ti ti-device-floppy"></i> 저장</button>
 </div>
@@ -1005,7 +1012,6 @@ function deleteSpace(spId){
   if(idx<0) return;
   const nm = spaces[idx].name || '이름 없는';
   const count = isSection(spaces[idx]) ? 1 + sectionMembers(spId).length : 1;
-  snapshotForUndo();
   spaces.splice(idx, count);
   const first = idx+1, last = idx+count;
   if(curPage>last) curPage -= count;
@@ -1120,8 +1126,7 @@ function railDrop(e, i){
   moveBlockTo(s, eIdx, spaces[t].id, after);
 }
 
-let _undo = null, _undoTimer = null;
-function snapshotForUndo(){ _undo = {projId: curProjId, spaces: JSON.stringify(curProj().spaces), curPage}; }
+let _undoTimer = null;
 function showUndo(msg){
   const t = document.getElementById('undo-toast');
   document.getElementById('undo-msg').textContent = msg;
@@ -1130,15 +1135,90 @@ function showUndo(msg){
   _undoTimer = setTimeout(()=>{ t.classList.remove('show'); }, 7000);
 }
 function undoLast(){
-  if(!_undo) return;
-  const p = projects.find(x=>x.id===_undo.projId);
-  if(p){ p.spaces = JSON.parse(_undo.spaces); if(curProjId===p.id) curPage = _undo.curPage; }
-  _undo = null;
   document.getElementById('undo-toast').classList.remove('show');
+  historyUndo();
+}
+
+/* ===== 실행취소 / 다시실행 (앱 전체) =====
+   markDirty()가 불릴 때마다 잠깐(0.7초) 기다렸다가 "바뀌기 전 상태"를 기록 → 연속 타이핑은 한 단계로 묶임.
+   상태 복사는 객체 구조만 새로 만들고 문자열(사진 base64 포함)은 그대로 공유해서 메모리를 거의 안 씀. */
+const HISTORY_MAX = 60;
+let _hist = {undo:[], redo:[], last:null, timer:null, restoring:false};
+function cloneShared(v){
+  if(Array.isArray(v)) return v.map(cloneShared);
+  if(v && typeof v==='object'){ const o={}; for(const k in v) o[k]=cloneShared(v[k]); return o; }
+  return v;
+}
+function appState(){ return cloneShared({DB, projects, PAGE_TEMPLATES, BRAND_LOGO, curPage, curProjId}); }
+function historyReset(){
+  clearTimeout(_hist.timer); _hist.timer = null;
+  _hist.undo = []; _hist.redo = []; _hist.last = appState();
+  updateHistButtons();
+}
+function historyTouch(){
+  if(_hist.restoring) return;
+  if(!_hist.last) _hist.last = appState();
+  clearTimeout(_hist.timer);
+  _hist.timer = setTimeout(historyCommit, 700);
+}
+function historyCommit(){
+  clearTimeout(_hist.timer); _hist.timer = null;
+  if(!_hist.last) return;
+  _hist.undo.push(_hist.last);
+  if(_hist.undo.length > HISTORY_MAX) _hist.undo.shift();
+  _hist.redo = [];
+  _hist.last = appState();
+  updateHistButtons();
+}
+function applyState(st){
+  _hist.restoring = true;
+  const c = cloneShared(st);
+  DB = c.DB; projects = c.projects; PAGE_TEMPLATES = c.PAGE_TEMPLATES; BRAND_LOGO = c.BRAND_LOGO;
+  if(mode==='editor'){
+    if(!projects.find(p=>p.id===curProjId)) mode = 'projects';
+    else if(c.curProjId===curProjId) curPage = c.curPage;
+  }
+  if(mode==='template' && !PAGE_TEMPLATES.find(t=>t.id===editingTemplateId)){ mode = prevMode; editingTemplateId = null; }
+  if(mode==='editor') curPage = Math.max(0, Math.min(curPage, pages().length-1));
+  _hist.last = appState();
   render();
   markDirty();
-  toast('되돌렸어요');
+  _hist.restoring = false;
+  updateHistButtons();
 }
+function historyUndo(){
+  if(_hist.timer) historyCommit();           // 아직 기록 안 된 마지막 변경부터 기록
+  if(!_hist.undo.length){ toast('더 되돌릴 게 없어요'); return; }
+  _hist.redo.push(appState());
+  applyState(_hist.undo.pop());
+  toast('실행취소');
+}
+function historyRedo(){
+  if(_hist.timer) historyCommit();
+  if(!_hist.redo.length){ toast('다시 실행할 게 없어요'); return; }
+  const r = _hist.redo.pop();
+  _hist.undo.push(appState());
+  const keep = _hist.redo;
+  applyState(r);
+  _hist.redo = keep;
+  updateHistButtons();
+  toast('다시실행');
+}
+function updateHistButtons(){
+  const u = document.getElementById('undo-btn'), r = document.getElementById('redo-btn');
+  if(u) u.disabled = !(_hist.undo.length || _hist.timer);
+  if(r) r.disabled = !_hist.redo.length;
+}
+document.addEventListener('keydown', e=>{
+  if(!(e.ctrlKey||e.metaKey)) return;
+  const k = e.key.toLowerCase();
+  if(k!=='z' && k!=='y') return;
+  const a = document.activeElement;
+  // 글자 입력 중에는 브라우저 기본 실행취소(글자 단위)를 그대로 씀
+  if(a && (a.isContentEditable || a.tagName==='INPUT' || a.tagName==='TEXTAREA')) return;
+  e.preventDefault();
+  if(k==='y' || e.shiftKey) historyRedo(); else historyUndo();
+});
 
 /* ===== 페이지 크기 (프로젝트별: 가로형 / A4 세로) ===== */
 function currentOrient(){
@@ -2059,6 +2139,7 @@ async function testGithubConnection(){
 }
 let _autoSaveTimer = null;
 function markDirty(){
+  historyTouch(); updateHistButtons();   // 실행취소 기록용 (저장 로직과 무관)
   if(!ghSettings.token) return;
   const btn = document.getElementById('save-btn');
   btn.style.display=''; btn.style.background='#c0392b'; btn.style.borderColor='#c0392b';
@@ -2131,12 +2212,14 @@ async function loadFromGithub(){
     if(content.seeds) SEEDS = content.seeds;
     updateSaveStatus('saved','불러옴');
     const seeded = applySeeds();
+    historyReset();
     render();
     toast(seeded ? 'GitHub에서 불러왔어요 — 다가구 세트 템플릿이 추가됐어요!' : 'GitHub에서 데이터를 불러왔어요!');
   }catch(e){ console.log('불러오기 실패:', e.message); }
 }
 
 loadGhSettings();
+historyReset();
 render();
 if(ghSettings.token) loadFromGithub();
 </script>
