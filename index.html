@@ -318,6 +318,12 @@ body.mode-projects .rail{display:none}
 .opt-ph{aspect-ratio:var(--opt-ratio,4/3);overflow:hidden;background:var(--bg2)}
 .opt-ph img{width:100%;height:100%;object-fit:cover;display:block}
 .opt-ph.empty{background:none;border:1.3px dashed var(--border);display:flex;align-items:center;justify-content:center;text-align:center;font-size:9.5px;color:var(--fg4);line-height:1.4;padding:4px}
+.opt-ph.empty.add{cursor:pointer;flex-direction:column;gap:3px}
+.opt-ph.empty.add:hover{border-color:var(--accent);color:var(--accent)}
+.opt-ph.empty.add i{font-size:16px}
+.opt-ph.empty.add span{font-size:8.5px;color:var(--fg4)}
+.opt-photos.drop{outline:2px dashed var(--accent);outline-offset:2px}
+label.opt-mini{margin:0}
 .opt-sub{font-size:9px;color:var(--fg3);text-align:center;margin-top:4px;line-height:1.35}
 .opt-sub:empty{opacity:0;margin-top:0;min-height:0}
 .opt-grp:hover .opt-sub:empty,.opt-sub:empty:focus{opacity:1;margin-top:4px;min-height:12px}
@@ -1510,10 +1516,13 @@ function optionBlockHtml(cid, b, toolbarBase){
     const pre = multi && part.name ? `[${esc(part.name)}] ` : '';
     groups.push(`<div class="opt-grp ${o.on?'on':''}" style="grid-column:span ${span}">
       <div class="opt-cap"><span class="opt-box" onclick="toggleOpt('${cid}','${b.id}',${pi},${oi})">${o.on?'■':'□'}</span><span>${pre}<span data-ok="${b.id}-${pi}-${oi}">${esc(optName(o))}</span></span>
-        <span class="opt-cap-tools no-print"><span class="opt-mini" onclick="toggleOptPhoto('${cid}','${b.id}',${pi},${oi})" title="사진 숨기기 (체크표에만 표시)"><i class="ti ti-photo-off"></i></span></span></div>
-      <div class="opt-photos" style="grid-template-columns:repeat(${b.stack?1:n},1fr)">
+        <span class="opt-cap-tools no-print">
+          ${imgs.length && imgs.length<3 ? `<label class="opt-mini" title="사진 추가 (라이브러리에 저장, 최대 3장)"><i class="ti ti-photo-plus"></i><input type="file" accept="image/*" multiple hidden onchange="addMatPhotos('${m.id}',this.files);this.value=''"></label>` : ''}
+          <span class="opt-mini" onclick="toggleOptPhoto('${cid}','${b.id}',${pi},${oi})" title="사진 숨기기 (체크표에만 표시)"><i class="ti ti-photo-off"></i></span>
+        </span></div>
+      <div class="opt-photos" style="grid-template-columns:repeat(${b.stack?1:n},1fr)" ondragover="if(event.dataTransfer.types.includes('Files')){event.preventDefault();this.classList.add('drop')}" ondragleave="this.classList.remove('drop')" ondrop="this.classList.remove('drop');if(event.dataTransfer.files.length){event.preventDefault();addMatPhotos('${m.id}',event.dataTransfer.files)}">
         ${imgs.length ? imgs.map(src=>`<div class="opt-ph"><img src="${src}"></div>`).join('')
-          : `<div class="opt-ph empty no-print">사진 없음<br>재료 라이브러리<br>"${esc(getCatOf(m.id))} › ${esc(m.name)}"에 추가</div>`}
+          : `<label class="opt-ph empty add no-print" title="클릭하거나 사진을 끌어다 놓으세요"><i class="ti ti-photo-plus"></i>사진 추가 (최대 3장)<br><span>라이브러리 "${esc(getCatOf(m.id))} › ${esc(m.name)}"에 저장돼요</span><input type="file" accept="image/*" multiple hidden onchange="addMatPhotos('${m.id}',this.files);this.value=''"></label>`}
       </div>
       <div class="opt-sub" contenteditable data-sub="${m.id}" data-ph="설명·가격 (라이브러리에 저장)" title="고치면 재료 라이브러리에 바로 반영돼요" oninput="editMatSub('${m.id}',this)">${esc(m.sub)}</div>
     </div>`);
@@ -1527,6 +1536,47 @@ function optionBlockHtml(cid, b, toolbarBase){
     ${groups.length?`<div class="opt-grid" style="--opt-ratio:${b.ratio||'4/3'}">${groups.join('')}</div>`:''}
   </div>`;
 }
+// 프로젝트 페이지에서 옵션에 사진을 넣으면 → 라이브러리 재료(exImgs)에 저장 → 이 재료를 쓰는 모든 페이지에 반영
+// 큰 사진은 긴 변 1600px JPEG로 줄여서 저장 (data.json 용량 보호)
+function shrinkImage(file, max=1600, q=0.85){
+  return new Promise(resolve=>{
+    const fr = new FileReader();
+    fr.onload = ()=>{
+      const src = fr.result;
+      const img = new Image();
+      img.onload = ()=>{
+        const sc = Math.min(1, max/Math.max(img.width, img.height));
+        if(sc===1 && file.size < 500*1024){ resolve(src); return; }
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.width*sc); c.height = Math.round(img.height*sc);
+        const g = c.getContext('2d');
+        g.fillStyle = '#fff'; g.fillRect(0,0,c.width,c.height);
+        g.drawImage(img, 0, 0, c.width, c.height);
+        resolve(c.toDataURL('image/jpeg', q));
+      };
+      img.onerror = ()=>resolve(null);
+      img.src = src;
+    };
+    fr.onerror = ()=>resolve(null);
+    fr.readAsDataURL(file);
+  });
+}
+async function addMatPhotos(matId, fileList){
+  const m = getMat(matId); if(!m) return;
+  if(!m.exImgs) m.exImgs = [];
+  const files = Array.from(fileList||[]).filter(f=>f.type.startsWith('image/'));
+  if(!files.length){ toast('사진 파일만 넣을 수 있어요'); return; }
+  const room = 3 - m.exImgs.length;
+  if(room<=0){ toast('사진은 재료당 최대 3장이에요'); return; }
+  const urls = (await Promise.all(files.slice(0,room).map(f=>shrinkImage(f)))).filter(Boolean);
+  if(!urls.length){ toast('사진을 읽지 못했어요'); return; }
+  const before = m.exImgs.length;
+  const ok = applyOrRevert(()=>{ m.exImgs.push(...urls); }, ()=>{ m.exImgs.splice(before); });
+  if(!ok) return;
+  const skipped = files.length - urls.length;
+  toast(`라이브러리 "${getCatOf(m.id)} › ${m.name}"에 사진 ${urls.length}장 저장 — 이 재료를 쓰는 모든 페이지에 나와요${skipped>0?` (최대 3장이라 ${skipped}장은 뺐어요)`:''}`);
+}
+
 // 옵션 사진 아래 설명(가격)을 고치면 라이브러리 재료(sub)에 바로 저장 → 이 재료를 쓰는 모든 페이지에 같이 반영
 function editMatSub(matId, el){
   const m = getMat(matId); if(!m) return;
