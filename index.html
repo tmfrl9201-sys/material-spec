@@ -589,6 +589,7 @@ function render(){
   else if(mode==='library'){ renderLibrary(); }
   else if(mode==='projects'){ renderProjectsList(); }
   else { renderRail(); renderPage(); }
+  syncRoute();
 }
 
 function renderTopBar(){
@@ -1139,6 +1140,72 @@ function undoLast(){
   historyUndo();
 }
 
+/* ===== 브라우저 뒤로가기/앞으로가기 (화면마다 방문 기록 + 주소) =====
+   #/            프로젝트 목록
+   #/p/{id}      프로젝트 편집
+   #/library     재료 라이브러리
+   #/t/{id}      템플릿 편집
+   render() 끝에서 syncRoute()가 화면이 바뀌었으면 기록을 하나 쌓고(pushState), 같은 화면이면 현재 쪽만 갱신(replaceState).
+   새로고침해도 주소를 보고 그 화면으로 돌아감(데이터 불러온 뒤 applyInitialRoute). */
+let _navIdx = 0, _navStack = [], _navFromPop = false, _navLast = '', _initialRoute = location.hash;
+function routeKeyFor(m){
+  if(m==='editor' && curProjId) return '#/p/'+curProjId;
+  if(m==='library') return '#/library';
+  if(m==='template' && editingTemplateId) return '#/t/'+editingTemplateId;
+  return '#/';
+}
+function navState(){ return {mode, curProjId, curPage, tid: editingTemplateId, prevMode, idx: _navIdx}; }
+function syncRoute(){
+  if(_navFromPop) return;
+  const key = routeKeyFor(mode);
+  const cur = location.hash || '#/';
+  try{
+    if(cur===key){
+      const js = JSON.stringify(navState());
+      if(js!==_navLast){ history.replaceState(navState(), '', key); _navLast = js; }
+      return;
+    }
+    _navIdx++;
+    _navStack.length = _navIdx;
+    _navStack[_navIdx] = key;
+    history.pushState(navState(), '', key);
+    _navLast = JSON.stringify(navState());
+  }catch(e){ /* 기록 API 호출 제한 등 — 무시 */ }
+}
+function navBackTo(key){
+  if(_navIdx>0 && _navStack[_navIdx-1]===key){ history.back(); return true; }
+  return false;
+}
+function applyNavState(st){
+  document.querySelectorAll('.ov.show').forEach(o=>o.classList.remove('show'));   // 열린 창은 닫기
+  let m = st.mode || 'projects';
+  if(m==='editor' && !projects.find(p=>p.id===st.curProjId)) m = 'projects';
+  if(m==='template' && !PAGE_TEMPLATES.find(t=>t.id===st.tid)) m = 'projects';
+  mode = m;
+  if(st.curProjId) curProjId = st.curProjId;
+  editingTemplateId = st.tid || null;
+  prevMode = st.prevMode || 'projects';
+  if(mode==='library' && !curLibCat) curLibCat = Object.keys(DB)[0] || null;
+  if(mode==='editor') curPage = Math.max(0, Math.min(st.curPage||0, pages().length-1));
+}
+window.addEventListener('popstate', e=>{
+  const st = e.state || {mode:'projects'};
+  _navIdx = typeof st.idx==='number' ? st.idx : 0;
+  _navFromPop = true;
+  try{ applyNavState(st); render(); }
+  finally{ _navFromPop = false; _navLast = JSON.stringify(navState()); }
+});
+// 새로고침/주소로 바로 들어왔을 때: 데이터를 불러온 뒤 그 화면으로
+function applyInitialRoute(){
+  const h = _initialRoute; _initialRoute = '';
+  if(!h || h==='#/' || h==='#') return;
+  let m;
+  if((m = h.match(/^#\/p\/(.+)$/)) && projects.find(p=>p.id===m[1])){ curProjId = m[1]; curPage = 0; mode = 'editor'; }
+  else if(h==='#/library'){ prevMode = 'projects'; mode = 'library'; curLibCat = Object.keys(DB)[0] || null; }
+  else if((m = h.match(/^#\/t\/(.+)$/)) && PAGE_TEMPLATES.find(t=>t.id===m[1])){ prevMode = 'projects'; editingTemplateId = m[1]; mode = 'template'; }
+}
+_navStack[0] = location.hash || '#/';
+
 /* ===== 실행취소 / 다시실행 (앱 전체) =====
    markDirty()가 불릴 때마다 잠깐(0.7초) 기다렸다가 "바뀌기 전 상태"를 기록 → 연속 타이핑은 한 단계로 묶임.
    상태 복사는 객체 구조만 새로 만들고 문자열(사진 base64 포함)은 그대로 공유해서 메모리를 거의 안 씀. */
@@ -1621,6 +1688,7 @@ function editTemplate(tmplId){
   render();
 }
 function exitTemplateEdit(){
+  if(navBackTo(routeKeyFor(prevMode))) return;
   mode = prevMode;
   editingTemplateId = null;
   render();
@@ -1657,10 +1725,12 @@ function openMatLibrary(){
   render();
 }
 function exitMatLibrary(){
+  if(navBackTo(routeKeyFor(prevMode))) return;
   mode = prevMode;
   render();
 }
 function goProjectsList(){
+  if(navBackTo('#/')) return;
   mode = 'projects';
   render();
 }
@@ -2213,6 +2283,7 @@ async function loadFromGithub(){
     updateSaveStatus('saved','불러옴');
     const seeded = applySeeds();
     historyReset();
+    applyInitialRoute();
     render();
     toast(seeded ? 'GitHub에서 불러왔어요 — 다가구 세트 템플릿이 추가됐어요!' : 'GitHub에서 데이터를 불러왔어요!');
   }catch(e){ console.log('불러오기 실패:', e.message); }
