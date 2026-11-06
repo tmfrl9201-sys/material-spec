@@ -1154,21 +1154,29 @@ function routeKeyFor(m){
   if(m==='template' && editingTemplateId) return '#/t/'+editingTemplateId;
   return '#/';
 }
-function navState(){ return {mode, curProjId, curPage, tid: editingTemplateId, prevMode, idx: _navIdx}; }
+function domModalOpen(){ return !!document.querySelector('.ov.show'); }
+function navState(){ return {mode, curProjId, curPage, tid: editingTemplateId, prevMode, idx: _navIdx, modal: domModalOpen()}; }
 function syncRoute(){
   if(_navFromPop) return;
   const key = routeKeyFor(mode);
   const cur = location.hash || '#/';
   try{
     if(cur===key){
+      if(history.state && history.state.modal && !domModalOpen()) return;   // 팝업 기록은 곧 조용히 되돌려짐
       const js = JSON.stringify(navState());
       if(js!==_navLast){ history.replaceState(navState(), '', key); _navLast = js; }
       return;
     }
-    _navIdx++;
-    _navStack.length = _navIdx;
-    _navStack[_navIdx] = key;
-    history.pushState(navState(), '', key);
+    if(history.state && history.state.modal){
+      // 팝업에서 다른 화면으로 넘어가는 경우: 팝업 기록 자리를 새 화면으로 바꿈 (뒤로가기 한 번에 원래 화면)
+      _navStack[_navIdx] = key;
+      history.replaceState(navState(), '', key);
+    } else {
+      _navIdx++;
+      _navStack.length = _navIdx;
+      _navStack[_navIdx] = key;
+      history.pushState(navState(), '', key);
+    }
     _navLast = JSON.stringify(navState());
   }catch(e){ /* 기록 API 호출 제한 등 — 무시 */ }
 }
@@ -1189,12 +1197,47 @@ function applyNavState(st){
   if(mode==='editor') curPage = Math.max(0, Math.min(st.curPage||0, pages().length-1));
 }
 window.addEventListener('popstate', e=>{
+  if(_silentBack){ _silentBack = false; _navLast = ''; syncRoute(); return; }   // X로 닫은 팝업의 기록을 지우는 중 → 지금 쪽 번호로 갱신
+  if(_modalOpen){                                         // 팝업이 떠 있으면: 팝업만 닫고 화면은 그대로
+    _modalOpen = false;
+    document.querySelectorAll('.ov.show').forEach(o=>o.classList.remove('show'));
+    _navLast = '';
+    return;
+  }
   const st = e.state || {mode:'projects'};
   _navIdx = typeof st.idx==='number' ? st.idx : 0;
   _navFromPop = true;
   try{ applyNavState(st); render(); }
   finally{ _navFromPop = false; _navLast = JSON.stringify(navState()); }
 });
+// 팝업(.ov) 열림/닫힘을 지켜보다가: 열리면 기록 하나 추가, X·취소로 닫히면 그 기록을 조용히 되돌림
+let _modalOpen = false, _silentBack = false;
+function watchModals(){
+  const check = ()=>{
+    const open = !!document.querySelector('.ov.show');
+    if(open===_modalOpen) return;
+    _modalOpen = open;
+    try{
+      if(open){
+        history.pushState(navState(), '', location.hash || '#/');
+      } else if(history.state && history.state.modal){
+        _silentBack = true;
+        history.back();
+      }
+    }catch(e){}
+  };
+  const obs = new MutationObserver(check);
+  document.querySelectorAll('.ov').forEach(o=>obs.observe(o, {attributes:true, attributeFilter:['class']}));
+}
+watchModals();
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Escape') return;
+  const open = document.querySelectorAll('.ov.show');
+  if(!open.length) return;
+  e.preventDefault();
+  open.forEach(o=>o.classList.remove('show'));
+});
+
 // 새로고침/주소로 바로 들어왔을 때: 데이터를 불러온 뒤 그 화면으로
 function applyInitialRoute(){
   const h = _initialRoute; _initialRoute = '';
