@@ -851,6 +851,9 @@ function blockHtml(container, containerId, b, i){
   </div>`;
 }
 
+// 겹치지 않는 id (같은 밀리초에 여러 개 만들어도 안전)
+let _uidSeq = 0;
+function uid(prefix){ return prefix + Date.now().toString(36) + (++_uidSeq).toString(36) + Math.random().toString(36).slice(2,6); }
 function getBlock(containerId,bId){ return resolveContainer(containerId).blocks.find(b=>b.id===bId); }
 
 /* 페이지(캔버스) 안에 내용이 다 들어가는지 확인 — A4류 고정 페이지 밖으로 넘치는 걸 막기 위함 */
@@ -865,7 +868,7 @@ const OVERFLOW_MSG = '이 페이지에 더 넣을 공간이 없어요. 새 페�
 
 function addBlock(containerId, type){
   const c = resolveContainer(containerId);
-  const base = {id:'b'+Date.now()};
+  const base = {id:uid('b')};
   let blk;
   if(type==='option') blk = {...base, type, label:'구분', ratio:'4/3', parts:[{name:'부위', options:[]}]};
   else if(type==='material') blk = {...base, type, label:'라벨', matIds:[]};
@@ -967,7 +970,7 @@ function startImgResize(e, containerId, bId){
 
 function addSpace(name, blocks){
   markDirty();
-  const sp = {id:'sp'+Date.now(), name: name||'새 공간', blocks: blocks?JSON.parse(JSON.stringify(blocks)):[]};
+  const sp = {id:uid('sp'), name: name||'새 공간', blocks: blocks?JSON.parse(JSON.stringify(blocks)):[]};
   curProj().spaces.push(sp);
   curPage = pages().length-1;
   render();
@@ -1002,7 +1005,7 @@ function duplicateSpace(spId){
   if(idx<0) return;
   if(isSection(spaces[idx])){ duplicateSection(idx); return; }
   const copy = JSON.parse(JSON.stringify(spaces[idx]));
-  copy.id = 'sp'+Date.now();
+  copy.id = uid('sp');
   copy.name = (copy.name||'') + ' (복사)';
   spaces.splice(idx+1, 0, copy);
   curPage = idx+2;
@@ -1114,7 +1117,7 @@ function ensureProjLine(){
 function addSectionCover(name){
   closeTmplPicker();
   ensureProjLine();
-  const sp = {id:'sp'+Date.now(), kind:'section', name: name||'실내 : 임대세대', date: defaultDate(), blocks:[]};
+  const sp = {id:uid('sp'), kind:'section', name: name||'실내 : 임대세대', date: defaultDate(), blocks:[]};
   curProj().spaces.push(sp);
   curPage = pages().length-1;
   render();
@@ -1125,8 +1128,7 @@ function duplicateSection(idx){
   const spaces = curProj().spaces;
   const sec = spaces[idx];
   const members = sectionMembers(sec.id);
-  const base = Date.now();
-  const copies = [sec, ...members].map((sp,k)=>{ const c = JSON.parse(JSON.stringify(sp)); c.id = 'sp'+(base+k); return c; });
+  const copies = [sec, ...members].map(sp=>{ const c = JSON.parse(JSON.stringify(sp)); c.id = uid('sp'); return c; });
   copies[0].name = (copies[0].name||'') + ' (복사)';
   const insertAt = idx + 1 + members.length;
   spaces.splice(insertAt, 0, ...copies);
@@ -1143,12 +1145,11 @@ function printSection(secId){
 /* ===== 세트 템플릿 (여러 페이지를 한번에 추가: {pageIds:[...], section:'섹션명'}) ===== */
 function addTemplateSet(t){
   ensureProjLine();
-  const base = Date.now();
   const add = [];
-  if(t.section) add.push({id:'sp'+base, kind:'section', name:t.section, date:defaultDate(), blocks:[]});
-  t.pageIds.forEach((pid,k)=>{
+  if(t.section) add.push({id:uid('sp'), kind:'section', name:t.section, date:defaultDate(), blocks:[]});
+  t.pageIds.forEach(pid=>{
     const pt = PAGE_TEMPLATES.find(x=>x.id===pid);
-    if(pt) add.push({id:'sp'+(base+k+1), name: pt.pageName||pt.name, blocks: JSON.parse(JSON.stringify(pt.blocks))});
+    if(pt) add.push({id:uid('sp'), name: pt.pageName||pt.name, blocks: JSON.parse(JSON.stringify(pt.blocks))});
   });
   const spaces = curProj().spaces;
   const first = spaces.length;
@@ -1313,7 +1314,7 @@ function ensureMat(cat, name, sub){
   if(!DB[cat]) DB[cat] = [];
   let m = DB[cat].find(x=>x.name===name);
   if(!m){
-    m = {id:'sd'+Date.now().toString(36)+Math.random().toString(36).slice(2,7), name, sub:sub||'', color:nextColor(), exImgs:[]};
+    m = {id:uid('sd'), name, sub:sub||'', color:nextColor(), exImgs:[]};
     DB[cat].push(m);
   } else if(sub && !m.sub){ m.sub = sub; }
   return m.id;
