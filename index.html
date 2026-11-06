@@ -212,7 +212,7 @@ body.mode-projects .rail{display:none}
 .ul-row-note.full,.ul-row-note.error{color:#c0392b}
 
 /* ===== 프로젝트 목록 ===== */
-.proj-panel{width:900px;max-width:100%}
+.proj-panel{width:100%;max-width:1080px;align-self:flex-start}
 .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
 .proj-card{background:#fff;border:1px solid var(--border2);border-radius:10px;overflow:hidden;cursor:pointer;position:relative;box-shadow:var(--shadow);transition:box-shadow .1s}
 .proj-card:hover{box-shadow:0 4px 14px rgba(0,0,0,0.08)}
@@ -391,6 +391,18 @@ label.opt-mini{margin:0}
 /* ===== 상단 고정 헤더 (저장 상태) ===== */
 html,body{height:100%}
 .app-header{height:44px;flex-shrink:0;background:#fff;border-bottom:1px solid var(--border2);display:flex;align-items:center;padding:0 14px;gap:8px}
+.app-home{display:flex;align-items:center;gap:6px;border:1px solid transparent;background:none;border-radius:8px;padding:5px 9px 5px 7px;margin-left:-6px;cursor:pointer;font-family:var(--font-sans);color:var(--fg2);font-size:12.5px}
+.app-home i{font-size:16px}
+.app-home-txt{font-weight:700;color:var(--fg)}
+.app-home-sep{width:1px;height:12px;background:var(--border)}
+.app-home-title{font-weight:600;color:var(--fg3)}
+.app-home:hover{background:var(--bg);border-color:var(--border2)}
+.app-home:hover .app-home-txt{color:var(--accent)}
+body.mode-projects .app-home{cursor:default}
+body.mode-projects .app-home:hover{background:none;border-color:transparent}
+body.mode-projects .app-home-txt,body.mode-projects .app-home-sep{display:none}
+.app-crumb{font-size:12px;color:var(--fg3);display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-crumb b{color:var(--fg);font-weight:600}
 .app-header-left{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:6px;color:var(--fg2)}
 .save-status{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--fg4);padding:4px 10px;border-radius:6px;border:1px solid var(--border2);background:#fff;font-weight:500;white-space:nowrap;cursor:pointer}
 .save-status.saving{color:#2d6ae0;border-color:#cfe0ff;background:#eef3ff}
@@ -412,7 +424,10 @@ html,body{height:100%}
 <body>
 
 <div class="app-header">
-  <div class="app-header-left"><i class="ti ti-clipboard-list"></i> 유타건축 재료 마감리스트</div>
+  <button class="app-home" id="app-home" onclick="goHome()" title="프로젝트 목록으로 (홈)">
+    <i class="ti ti-home"></i><span class="app-home-txt">홈</span><span class="app-home-sep"></span><span class="app-home-title">유타건축 재료 마감리스트</span>
+  </button>
+  <span class="app-crumb" id="app-crumb"></span>
   <div class="spacer"></div>
   <div class="hist-btns">
     <button class="btn hist-btn" id="undo-btn" onclick="historyUndo()" title="실행취소 (Ctrl+Z)" disabled><i class="ti ti-arrow-back-up"></i> 실행취소</button>
@@ -586,7 +601,7 @@ function render(){
   document.body.className = 'mode-'+mode;
   document.getElementById('page-root').style.display = (mode==='library'||mode==='projects') ? 'none' : 'block';
   document.getElementById('lib-root').style.display = mode==='library' ? 'flex' : 'none';
-  document.getElementById('proj-root').style.display = mode==='projects' ? 'flex' : 'none';
+  document.getElementById('proj-root').style.display = mode==='projects' ? 'block' : 'none';
   const portrait = currentOrient()==='portrait';
   document.getElementById('page-root').className = 'page' + (portrait?' portrait':'');
   document.querySelector('.rail').classList.toggle('portrait', portrait);
@@ -595,6 +610,7 @@ function render(){
   else if(mode==='library'){ renderLibrary(); }
   else if(mode==='projects'){ renderProjectsList(); }
   else { renderRail(); renderPage(); }
+  renderCrumb();
   syncRoute();
 }
 
@@ -1154,6 +1170,7 @@ function undoLast(){
    render() 끝에서 syncRoute()가 화면이 바뀌었으면 기록을 하나 쌓고(pushState), 같은 화면이면 현재 쪽만 갱신(replaceState).
    새로고침해도 주소를 보고 그 화면으로 돌아감(데이터 불러온 뒤 applyInitialRoute). */
 let _navIdx = 0, _navStack = [], _navFromPop = false, _navLast = '', _initialRoute = location.hash;
+let _routePending = false;   // 새로고침으로 #/p/... 에 들어왔을 때 데이터 불러오기 전에는 기록을 건드리지 않음
 function routeKeyFor(m){
   if(m==='editor' && curProjId) return '#/p/'+curProjId;
   if(m==='library') return '#/library';
@@ -1163,7 +1180,7 @@ function routeKeyFor(m){
 function domModalOpen(){ return !!document.querySelector('.ov.show'); }
 function navState(){ return {mode, curProjId, curPage, tid: editingTemplateId, prevMode, idx: _navIdx, modal: domModalOpen()}; }
 function syncRoute(){
-  if(_navFromPop) return;
+  if(_navFromPop || _routePending) return;
   const key = routeKeyFor(mode);
   const cur = location.hash || '#/';
   try{
@@ -1202,7 +1219,33 @@ function applyNavState(st){
   if(mode==='library' && !curLibCat) curLibCat = Object.keys(DB)[0] || null;
   if(mode==='editor') curPage = Math.max(0, Math.min(st.curPage||0, pages().length-1));
 }
+// 앱 첫 진입 시 맨 아래에 "지킴이" 기록을 하나 깔아둠 → 목록에서 뒤로가기를 눌러도 바로 나가지 않고 안내
+// 3초 안에 한 번 더 누르면 그때 진짜로 나감
+let _exitArmed = false, _exitTimer = null;
+(function installExitGuard(){
+  const st = history.state;
+  if(st && (st.guard || typeof st.idx==='number')) return;   // 새로고침: 이미 깔려 있음
+  try{
+    history.replaceState({guard:true}, '', location.href);
+    history.pushState({mode:'projects', idx:0}, '', location.hash || '#/');
+  }catch(e){}
+})();
+window.addEventListener('beforeunload', e=>{
+  // 저장 안 된 변경이 있을 때만 브라우저 확인창
+  const st = document.getElementById('save-status');
+  if(st && st.classList.contains('error')){ e.preventDefault(); e.returnValue = ''; }
+});
 window.addEventListener('popstate', e=>{
+  if(e.state && e.state.guard){
+    if(_exitArmed){ history.back(); return; }                 // 두 번째 → 진짜 나가기
+    _exitArmed = true;
+    clearTimeout(_exitTimer);
+    _exitTimer = setTimeout(()=>{ _exitArmed = false; }, 3000);
+    _navIdx = 0;
+    try{ history.pushState(navState(), '', routeKeyFor(mode)); }catch(_){}
+    toast('한 번 더 뒤로가기를 누르면 앱에서 나가요');
+    return;
+  }
   if(_silentBack){ _silentBack = false; _navLast = ''; syncRoute(); return; }   // X로 닫은 팝업의 기록을 지우는 중 → 지금 쪽 번호로 갱신
   if(_modalOpen){                                         // 팝업이 떠 있으면: 팝업만 닫고 화면은 그대로
     _modalOpen = false;
@@ -1246,6 +1289,7 @@ document.addEventListener('keydown', e=>{
 
 // 새로고침/주소로 바로 들어왔을 때: 데이터를 불러온 뒤 그 화면으로
 function applyInitialRoute(){
+  _routePending = false;
   const h = _initialRoute; _initialRoute = '';
   if(!h || h==='#/' || h==='#') return;
   let m;
@@ -1822,6 +1866,19 @@ function exitMatLibrary(){
   mode = prevMode;
   render();
 }
+// 좌상단 홈 버튼: 어느 화면에서든 프로젝트 목록으로
+function goHome(){
+  if(mode==='projects') return;
+  goProjectsList();
+}
+function renderCrumb(){
+  const el = document.getElementById('app-crumb'); if(!el) return;
+  let t = '';
+  if(mode==='editor' && curProj()) t = `<i class="ti ti-chevron-right"></i><b>${esc(curProj().name)}</b>`;
+  else if(mode==='library') t = `<i class="ti ti-chevron-right"></i><b>재료 라이브러리</b>`;
+  else if(mode==='template'){ const tp = PAGE_TEMPLATES.find(x=>x.id===editingTemplateId); t = `<i class="ti ti-chevron-right"></i><b>템플릿 편집${tp?' · '+esc(tp.name):''}</b>`; }
+  el.innerHTML = t;
+}
 function goProjectsList(){
   if(navBackTo('#/')) return;
   mode = 'projects';
@@ -2384,8 +2441,9 @@ async function loadFromGithub(){
 
 loadGhSettings();
 historyReset();
+_routePending = !!ghSettings.token && !!_initialRoute && _initialRoute!=='#/' && _initialRoute!=='#';
 render();
-if(ghSettings.token) loadFromGithub();
+if(ghSettings.token) loadFromGithub().finally(()=>{ if(_routePending){ _routePending = false; syncRoute(); } });
 </script>
 </body>
 </html>
