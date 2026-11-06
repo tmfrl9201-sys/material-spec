@@ -108,6 +108,15 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
 .img-resize-handle{position:absolute;right:3px;bottom:3px;width:13px;height:13px;border-radius:3px;background:rgba(255,255,255,.9);border:1px solid var(--accent);cursor:nwse-resize;z-index:3;display:none;align-items:center;justify-content:center}
 .img-slot-main:hover .img-resize-handle{display:flex}
 .img-resize-handle i{font-size:9px;color:var(--accent)}
+.img-edge-r,.img-edge-b{position:absolute;z-index:3;display:none}
+.img-edge-r{top:18%;bottom:18%;right:0;width:9px;cursor:ew-resize}
+.img-edge-b{left:18%;right:18%;bottom:0;height:9px;cursor:ns-resize}
+.img-edge-r:after,.img-edge-b:after{content:'';position:absolute;background:var(--accent);border-radius:3px;opacity:.85}
+.img-edge-r:after{right:2px;top:50%;width:4px;height:34px;transform:translateY(-50%)}
+.img-edge-b:after{bottom:2px;left:50%;height:4px;width:34px;transform:translateX(-50%)}
+.img-slot-main:hover .img-edge-r,.img-slot-main:hover .img-edge-b,.img-slot-main.framing .img-edge-r,.img-slot-main.framing .img-edge-b{display:block}
+.img-ratio-badge{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.72);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:6px;z-index:4;display:none;pointer-events:none;white-space:nowrap}
+.img-slot-main.framing .img-ratio-badge{display:block}
 
 .blk-text{flex:1 1 260px}
 .blk-text-content{font-size:11.5px;line-height:1.6;min-height:60px;padding:8px 9px;border:1px solid var(--border2);border-radius:7px;background:var(--bg2)}
@@ -325,8 +334,14 @@ body.mode-projects .rail{display:none}
 .opt-photos.drop{outline:2px dashed var(--accent);outline-offset:2px}
 label.opt-mini{margin:0}
 .opt-sub{font-size:9px;color:var(--fg3);text-align:center;margin-top:4px;line-height:1.35}
-.opt-sub:empty{opacity:0;margin-top:0;min-height:0}
-.opt-grp:hover .opt-sub:empty,.opt-sub:empty:focus{opacity:1;margin-top:4px;min-height:12px}
+.opt-sub-wrap{position:relative;display:flex;justify-content:center;align-items:flex-start;gap:2px}
+.opt-sub-wrap .opt-mini{display:none;position:absolute;right:0;top:2px}
+.opt-sub-wrap:hover .opt-mini{display:flex}
+.opt-sub.lib{position:relative}
+.opt-sub.lib:hover::before,.opt-sub.lib:focus::before{content:'📚 라이브러리 공통 — 고치면 모든 프로젝트에 반영';position:absolute;left:50%;bottom:100%;transform:translateX(-50%);white-space:nowrap;background:var(--fg);color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;margin-bottom:2px;z-index:5;font-weight:500}
+.opt-note{font-size:9.5px;color:var(--fg2);text-align:center;margin-top:3px;line-height:1.4;min-height:12px}
+.opt-note:empty{opacity:0;margin-top:0;min-height:0}
+.opt-grp:hover .opt-note:empty,.opt-note:empty:focus{opacity:1;margin-top:3px;min-height:12px}
 
 /* ===== 섹션 표지 (실외 / 실내:임대세대 같은 묶음의 첫 장) ===== */
 .pg-section{padding:44px 60px 28px;display:flex;flex-direction:column;height:562px;overflow:hidden;position:relative}
@@ -366,6 +381,7 @@ label.opt-mini{margin:0}
   .print-page:last-child{page-break-after:auto}
   [contenteditable]:hover,[contenteditable]:focus{background:none;box-shadow:none}
   [contenteditable]:empty:before{content:none}
+  .opt-sub.lib::before{content:none!important}
 }
 #print-all-pages{display:none}
 
@@ -854,9 +870,15 @@ function blockHtml(container, containerId, b, i){
     </div>`;
   }
   if(b.type==='image'){
-    return `<div class="blk blk-img" style="flex:0 0 ${b.width||220}px">${toolbar}
+    const ar = b.ar || 4/3;
+    const imgToolbar = b.img ? toolbar.replace('<div class="blk-tbtn danger"',
+      `<div class="blk-tbtn" onclick="fitImgRatio('${containerId}','${b.id}')" title="사진 원본 비율로 (지금 ${ratioLabel(ar)})"><i class="ti ti-aspect-ratio"></i></div><div class="blk-tbtn danger"`) : toolbar;
+    return `<div class="blk blk-img" style="flex:0 0 ${b.width||220}px">${imgToolbar}
       <div class="blk-lbl" contenteditable data-ph="이미지 라벨" oninput="renameBlockLabel('${containerId}','${b.id}',this)">${esc(b.label)}</div>
-      <div class="img-slot-main ${b.img?'has-img':''}">
+      <div class="img-slot-main ${b.img?'has-img':''}" style="aspect-ratio:${ar}">
+        <div class="img-edge-r no-print" onmousedown="startImgFrame(event,'${containerId}','${b.id}','w')" title="끌어서 가로 비율 조절 (사진은 늘어나지 않고 잘려 보여요)"></div>
+        <div class="img-edge-b no-print" onmousedown="startImgFrame(event,'${containerId}','${b.id}','h')" title="끌어서 세로 비율 조절 (사진은 늘어나지 않고 잘려 보여요)"></div>
+        <div class="img-ratio-badge no-print"></div>
         ${b.img?`<img src="${b.img}">`:''}
         <input type="file" accept="image/*" class="no-print" onchange="uploadBlockImg('${containerId}','${b.id}',this)">
         <div class="iup-hint no-print"><i class="ti ti-camera" style="font-size:18px"></i>이미지 업로드</div>
@@ -979,6 +1001,89 @@ function renameBlockLabel(containerId, bId, el){
 function updateBlockText(containerId, bId, el){
   markDirty();
   getBlock(containerId,bId).content = el.textContent;
+}
+/* ===== 이미지 틀 비율 조절 =====
+   오른쪽 가장자리 = 가로만, 아래 가장자리 = 세로만 → 틀 비율(b.ar = 가로/세로)이 바뀜.
+   사진은 object-fit:cover라 늘어나지 않고 잘려 보임. 모서리 핸들(startImgResize)은 비율 유지한 채 크기만. */
+const COMMON_RATIOS = [[1,1],[4,3],[3,2],[16,9],[2,1],[3,4],[2,3],[9,16]];
+function ratioLabel(ar){
+  for(const [w,h] of COMMON_RATIOS) if(Math.abs(ar/(w/h)-1) < 0.005) return `${w}:${h}`;
+  return ar>=1 ? `${ar.toFixed(2)}:1` : `1:${(1/ar).toFixed(2)}`;
+}
+function snapRatio(ar, natural){
+  const cands = COMMON_RATIOS.map(([w,h])=>w/h);
+  if(natural) cands.push(natural);
+  for(const c of cands) if(Math.abs(ar/c-1) < 0.035) return c;
+  return ar;
+}
+function startImgFrame(e, containerId, bId, axis){
+  e.preventDefault(); e.stopPropagation();
+  const b = getBlock(containerId, bId);
+  const slot = e.target.closest('.img-slot-main');
+  const blockEl = slot.closest('.blk-img');
+  const flowEl = blockEl.closest('.blocks-flow');
+  const maxW = flowEl ? flowEl.clientWidth : 700;
+  const imgEl = slot.querySelector('img');
+  const natural = imgEl && imgEl.naturalWidth ? imgEl.naturalWidth/imgEl.naturalHeight : null;
+  const r = slot.getBoundingClientRect(), br = blockEl.getBoundingClientRect();
+  const startX = e.clientX, startY = e.clientY;
+  const extra = br.width - r.width;          // 블록 안쪽 여백
+  const prev = {width: b.width, ar: b.ar};
+  let liveAr = r.width / r.height, liveBlockW = br.width;
+  const badge = slot.querySelector('.img-ratio-badge');
+  slot.classList.add('framing');
+  function onMove(ev){
+    if(axis==='w'){
+      const w = Math.max(110 - extra, Math.min(maxW - extra, r.width + (ev.clientX - startX)));
+      liveAr = snapRatio(Math.max(0.25, Math.min(4, w / r.height)), natural);
+      const sw = liveAr * r.height;
+      liveBlockW = Math.round(sw + extra);
+      blockEl.style.flex = `0 0 ${liveBlockW}px`;
+    } else {
+      const h = Math.max(40, r.height + (ev.clientY - startY));
+      liveAr = snapRatio(Math.max(0.25, Math.min(4, r.width / h)), natural);
+    }
+    slot.style.aspectRatio = liveAr;
+    badge.textContent = ratioLabel(liveAr) + (natural && Math.abs(liveAr/natural-1)<0.001 ? ' · 원본' : '');
+  }
+  function onUp(){
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    slot.classList.remove('framing');
+    // 페이지를 넘기면 취소하지 않고 들어가는 데까지만 (끌던 방향으로 최대한)
+    const a0 = prev.ar || 4/3, w0 = prev.width || Math.round(br.width);
+    applyFitting(t=>{ b.ar = a0 + (liveAr-a0)*t; if(axis==='w') b.width = Math.round(w0 + (liveBlockW-w0)*t); },
+                 ()=>{ b.ar = prev.ar; b.width = prev.width; });
+  }
+  badge.textContent = ratioLabel(liveAr);
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+// apply(t): t=1이 원하는 상태, t=0이 원래 상태 쪽. 넘치면 넘치지 않는 가장 큰 t를 찾아 적용.
+function applyFitting(apply, revert, quiet){
+  apply(1); render();
+  if(!pageContentOverflows()){ markDirty(); return 1; }
+  let lo = 0, hi = 1;
+  for(let k=0;k<8;k++){ const mid=(lo+hi)/2; apply(mid); render(); if(pageContentOverflows()) hi = mid; else lo = mid; }
+  apply(lo); render();
+  if(lo < 0.02 || pageContentOverflows()){ revert(); render(); toast(OVERFLOW_MSG); return 0; }
+  markDirty();
+  if(!quiet) toast('페이지에 들어가는 만큼만 늘렸어요');
+  return lo;
+}
+function fitImgRatio(containerId, bId){
+  const b = getBlock(containerId, bId);
+  if(!b.img) return;
+  const im = new Image();
+  im.onload = ()=>{
+    const prevAr = b.ar, prevW = b.width || 220;
+    const nat = im.naturalWidth / im.naturalHeight;
+    // 비율은 원본 그대로, 페이지를 넘기면 크기만 줄여서 맞춤
+    const t = applyFitting(t=>{ b.ar = nat; b.width = Math.round(110 + (prevW-110)*t); },
+                           ()=>{ b.ar = prevAr; b.width = prevW; }, true);
+    if(t>0) toast(`사진 원본 비율 ${ratioLabel(nat)}로 맞췄어요${t<1?' (페이지에 맞게 크기를 줄였어요)':''}`);
+  };
+  im.src = b.img;
 }
 function startImgResize(e, containerId, bId){
   e.preventDefault(); e.stopPropagation();
@@ -1561,6 +1666,7 @@ function optionBlockHtml(cid, b, toolbarBase){
     groups.push(`<div class="opt-grp ${o.on?'on':''}" style="grid-column:span ${span}">
       <div class="opt-cap"><span class="opt-box" onclick="toggleOpt('${cid}','${b.id}',${pi},${oi})">${o.on?'■':'□'}</span><span>${pre}<span data-ok="${b.id}-${pi}-${oi}">${esc(optName(o))}</span></span>
         <span class="opt-cap-tools no-print">
+          ${m.sub && o.hideSub ? `<span class="opt-mini" onclick="toggleOptSub('${cid}','${b.id}',${pi},${oi})" title="라이브러리 공통 설명 다시 보이기"><i class="ti ti-books"></i></span>` : ''}
           ${imgs.length && imgs.length<3 ? `<label class="opt-mini" title="사진 추가 (라이브러리에 저장, 최대 3장)"><i class="ti ti-photo-plus"></i><input type="file" accept="image/*" multiple hidden onchange="addMatPhotos('${m.id}',this.files);this.value=''"></label>` : ''}
           <span class="opt-mini" onclick="toggleOptPhoto('${cid}','${b.id}',${pi},${oi})" title="사진 숨기기 (체크표에만 표시)"><i class="ti ti-photo-off"></i></span>
         </span></div>
@@ -1568,7 +1674,8 @@ function optionBlockHtml(cid, b, toolbarBase){
         ${imgs.length ? imgs.map(src=>`<div class="opt-ph"><img src="${src}"></div>`).join('')
           : `<label class="opt-ph empty add no-print" title="클릭하거나 사진을 끌어다 놓으세요"><i class="ti ti-photo-plus"></i>사진 추가 (최대 3장)<br><span>라이브러리 "${esc(getCatOf(m.id))} › ${esc(m.name)}"에 저장돼요</span><input type="file" accept="image/*" multiple hidden onchange="addMatPhotos('${m.id}',this.files);this.value=''"></label>`}
       </div>
-      <div class="opt-sub" contenteditable data-sub="${m.id}" data-ph="설명·가격 (라이브러리에 저장)" title="고치면 재료 라이브러리에 바로 반영돼요" oninput="editMatSub('${m.id}',this)">${esc(m.sub)}</div>
+      ${m.sub && !o.hideSub ? `<div class="opt-sub-wrap"><div class="opt-sub lib" contenteditable data-sub="${m.id}" title="라이브러리 공통 설명 — 고치면 이 재료를 쓰는 모든 프로젝트에 반영돼요" oninput="editMatSub('${m.id}',this)">${esc(m.sub)}</div><span class="opt-mini no-print" onclick="toggleOptSub('${cid}','${b.id}',${pi},${oi})" title="이 페이지에서만 숨기기"><i class="ti ti-eye-off"></i></span></div>` : ''}
+      <div class="opt-note" contenteditable data-ph="설명 (이 프로젝트에만)" oninput="editOptNote('${cid}','${b.id}',${pi},${oi},this)">${esc(o.note)}</div>
     </div>`);
   }));
 
@@ -1622,6 +1729,9 @@ async function addMatPhotos(matId, fileList){
 }
 
 // 옵션 사진 아래 설명(가격)을 고치면 라이브러리 재료(sub)에 바로 저장 → 이 재료를 쓰는 모든 페이지에 같이 반영
+// 사진 아래 "이 프로젝트에만" 설명 (라이브러리와 무관)
+function editOptNote(cid,bId,pi,oi,el){ optAt(cid,bId,pi,oi).note = el.textContent.trim(); markDirty(); }
+function toggleOptSub(cid,bId,pi,oi){ const o=optAt(cid,bId,pi,oi); o.hideSub=!o.hideSub; render(); markDirty(); }
 function editMatSub(matId, el){
   const m = getMat(matId); if(!m) return;
   m.sub = el.textContent.trim();
