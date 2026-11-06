@@ -401,6 +401,12 @@ label.opt-mini{margin:0}
 .ov-hdr{padding:14px 16px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:between;gap:10px}
 .ov-hdr b{font-size:13px;flex:1}
 .ov-close{cursor:pointer;color:var(--fg4);font-size:16px}
+.ov-pick-new{padding:0 16px 8px}
+.ov-pick-new:empty{display:none}
+.pn-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--accent-bg);border:1px solid var(--border2);border-radius:8px;padding:8px 10px}
+.pn-row select{padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:var(--font-sans);background:#fff}
+.pn-lbl,.pn-or{font-size:11px;color:var(--fg3)}
+.pn-hint{font-size:10.5px;color:var(--fg4);margin-top:5px;display:flex;align-items:center;gap:4px}
 .ov-search{padding:10px 16px}
 .ov-search input{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:var(--font-sans)}
 .ov-grid{padding:0 12px 12px;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -554,7 +560,8 @@ body.mode-projects .app-home-txt,body.mode-projects .app-home-sep{display:none}
 <div class="ov" id="ov-pick">
   <div class="ov-box">
     <div class="ov-hdr"><b id="ov-pick-title">재료 선택</b><span class="ov-close" onclick="closePicker()"><i class="ti ti-x"></i></span></div>
-    <div class="ov-search"><input id="ov-pick-search" placeholder="재료 검색..." oninput="renderPickGrid(this.value)"></div>
+    <div class="ov-search"><input id="ov-pick-search" placeholder="재료 검색... (없으면 이름을 입력해서 새로 만들 수 있어요)" oninput="renderPickGrid(this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault();pickEnter();}"></div>
+    <div class="ov-pick-new" id="ov-pick-new"></div>
     <div class="ov-grid" id="ov-pick-grid"></div>
   </div>
 </div>
@@ -2494,10 +2501,58 @@ function renderPickGrid(q){
       <div class="ov-sw" style="${matSwatchStyle(m)}"></div>
       <div><div class="ov-item-nm">${esc(m.name)}</div><div class="ov-item-sub">${esc(getCatOf(m.id))} · ${esc(m.sub)}</div></div>
     </div>`).join('') || `<div style="grid-column:1/-1;color:var(--fg4);font-size:11px;padding:10px">검색 결과 없음</div>`;
+  renderPickNew(q, all);
+}
+/* 라이브러리에 없을 때: 검색한 이름으로 새 재료 만들기 / (옵션 블록) 글자로만 추가 */
+let _lastNewCat = null;
+function renderPickNew(q, results){
+  const el = document.getElementById('ov-pick-new'); if(!el) return;
   const b = pickCtx && getBlock(pickCtx.containerId, pickCtx.bId);
-  if(b && b.type==='option'){
-    document.getElementById('ov-pick-grid').innerHTML += `<div class="ov-item" style="grid-column:1/-1;justify-content:center;color:var(--fg3)" onclick="pickTextOption()"><i class="ti ti-forms"></i> 라이브러리 없이 글자로만 추가 (사진 없음)</div>`;
+  const isOpt = b && b.type==='option';
+  const name = (q||'').trim();
+  const cats = Object.keys(DB);
+  const exact = name && Object.values(DB).flat().some(m=>m.name===name);
+  if(!name){
+    el.innerHTML = `<div class="pn-hint"><i class="ti ti-info-circle"></i> 찾는 재료가 없으면 위에 이름을 입력하세요 — 새 재료로 만들거나${isOpt?' 글자로만 넣을':''} 수 있어요</div>`;
+    return;
   }
+  if(exact && results.length){ el.innerHTML = ''; return; }
+  const def = (_lastNewCat && DB[_lastNewCat]) ? _lastNewCat : (results[0] ? getCatOf(results[0].id) : (DB['기타'] ? '기타' : cats[0]));
+  el.innerHTML = `<div class="pn-row">
+      <button class="btn btn-dark" onclick="createMatFromPicker()"><i class="ti ti-plus"></i> "${esc(name)}" 새 재료로 추가</button>
+      <span class="pn-lbl">카테고리</span>
+      <select id="pn-cat">${cats.map(c=>`<option ${c===def?'selected':''}>${esc(c)}</option>`).join('')}<option value="__new">+ 새 카테고리…</option></select>
+      ${isOpt?`<span class="pn-or">또는</span><button class="btn" onclick="pickTextOptionNamed()" title="라이브러리에 안 남기고 이 체크표에만"><i class="ti ti-forms"></i> 글자로만 (이 프로젝트에만)</button>`:''}
+    </div>
+    <div class="pn-hint">새 재료는 라이브러리에 사진 없이 만들어져요. 사진은 페이지의 빈 사진 칸을 눌러 바로 넣을 수 있어요.</div>`;
+}
+function pickEnter(){
+  const q = document.getElementById('ov-pick-search').value.trim();
+  const items = document.querySelectorAll('#ov-pick-grid .ov-item');
+  if(items.length===1){ items[0].click(); return; }
+  if(q && document.querySelector('#ov-pick-new .btn-dark')) createMatFromPicker();
+}
+function createMatFromPicker(){
+  const name = document.getElementById('ov-pick-search').value.trim();
+  if(!name) return;
+  let cat = document.getElementById('pn-cat').value;
+  if(cat==='__new'){
+    cat = (prompt('새 카테고리 이름')||'').trim();
+    if(!cat) return;
+  }
+  if(!DB[cat]) DB[cat] = [];
+  let m = DB[cat].find(x=>x.name===name);
+  if(!m){ m = {id:uid('m'), name, sub:'', color:nextColor(), exImgs:[]}; DB[cat].push(m); }
+  _lastNewCat = cat;
+  markDirty();
+  pickMat(m.id);
+  toast(`라이브러리 "${cat} › ${name}"을 만들었어요 — 사진은 빈 칸을 눌러 추가하세요`);
+}
+function pickTextOptionNamed(){
+  const name = document.getElementById('ov-pick-search').value.trim();
+  const ctx = pickCtx;
+  closePicker();
+  if(name) addOptionItem(ctx.containerId, ctx.bId, ctx.partIdx||0, null, name);
 }
 function pickMat(matId){
   markDirty();
