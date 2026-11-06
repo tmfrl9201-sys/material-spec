@@ -26,6 +26,11 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
 .thumb.active{border-color:var(--fg);box-shadow:0 0 0 2px rgba(0,0,0,0.08)}
 .thumb:hover{border-color:#999}
 .thumb-num{position:absolute;bottom:2px;right:3px;font-size:8px;color:var(--fg4);background:rgba(255,255,255,.8);padding:0 2px;border-radius:2px}
+.thumb-tools{position:absolute;top:2px;right:2px;display:none;gap:1px;background:rgba(255,255,255,.95);border:1px solid var(--border2);border-radius:4px;padding:1px}
+.thumb:hover .thumb-tools,.thumb.active .thumb-tools{display:flex}
+.thumb-tool{width:17px;height:17px;display:flex;align-items:center;justify-content:center;border-radius:3px;cursor:pointer;color:var(--fg3);font-size:10px}
+.thumb-tool:hover{background:var(--bg);color:var(--fg)}
+.thumb-tool.danger:hover{background:#fdecea;color:#c0392b}
 .thumb-add{width:100%;aspect-ratio:794/562;border:1.5px dashed var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg4);font-size:11px;gap:4px}
 .thumb-add:hover{border-color:#999;color:var(--fg3);background:var(--bg)}
 
@@ -534,8 +539,15 @@ function renderTopBar(){
 function renderRail(){
   const ps = pages();
   document.getElementById('rail-thumbs').innerHTML = ps.map((pg,i)=>{
+    const n = ps.length;
+    const tools = pg.type==='space' ? `<div class="thumb-tools no-print" onclick="event.stopPropagation()">
+        ${i>1?`<div class="thumb-tool" onclick="moveSpace('${pg.sp.id}',-1)" title="앞으로"><i class="ti ti-chevron-up"></i></div>`:''}
+        ${i<n-1?`<div class="thumb-tool" onclick="moveSpace('${pg.sp.id}',1)" title="뒤로"><i class="ti ti-chevron-down"></i></div>`:''}
+        <div class="thumb-tool" onclick="duplicateSpace('${pg.sp.id}')" title="복제"><i class="ti ti-copy"></i></div>
+        <div class="thumb-tool danger" onclick="deleteSpace('${pg.sp.id}')" title="삭제"><i class="ti ti-trash"></i></div>
+      </div>` : '';
     return `<div class="thumb ${i===curPage?'active':''}" onclick="goPage(${i})">
-      ${miniHtml(pg)}<span class="thumb-num">${i+1}</span>
+      ${miniHtml(pg)}<span class="thumb-num">${i+1}</span>${tools}
     </div>`;
   }).join('') + `<div class="thumb-add" onclick="openTmplPicker()"><i class="ti ti-plus"></i> 공간</div>`;
 }
@@ -855,6 +867,53 @@ function addSpace(name, blocks){
   curProj().spaces.push(sp);
   curPage = pages().length-1;
   render();
+}
+
+/* ===== 페이지(공간) 삭제 / 복제 / 순서 이동 ===== */
+// pages() 인덱스 = spaces 인덱스 + 1 (0번은 표지)
+function spaceIndex(spId){ return curProj().spaces.findIndex(sp=>sp.id===spId); }
+
+function deleteSpace(spId){
+  const spaces = curProj().spaces;
+  const idx = spaceIndex(spId);
+  if(idx<0) return;
+  const nm = spaces[idx].name || '이름 없는';
+  if(!confirm(`"${nm}" 페이지를 삭제할까요? 되돌릴 수 없어요.`)) return;
+  spaces.splice(idx,1);
+  const pgIdx = idx+1;
+  if(curPage>pgIdx) curPage--;
+  else if(curPage===pgIdx) curPage = Math.max(0, pgIdx-1);
+  curPage = Math.min(curPage, pages().length-1);
+  render();
+  markDirty();
+  toast('페이지가 삭제됐어요');
+}
+
+function duplicateSpace(spId){
+  const spaces = curProj().spaces;
+  const idx = spaceIndex(spId);
+  if(idx<0) return;
+  const copy = JSON.parse(JSON.stringify(spaces[idx]));
+  copy.id = 'sp'+Date.now();
+  copy.name = (copy.name||'') + ' (복사)';
+  spaces.splice(idx+1, 0, copy);
+  curPage = idx+2;
+  render();
+  markDirty();
+  toast('페이지를 복제했어요');
+}
+
+function moveSpace(spId, dir){
+  const spaces = curProj().spaces;
+  const idx = spaceIndex(spId);
+  const to = idx+dir;
+  if(idx<0 || to<0 || to>=spaces.length) return;
+  [spaces[idx], spaces[to]] = [spaces[to], spaces[idx]];
+  const from = idx+1, dest = to+1;
+  if(curPage===from) curPage = dest;
+  else if(curPage===dest) curPage = from;
+  render();
+  markDirty();
 }
 
 /* ===== 페이지 추가 / 템플릿 라이브러리 관리 ===== */
