@@ -308,6 +308,8 @@ body.mode-projects .rail{display:none}
 .opt-ph img{width:100%;height:100%;object-fit:cover;display:block}
 .opt-ph.empty{background:none;border:1.3px dashed var(--border);display:flex;align-items:center;justify-content:center;text-align:center;font-size:9.5px;color:var(--fg4);line-height:1.4;padding:4px}
 .opt-sub{font-size:9px;color:var(--fg3);text-align:center;margin-top:4px;line-height:1.35}
+.opt-sub:empty{opacity:0;margin-top:0;min-height:0}
+.opt-grp:hover .opt-sub:empty,.opt-sub:empty:focus{opacity:1;margin-top:4px;min-height:12px}
 
 /* ===== 섹션 표지 (실외 / 실내:임대세대 같은 묶음의 첫 장) ===== */
 .pg-section{padding:44px 60px 28px;display:flex;flex-direction:column;height:562px;overflow:hidden;position:relative}
@@ -1210,7 +1212,7 @@ function optionBlockHtml(cid, b, toolbarBase){
         ${imgs.length ? imgs.map(src=>`<div class="opt-ph"><img src="${src}"></div>`).join('')
           : `<div class="opt-ph empty no-print">사진 없음<br>재료 라이브러리<br>"${esc(getCatOf(m.id))} › ${esc(m.name)}"에 추가</div>`}
       </div>
-      ${m.sub?`<div class="opt-sub">${esc(m.sub)}</div>`:''}
+      <div class="opt-sub" contenteditable data-sub="${m.id}" data-ph="설명·가격 (라이브러리에 저장)" title="고치면 재료 라이브러리에 바로 반영돼요" oninput="editMatSub('${m.id}',this)">${esc(m.sub)}</div>
     </div>`);
   }));
 
@@ -1221,6 +1223,13 @@ function optionBlockHtml(cid, b, toolbarBase){
     </tr></table>
     ${groups.length?`<div class="opt-grid" style="--opt-ratio:${b.ratio||'4/3'}">${groups.join('')}</div>`:''}
   </div>`;
+}
+// 옵션 사진 아래 설명(가격)을 고치면 라이브러리 재료(sub)에 바로 저장 → 이 재료를 쓰는 모든 페이지에 같이 반영
+function editMatSub(matId, el){
+  const m = getMat(matId); if(!m) return;
+  m.sub = el.textContent.trim();
+  document.querySelectorAll(`[data-sub="${matId}"]`).forEach(x=>{ if(x!==el) x.textContent = el.textContent; });
+  markDirty();
 }
 function optAt(cid,bId,pi,oi){ return getBlock(cid,bId).parts[pi].options[oi]; }
 function toggleOpt(cid,bId,pi,oi){ const o=optAt(cid,bId,pi,oi); o.on=!o.on; render(); markDirty(); }
