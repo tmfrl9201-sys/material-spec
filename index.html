@@ -56,7 +56,16 @@ body{font-family:var(--font-sans);font-size:13px;background:var(--bg);color:var(
 .btn-dark{background:var(--fg);color:#fff;border-color:var(--fg)}
 .btn-dark:hover{background:#000}
 
-.canvas-wrap{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:36px}
+.canvas-wrap{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:safe center;padding:36px}
+.stage{position:relative}
+.zoom-pill{position:absolute;right:18px;bottom:16px;display:none;align-items:center;gap:2px;background:#fff;border:1px solid var(--border2);border-radius:999px;box-shadow:0 2px 10px rgba(0,0,0,.08);padding:3px;z-index:20;font-size:11.5px}
+body.mode-editor .zoom-pill,body.mode-template .zoom-pill{display:flex}
+.zoom-pill button{border:none;background:none;width:26px;height:26px;border-radius:50%;cursor:pointer;color:var(--fg2);font-size:14px;display:flex;align-items:center;justify-content:center;font-family:var(--font-sans)}
+.zoom-pill button:hover{background:var(--bg)}
+.zoom-pill .zoom-val{width:auto;padding:0 8px;border-radius:999px;font-size:11.5px;font-weight:600;min-width:52px}
+.page-turn-hint{position:absolute;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#fff;font-size:11px;padding:4px 12px;border-radius:999px;z-index:20;pointer-events:none;opacity:0;transition:opacity .15s}
+.page-turn-hint.top{top:52px}.page-turn-hint.bottom{bottom:16px}
+.page-turn-hint.show{opacity:1}
 .page{width:794px;min-height:562px;background:#fff;box-shadow:0 4px 24px rgba(0,0,0,0.12);position:relative;flex-shrink:0}
 
 /* ===== 편집 가능 텍스트 공통 ===== */
@@ -468,6 +477,13 @@ body.mode-projects .app-home-txt,body.mode-projects .app-home-sep{display:none}
       <div class="lib-panel" id="lib-root" style="display:none"></div>
       <div class="proj-panel" id="proj-root" style="display:none"></div>
     </div>
+    <div class="zoom-pill no-print" id="zoom-pill">
+      <button onclick="setPageZoom(pageZoom/1.1)" title="축소 (Ctrl+휠 아래 / Ctrl+-)">−</button>
+      <button class="zoom-val" id="zoom-val" onclick="setPageZoom(1)" title="100%로 (Ctrl+0)">100%</button>
+      <button onclick="setPageZoom(pageZoom*1.1)" title="확대 (Ctrl+휠 위 / Ctrl+=)">+</button>
+      <button onclick="fitPageZoom()" title="창 높이에 맞추기"><i class="ti ti-arrows-maximize" style="font-size:13px"></i></button>
+    </div>
+    <div class="page-turn-hint no-print" id="page-turn-hint"></div>
   </div>
 </div>
 
@@ -1025,7 +1041,9 @@ function startImgFrame(e, containerId, bId, axis){
   const maxW = flowEl ? flowEl.clientWidth : 700;
   const imgEl = slot.querySelector('img');
   const natural = imgEl && imgEl.naturalWidth ? imgEl.naturalWidth/imgEl.naturalHeight : null;
-  const r = slot.getBoundingClientRect(), br = blockEl.getBoundingClientRect();
+  const Zf = blockEl.getBoundingClientRect().width / blockEl.offsetWidth || 1;   // 페이지 확대 배율
+  const r0 = slot.getBoundingClientRect(), b0 = blockEl.getBoundingClientRect();
+  const r = {width:r0.width/Zf, height:r0.height/Zf}, br = {width:b0.width/Zf};
   const startX = e.clientX, startY = e.clientY;
   const extra = br.width - r.width;          // 블록 안쪽 여백
   const prev = {width: b.width, ar: b.ar};
@@ -1034,13 +1052,13 @@ function startImgFrame(e, containerId, bId, axis){
   slot.classList.add('framing');
   function onMove(ev){
     if(axis==='w'){
-      const w = Math.max(110 - extra, Math.min(maxW - extra, r.width + (ev.clientX - startX)));
+      const w = Math.max(110 - extra, Math.min(maxW - extra, r.width + (ev.clientX - startX)/Zf));
       liveAr = snapRatio(Math.max(0.25, Math.min(4, w / r.height)), natural);
       const sw = liveAr * r.height;
       liveBlockW = Math.round(sw + extra);
       blockEl.style.flex = `0 0 ${liveBlockW}px`;
     } else {
-      const h = Math.max(40, r.height + (ev.clientY - startY));
+      const h = Math.max(40, r.height + (ev.clientY - startY)/Zf);
       liveAr = snapRatio(Math.max(0.25, Math.min(4, r.width / h)), natural);
     }
     slot.style.aspectRatio = liveAr;
@@ -1091,11 +1109,12 @@ function startImgResize(e, containerId, bId){
   const flowEl = blockEl.closest('.blocks-flow');
   const maxByRow = flowEl ? flowEl.clientWidth : 700;
   const startX = e.clientX;
-  const startW = blockEl.getBoundingClientRect().width;
+  const startW = blockEl.offsetWidth;
+  const Zf = blockEl.getBoundingClientRect().width / blockEl.offsetWidth || 1;   // 페이지 확대 배율
   const prevWidth = getBlock(containerId, bId).width || Math.round(startW);
   let liveW = startW;
   function onMove(ev){
-    liveW = Math.max(110, Math.min(maxByRow, startW + (ev.clientX - startX)));
+    liveW = Math.max(110, Math.min(maxByRow, startW + (ev.clientX - startX)/Zf));
     blockEl.style.flex = `0 0 ${liveW}px`;
   }
   function onUp(){
@@ -1403,6 +1422,86 @@ function applyInitialRoute(){
   else if((m = h.match(/^#\/t\/(.+)$/)) && PAGE_TEMPLATES.find(t=>t.id===m[1])){ prevMode = 'projects'; editingTemplateId = m[1]; mode = 'template'; }
 }
 _navStack[0] = location.hash || '#/';
+
+/* ===== 편집 화면: 페이지만 확대/축소 (Ctrl+휠) + 휠로 위아래 페이지 넘기기 =====
+   확대는 #page-root에만 CSS zoom을 걸어서 브라우저 전체 확대 대신 페이지만 커짐 (인쇄에는 영향 없음 — 인쇄는 별도 영역).
+   배율은 이 PC에만 기억(localStorage). 드래그 계산은 각 함수에서 배율(Zf)로 나눠 보정. */
+let pageZoom = 1;
+try{ const z = parseFloat(localStorage.getItem('page_zoom')); if(z>=0.4 && z<=2.5) pageZoom = z; }catch(e){}
+function setPageZoom(z){
+  const cw = document.querySelector('.canvas-wrap');
+  const old = pageZoom;
+  pageZoom = Math.max(0.4, Math.min(2.5, Math.round(z*100)/100));
+  applyPageZoom();
+  // 확대 중심을 대략 유지
+  if(cw && old!==pageZoom){ cw.scrollTop = cw.scrollTop * pageZoom/old; cw.scrollLeft = cw.scrollLeft * pageZoom/old; }
+  try{ localStorage.setItem('page_zoom', String(pageZoom)); }catch(e){}
+}
+function applyPageZoom(){
+  const el = document.getElementById('page-root');
+  if(el) el.style.zoom = pageZoom===1 ? '' : pageZoom;
+  const v = document.getElementById('zoom-val');
+  if(v) v.textContent = Math.round(pageZoom*100) + '%';
+}
+function fitPageZoom(){
+  const cw = document.querySelector('.canvas-wrap'), el = document.getElementById('page-root');
+  if(!cw || !el) return;
+  const h = el.offsetHeight, w = el.offsetWidth;
+  setPageZoom(Math.min((cw.clientHeight-72)/h, (cw.clientWidth-72)/w));
+}
+function pageZoomActive(){ return (mode==='editor' || mode==='template') && !document.querySelector('.ov.show'); }
+window.addEventListener('wheel', e=>{
+  if(!e.ctrlKey || !pageZoomActive()) return;
+  e.preventDefault();                                   // 브라우저 전체 확대 막기
+  setPageZoom(pageZoom * Math.exp(-(e.deltaMode===1?e.deltaY*40:e.deltaY) * 0.001));
+}, {passive:false});
+document.addEventListener('keydown', e=>{
+  if(!(e.ctrlKey||e.metaKey) || !pageZoomActive()) return;
+  if(e.key==='=' || e.key==='+'){ e.preventDefault(); setPageZoom(pageZoom*1.1); }
+  else if(e.key==='-'){ e.preventDefault(); setPageZoom(pageZoom/1.1); }
+  else if(e.key==='0'){ e.preventDefault(); setPageZoom(1); }
+});
+// 휠: 페이지 안에서 먼저 스크롤 → 끝에 닿은 뒤 더 굴리면 다음/이전 페이지
+let _edgeAcc = 0, _turnLock = 0, _hintTimer = null, _wasEdge = false;
+function showTurnHint(txt, where){
+  const h = document.getElementById('page-turn-hint'); if(!h) return;
+  h.textContent = txt; h.className = 'page-turn-hint no-print show ' + where;
+  clearTimeout(_hintTimer); _hintTimer = setTimeout(()=>h.classList.remove('show'), 700);
+}
+function initWheelPaging(){
+  const cw = document.querySelector('.canvas-wrap');
+  if(!cw) return;
+  cw.addEventListener('wheel', e=>{
+    if(e.ctrlKey || mode!=='editor' || document.querySelector('.ov.show')) return;
+    if(Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;          // 가로 스크롤은 그대로
+    const dy = e.deltaMode===1 ? e.deltaY*40 : e.deltaY;
+    const atBottom = cw.scrollTop + cw.clientHeight >= cw.scrollHeight - 2;
+    const atTop = cw.scrollTop <= 1;
+    if(!((dy>0 && atBottom) || (dy<0 && atTop))){ _edgeAcc = 0; _wasEdge = false; return; }   // 페이지 안 스크롤
+    e.preventDefault();
+    // 긴 페이지를 스크롤하다 끝에 막 닿은 경우: 잠깐 멈춤 (빠르게 굴려도 페이지가 휙휙 넘어가지 않게)
+    if(cw.scrollHeight > cw.clientHeight + 2 && !_wasEdge){
+      _wasEdge = true; _edgeAcc = 0; _turnLock = Date.now() + 450;
+      showTurnHint(dy>0 ? '한 번 더 내리면 다음 페이지' : '한 번 더 올리면 이전 페이지', dy>0?'bottom':'top');
+      return;
+    }
+    _wasEdge = true;
+    if(Date.now() < _turnLock) return;
+    if(Math.sign(dy)!==Math.sign(_edgeAcc)) _edgeAcc = 0;
+    _edgeAcc += dy;
+    if(Math.abs(_edgeAcc) < 90) return;
+    const dir = _edgeAcc>0 ? 1 : -1;
+    _edgeAcc = 0;
+    const to = curPage + dir;
+    if(to<0 || to>=pages().length){ showTurnHint(dir>0?'마지막 페이지예요':'첫 페이지예요', dir>0?'bottom':'top'); _turnLock = Date.now()+400; return; }
+    goPage(to);
+    cw.scrollTop = dir>0 ? 0 : cw.scrollHeight;
+    showTurnHint(`${to+1} / ${pages().length}`, dir>0?'top':'bottom');
+    _turnLock = Date.now() + 380;
+  }, {passive:false});
+}
+initWheelPaging();
+applyPageZoom();
 
 /* ===== 실행취소 / 다시실행 (앱 전체) =====
    markDirty()가 불릴 때마다 잠깐(0.7초) 기다렸다가 "바뀌기 전 상태"를 기록 → 연속 타이핑은 한 단계로 묶임.
