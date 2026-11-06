@@ -269,15 +269,84 @@ body.mode-projects .rail{display:none}
 
 .sp-foot{font-size:9px;color:var(--fg4);text-align:center;padding-top:10px;margin-top:auto}
 
+/* ===== A4 세로 페이지 (프로젝트별 선택) ===== */
+.page.portrait{min-height:1123px}
+.page.portrait .pg-cover,.page.portrait .pg-space,.page.portrait .pg-section,
+.print-page.portrait .pg-cover,.print-page.portrait .pg-space,.print-page.portrait .pg-section{height:1123px}
+.rail.portrait .thumb,.rail.portrait .thumb-add{aspect-ratio:794/1123}
+.page.portrait .pg-space,.print-page.portrait .pg-space{padding:30px 34px}
+
+/* ===== 옵션 선택 블록 (체크표 + 옵션별 사진) ===== */
+.blk-option{flex:1 1 100%;min-width:0}
+.opt-head{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px;table-layout:auto}
+.opt-head td{border:1px solid #333;padding:5px 8px;vertical-align:middle}
+.opt-h-lbl{background:#e6e6e6;text-align:center;font-weight:600;width:84px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.opt-h-part{text-align:center;width:58px;white-space:nowrap;color:var(--fg2)}
+.opt-h-part-wrap{display:flex;align-items:center;justify-content:center;gap:1px}
+.opt-h-list{line-height:1.65}
+.opt-li{display:flex;align-items:flex-start;gap:4px;position:relative}
+.opt-box{cursor:pointer;flex-shrink:0;width:13px;text-align:center;user-select:none}
+.opt-box:hover{color:var(--accent)}
+.opt-txt{flex:1;min-width:20px}
+.opt-li.on .opt-txt{font-weight:600}
+.opt-li-tools{display:none;gap:2px;flex-shrink:0}
+.opt-li:hover .opt-li-tools{display:flex}
+.opt-mini{width:15px;height:15px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--fg4);cursor:pointer}
+.opt-mini:hover{background:var(--bg2);color:var(--fg)}
+.opt-mini.danger:hover{background:#fde8e8;color:#c0392b}
+.opt-add{font-size:10px;color:var(--fg4);cursor:pointer;display:inline-flex;align-items:center;gap:3px;margin-top:2px}
+.opt-add:hover{color:var(--accent)}
+.opt-li.hidden-photo .opt-txt{color:var(--fg2)}
+.opt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 8px}
+.opt-grp{min-width:0}
+.opt-cap{background:#ececec;text-align:center;font-size:10.5px;padding:2px 6px;margin-bottom:5px;display:flex;align-items:center;justify-content:center;gap:4px;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.opt-grp.on .opt-cap{font-weight:700}
+.opt-cap-tools{position:absolute;right:3px;top:50%;transform:translateY(-50%);display:none;gap:1px}
+.opt-grp:hover .opt-cap-tools{display:flex}
+.opt-photos{display:grid;gap:8px}
+.opt-ph{aspect-ratio:var(--opt-ratio,4/3);overflow:hidden;background:var(--bg2)}
+.opt-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.opt-ph.empty{background:none;border:1.3px dashed var(--border);display:flex;align-items:center;justify-content:center;text-align:center;font-size:9.5px;color:var(--fg4);line-height:1.4;padding:4px}
+.opt-sub{font-size:9px;color:var(--fg3);text-align:center;margin-top:4px;line-height:1.35}
+
+/* ===== 섹션 표지 (실외 / 실내:임대세대 같은 묶음의 첫 장) ===== */
+.pg-section{padding:44px 60px 28px;display:flex;flex-direction:column;height:562px;overflow:hidden;position:relative}
+.sc-logo{position:absolute;top:30px;right:40px}
+.sc-logo img{height:16px;width:auto;display:block}
+.sc-main{flex:1;display:flex;flex-direction:column;justify-content:center}
+.sc-year{font-size:10px;color:var(--fg3);margin-bottom:14px;letter-spacing:.5px}
+.sc-title{font-size:21px;font-weight:600;text-align:center;padding-bottom:14px;border-bottom:1.5px solid var(--fg)}
+.sc-proj{font-size:10.5px;text-align:center;margin-top:10px;color:var(--fg2)}
+.sc-toc{display:flex;gap:40px;margin-top:70px;align-items:flex-start}
+.page.portrait .sc-toc,.print-page.portrait .sc-toc{margin-top:150px}
+.sc-toc-lbl{width:40%;text-align:right;font-size:11px;padding-top:1px}
+.sc-toc-list{font-size:11px;line-height:1.85}
+.sc-toc-empty{color:var(--fg4);font-size:10.5px}
+.sc-actions{position:absolute;top:26px;left:30px;display:flex;gap:6px}
+.sp-toc-name{font-size:11px;color:var(--fg3);display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.sp-toc-name span[contenteditable]{color:var(--fg);font-weight:700;font-size:12px;padding:1px 4px}
+.sp-toc-name .hint{font-size:10px;color:var(--fg4)}
+.pg-space.in-section .blocks-flow{gap:12px}
+.sp-foot.auto{display:flex;justify-content:space-between;align-items:flex-end;text-align:right;color:var(--fg2)}
+.sp-foot.auto .pno{color:var(--fg3)}
+.sp-foot.auto .ftxt{border-bottom:1px solid var(--fg4);padding-bottom:1px}
+.pg-section .sp-foot{margin-top:0}
+.tmpl-group{grid-column:1/-1;font-size:10.5px;font-weight:700;color:var(--fg3);margin-top:4px;letter-spacing:.3px}
+.tmpl-badge{display:inline-block;font-size:9px;font-weight:600;color:var(--fg3);background:var(--bg2);border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle}
+.thumb.section{border-left:3px solid var(--fg)}
+.ov-field select{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:var(--font-sans);background:#fff}
+
 /* 편집 전용 UI는 인쇄시 숨김 + 캔버스와 동일한 비율로 전체 페이지 인쇄 */
 @page{ size: 210.05mm 148.66mm; margin: 0; }
 @media print{
   .no-print{display:none!important}
-  .app,.app-header{display:none!important}
+  .app,.app-header,.toast,.ov{display:none!important}
   #print-all-pages{display:block!important}
   .print-page{width:794px;height:562px;overflow:hidden;margin:0;page-break-after:always}
+  .print-page.portrait{height:1123px}
   .print-page:last-child{page-break-after:auto}
   [contenteditable]:hover,[contenteditable]:focus{background:none;box-shadow:none}
+  [contenteditable]:empty:before{content:none}
 }
 #print-all-pages{display:none}
 
@@ -366,6 +435,7 @@ html,body{height:100%}
     <div class="ov-field"><label>프로젝트명</label><input type="text" id="proj-name" placeholder="예) 자곡동 대수선"></div>
     <div class="ov-field"><label>주소</label><input type="text" id="proj-addr" placeholder="예) 서울 강남구 자곡동 424-9"></div>
     <div class="ov-field"><label>용도 (쉼표로 구분)</label><input type="text" id="proj-types" placeholder="예) 근린생활시설"></div>
+    <div class="ov-field"><label>페이지 크기</label><select id="proj-orient"><option value="landscape">가로형 (210×149mm)</option><option value="portrait">A4 세로 (210×297mm)</option></select></div>
     <div class="ov-actions">
       <button class="btn" onclick="closeProjModal()">취소</button>
       <button class="btn btn-dark" onclick="saveProjModal()">저장</button>
@@ -493,6 +563,9 @@ function render(){
   document.getElementById('page-root').style.display = (mode==='library'||mode==='projects') ? 'none' : 'block';
   document.getElementById('lib-root').style.display = mode==='library' ? 'flex' : 'none';
   document.getElementById('proj-root').style.display = mode==='projects' ? 'flex' : 'none';
+  const portrait = currentOrient()==='portrait';
+  document.getElementById('page-root').className = 'page' + (portrait?' portrait':'');
+  document.querySelector('.rail').classList.toggle('portrait', portrait);
   renderTopBar();
   if(mode==='template'){ renderTemplateEditor(); }
   else if(mode==='library'){ renderLibrary(); }
@@ -531,6 +604,7 @@ function renderTopBar(){
       <span class="hint"><i class="ti ti-info-circle"></i> 화면을 그대로 클릭해서 수정하세요. 지금 이 화면이 곧 결과물이에요.</span>
       <div class="spacer"></div>
       <button class="btn" onclick="openMatLibrary()"><i class="ti ti-palette"></i> 재료 라이브러리</button>
+      <button class="btn" onclick="toggleProjectOrient()" title="페이지 크기 바꾸기"><i class="ti ti-${currentOrient()==='portrait'?'file':'file-horizontal'}"></i> ${currentOrient()==='portrait'?'A4 세로':'가로형'}</button>
       <button class="btn" onclick="saveCurrentAsTemplate()"><i class="ti ti-stack"></i> 이 페이지를 템플릿으로 저장</button>
       <button class="btn btn-dark" onclick="printProject()"><i class="ti ti-printer"></i> PDF로 내보내기</button>`;
   }
@@ -543,10 +617,10 @@ function renderRail(){
     const tools = pg.type==='space' ? `<div class="thumb-tools no-print" onclick="event.stopPropagation()">
         ${i>1?`<div class="thumb-tool" onclick="moveSpace('${pg.sp.id}',-1)" title="앞으로"><i class="ti ti-chevron-up"></i></div>`:''}
         ${i<n-1?`<div class="thumb-tool" onclick="moveSpace('${pg.sp.id}',1)" title="뒤로"><i class="ti ti-chevron-down"></i></div>`:''}
-        <div class="thumb-tool" onclick="duplicateSpace('${pg.sp.id}')" title="복제"><i class="ti ti-copy"></i></div>
+        <div class="thumb-tool" onclick="duplicateSpace('${pg.sp.id}')" title="${isSection(pg.sp)?'섹션 전체 복제':'복제'}"><i class="ti ti-copy"></i></div>
         <div class="thumb-tool danger" onclick="deleteSpace('${pg.sp.id}')" title="삭제"><i class="ti ti-trash"></i></div>
       </div>` : '';
-    return `<div class="thumb ${i===curPage?'active':''}" onclick="goPage(${i})">
+    return `<div class="thumb ${i===curPage?'active':''} ${pg.type==='space'&&isSection(pg.sp)?'section':''}" onclick="goPage(${i})">
       ${miniHtml(pg)}<span class="thumb-num">${i+1}</span>${tools}
     </div>`;
   }).join('') + `<div class="thumb-add" onclick="openTmplPicker()"><i class="ti ti-plus"></i> 공간</div>`;
@@ -560,7 +634,13 @@ function miniHtml(pg){
     </div>`;
   }
   const sp = pg.sp;
-  const typeLbl = {material:b=>b.label||'재료', image:()=>'이미지', text:()=>'텍스트', gallery:b=>b.label||'예시카드'};
+  if(isSection(sp)){
+    return `<div style="padding:8px;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center">
+      <div style="font-size:4px;color:#999;margin-bottom:2px">섹션 표지</div>
+      <div style="font-size:5.5px;font-weight:700;border-bottom:0.5px solid #333;padding-bottom:2px">[${esc(sp.name)}]</div>
+    </div>`;
+  }
+  const typeLbl = {material:b=>b.label||'재료', image:()=>'이미지', text:()=>'텍스트', gallery:b=>b.label||'예시카드', option:b=>b.label||'옵션'};
   const blockSummary = sp.blocks.length
     ? sp.blocks.map(b=>(typeLbl[b.type]||(()=>''))(b)).join(', ')
     : '빈 페이지';
@@ -575,18 +655,28 @@ function goPage(i){ curPage=i; render(); }
 
 function renderPage(){
   const pg = pages()[curPage];
-  document.getElementById('page-root').innerHTML = pg.type==='cover' ? coverHtml() : spaceHtml(pg.sp);
+  document.getElementById('page-root').innerHTML = pageHtml(pg);
+}
+function pageHtml(pg){
+  if(pg.type==='cover') return coverHtml();
+  return isSection(pg.sp) ? sectionHtml(pg.sp) : spaceHtml(pg.sp);
 }
 
 function printProject(){
   if(mode!=='editor' || !curProj()){ toast('프로젝트를 연 상태에서만 PDF로 내보낼 수 있어요'); return; }
-  const allPages = pages();
-  const html = allPages.map(pg => `<div class="print-page">${pg.type==='cover' ? coverHtml() : spaceHtml(pg.sp)}</div>`).join('');
-  document.getElementById('print-all-pages').innerHTML = html;
+  printPages(pages());
+}
+function printPages(list){
+  const portrait = currentOrient()==='portrait';
+  const cls = 'print-page' + (portrait?' portrait':'');
+  document.getElementById('print-all-pages').innerHTML = list.map(pg => `<div class="${cls}">${pageHtml(pg)}</div>`).join('');
+  let st = document.getElementById('page-size-style');
+  if(!st){ st = document.createElement('style'); st.id = 'page-size-style'; document.head.appendChild(st); }
+  st.textContent = portrait ? '@page{ size: 210.05mm 297.15mm; margin: 0; }' : '@page{ size: 210.05mm 148.66mm; margin: 0; }';
   window.print();
 }
 
-function esc(s){ return (s||'').replace(/</g,'&lt;'); }
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
 
 /* ===== 표지 페이지 ===== */
 function coverHtml(){
@@ -625,6 +715,7 @@ function uploadBrandLogo(input){
 /* ===== 블록 구성 영역 (공간 페이지 / 템플릿 편집 화면 공통) ===== */
 function blocksAreaHtml(container, containerId){
   const addBar = `<div class="add-blk-bar no-print">
+    <span class="btn-add-blk" onclick="addBlock('${containerId}','option')"><i class="ti ti-checkbox"></i> 옵션 선택 블록</span>
     <span class="btn-add-blk" onclick="addBlock('${containerId}','material')"><i class="ti ti-square"></i> 재료 블록</span>
     <span class="btn-add-blk" onclick="addBlock('${containerId}','image')"><i class="ti ti-photo"></i> 이미지 블록</span>
     <span class="btn-add-blk" onclick="addBlock('${containerId}','text')"><i class="ti ti-align-left"></i> 텍스트 블록</span>
@@ -635,6 +726,7 @@ function blocksAreaHtml(container, containerId){
     return `${addBar}<div class="empty-space no-print">
         <div style="font-size:12px">이 페이지에 넣을 블록을 선택하세요</div>
         <div class="big-add-row">
+          <div class="big-add-btn" onclick="addBlock('${containerId}','option')"><i class="ti ti-checkbox"></i>옵션 선택</div>
           <div class="big-add-btn" onclick="addBlock('${containerId}','material')"><i class="ti ti-square"></i>재료</div>
           <div class="big-add-btn" onclick="addBlock('${containerId}','image')"><i class="ti ti-photo"></i>이미지</div>
           <div class="big-add-btn" onclick="addBlock('${containerId}','text')"><i class="ti ti-align-left"></i>텍스트</div>
@@ -648,6 +740,14 @@ function blocksAreaHtml(container, containerId){
 /* ===== 공간 페이지 (프로젝트 안, 블록 자유 구성) ===== */
 function spaceHtml(sp){
   const m = curProj().meta;
+  if(sectionInfo(sp.id)){
+    return `
+  <div class="pg-space in-section">
+    <div class="sp-toc-name no-print"><i class="ti ti-list-numbers"></i> 목차 이름 <span contenteditable data-ph="공간명 (목차에 표시)" oninput="renameContainer('${sp.id}',this)">${esc(sp.name)}</span><span class="hint">· 같은 이름이 이어지면 목차에 한 줄로 합쳐져요</span></div>
+    ${blocksAreaHtml(sp, sp.id)}
+    ${footHtml(sp)}
+  </div>`;
+  }
   return `
   <div class="pg-space">
     <div class="sp-hdr">
@@ -659,7 +759,7 @@ function spaceHtml(sp){
     </div>
     <div class="sp-name" contenteditable data-ph="공간명" oninput="renameContainer('${sp.id}',this)">${esc(sp.name)}</div>
     ${blocksAreaHtml(sp, sp.id)}
-    <div class="sp-foot" contenteditable data-ph="하단 문구" oninput="updateMeta('footer',this)">${esc(m.footer)}</div>
+    ${footHtml(sp)}
   </div>`;
 }
 
@@ -691,6 +791,7 @@ function blockHtml(container, containerId, b, i){
     <div class="blk-tbtn danger" onclick="removeBlock('${containerId}','${b.id}')" title="삭제"><i class="ti ti-trash"></i></div>
   </div>`;
 
+  if(b.type==='option') return optionBlockHtml(containerId, b, toolbar);
   if(b.type==='material'){
     const chips = b.matIds.map(id=>{
       const mat = getMat(id); if(!mat) return '';
@@ -764,7 +865,8 @@ function addBlock(containerId, type){
   const c = resolveContainer(containerId);
   const base = {id:'b'+Date.now()};
   let blk;
-  if(type==='material') blk = {...base, type, label:'라벨', matIds:[]};
+  if(type==='option') blk = {...base, type, label:'구분', ratio:'4/3', parts:[{name:'부위', options:[]}]};
+  else if(type==='material') blk = {...base, type, label:'라벨', matIds:[]};
   else if(type==='image') blk = {...base, type, label:'이미지', img:null, width:220};
   else if(type==='gallery') blk = {...base, type, label:'예시 카드', items:[{img:null,title:'옵션 A',desc:''},{img:null,title:'옵션 B',desc:''}]};
   else blk = {...base, type, label:'텍스트', content:''};
@@ -878,7 +980,10 @@ function deleteSpace(spId){
   const idx = spaceIndex(spId);
   if(idx<0) return;
   const nm = spaces[idx].name || '이름 없는';
-  if(!confirm(`"${nm}" 페이지를 삭제할까요? 되돌릴 수 없어요.`)) return;
+  const msg = isSection(spaces[idx])
+    ? `섹션 표지 "${nm}"를 삭제할까요?\n(섹션 안의 페이지들은 지워지지 않고 앞 섹션에 합쳐져요)`
+    : `"${nm}" 페이지를 삭제할까요? 되돌릴 수 없어요.`;
+  if(!confirm(msg)) return;
   spaces.splice(idx,1);
   const pgIdx = idx+1;
   if(curPage>pgIdx) curPage--;
@@ -893,6 +998,7 @@ function duplicateSpace(spId){
   const spaces = curProj().spaces;
   const idx = spaceIndex(spId);
   if(idx<0) return;
+  if(isSection(spaces[idx])){ duplicateSection(idx); return; }
   const copy = JSON.parse(JSON.stringify(spaces[idx]));
   copy.id = 'sp'+Date.now();
   copy.name = (copy.name||'') + ' (복사)';
@@ -916,28 +1022,390 @@ function moveSpace(spId, dir){
   markDirty();
 }
 
+/* ===== 페이지 크기 (프로젝트별: 가로형 / A4 세로) ===== */
+function currentOrient(){
+  if(mode==='template'){
+    const t = PAGE_TEMPLATES.find(x=>x.id===editingTemplateId);
+    return t && t.orient==='portrait' ? 'portrait' : 'landscape';
+  }
+  if(mode==='editor' && curProj()) return curProj().meta.orient==='portrait' ? 'portrait' : 'landscape';
+  return 'landscape';
+}
+function orientLabel(o){ return o==='portrait' ? 'A4 세로' : '가로형'; }
+function toggleProjectOrient(){
+  const p = curProj();
+  const to = currentOrient()==='portrait' ? 'landscape' : 'portrait';
+  if(!confirm(`페이지 크기를 ${orientLabel(to)}로 바꿀까요?\n(가로형으로 줄이면 넘치는 내용이 잘려 보일 수 있어요)`)) return;
+  p.meta.orient = to;
+  render();
+  markDirty();
+}
+function offerOrientFor(t){
+  const want = t.orient;
+  if(confirm(`이 템플릿은 ${orientLabel(want)}용이에요. 이 프로젝트의 페이지 크기를 ${orientLabel(want)}로 바꿀까요?\n(취소하면 지금 크기 그대로 추가돼요)`)){
+    curProj().meta.orient = want;
+    markDirty();
+  }
+}
+
+/* ===== 섹션 표지 (실외 / 실내:임대세대처럼 PDF 한 권 단위) =====
+   섹션 표지 = spaces 안의 {kind:'section'} 항목. 다음 섹션 표지 전까지의 페이지가 그 섹션에 속함.
+   목차·하단 문구·쪽번호는 저장하지 않고 매번 계산해서 그림 (어긋날 일이 없게) */
+function isSection(sp){ return !!sp && sp.kind==='section'; }
+function defaultDate(){ const d=new Date(); return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}`; }
+function sectionInfo(spId){
+  let sec=null, no=0;
+  for(const sp of curProj().spaces){
+    if(isSection(sp)){ sec=sp; no=1; } else if(sec){ no++; }
+    if(sp.id===spId) return sec ? {sec, no} : null;
+  }
+  return null;
+}
+function sectionMembers(secId){
+  const spaces = curProj().spaces;
+  const i = spaceIndex(secId);
+  const out = [];
+  for(let k=i+1;k<spaces.length && !isSection(spaces[k]);k++) out.push(spaces[k]);
+  return out;
+}
+function sectionToc(secId){
+  const toc = [];
+  sectionMembers(secId).forEach(sp=>{
+    const nm = (sp.name||'').trim();
+    if(nm && toc[toc.length-1]!==nm) toc.push(nm);   // 같은 이름이 연속되면 한 줄로 합침
+  });
+  return toc;
+}
+function footHtml(sp){
+  const m = curProj().meta;
+  const info = sectionInfo(sp.id);
+  if(!info) return `<div class="sp-foot" contenteditable data-ph="하단 문구" oninput="updateMeta('footer',this)">${esc(m.footer)}</div>`;
+  return `<div class="sp-foot auto"><span class="pno">- ${info.no} -</span><span class="ftxt">${esc(m.title)} 재료마감리스트 [${esc(info.sec.name)}] ${esc(info.sec.date)} UTAA</span></div>`;
+}
+function sectionHtml(sp){
+  const m = curProj().meta;
+  const toc = sectionToc(sp.id);
+  return `
+  <div class="pg-section">
+    <div class="sc-actions no-print"><button class="btn" onclick="printSection('${sp.id}')"><i class="ti ti-printer"></i> 이 섹션만 PDF로</button></div>
+    <div class="sc-logo"><img src="${BRAND_LOGO}"></div>
+    <div class="sc-main">
+      <div class="sc-year">UTAA <span contenteditable data-ph="2026.03" oninput="updateSectionField('${sp.id}','date',this)">${esc(sp.date)}</span></div>
+      <div class="sc-title">재료마감리스트 - [<span contenteditable data-ph="실내 : 임대세대" oninput="renameContainer('${sp.id}',this)">${esc(sp.name)}</span>]</div>
+      <div class="sc-proj">PROJECT : <span contenteditable data-ph="경기도 과천시 갈현동 820-8 다가구주택 신축공사" oninput="updateMeta('projLine',this)">${esc(m.projLine)}</span></div>
+      <div class="sc-toc">
+        <div class="sc-toc-lbl">[목차]</div>
+        <div class="sc-toc-list">${toc.length ? toc.map((t,i)=>`${i+1}) ${esc(t)}`).join('<br>') : '<span class="sc-toc-empty no-print">이 섹션 뒤에 페이지를 추가하면<br>페이지 이름으로 목차가 자동으로 채워져요</span>'}</div>
+      </div>
+    </div>
+    ${footHtml(sp)}
+  </div>`;
+}
+function updateSectionField(spId, key, el){
+  markDirty();
+  resolveContainer(spId)[key] = el.textContent;
+}
+function ensureProjLine(){
+  const p = curProj();
+  if(!p.meta.projLine) p.meta.projLine = [p.addr, p.name].filter(Boolean).join(' ');
+}
+function addSectionCover(name){
+  closeTmplPicker();
+  ensureProjLine();
+  const sp = {id:'sp'+Date.now(), kind:'section', name: name||'실내 : 임대세대', date: defaultDate(), blocks:[]};
+  curProj().spaces.push(sp);
+  curPage = pages().length-1;
+  render();
+  markDirty();
+  toast('섹션 표지가 추가됐어요. 이 뒤에 넣는 페이지가 이 섹션에 묶여요');
+}
+function duplicateSection(idx){
+  const spaces = curProj().spaces;
+  const sec = spaces[idx];
+  const members = sectionMembers(sec.id);
+  const base = Date.now();
+  const copies = [sec, ...members].map((sp,k)=>{ const c = JSON.parse(JSON.stringify(sp)); c.id = 'sp'+(base+k); return c; });
+  copies[0].name = (copies[0].name||'') + ' (복사)';
+  const insertAt = idx + 1 + members.length;
+  spaces.splice(insertAt, 0, ...copies);
+  curPage = insertAt + 1;
+  render();
+  markDirty();
+  toast(`섹션 전체(${copies.length}페이지)를 복제했어요. 섹션 이름을 바꿔주세요`);
+}
+function printSection(secId){
+  const sec = resolveContainer(secId);
+  printPages([sec, ...sectionMembers(secId)].map(sp=>({type:'space', sp})));
+}
+
+/* ===== 세트 템플릿 (여러 페이지를 한번에 추가: {pageIds:[...], section:'섹션명'}) ===== */
+function addTemplateSet(t){
+  ensureProjLine();
+  const base = Date.now();
+  const add = [];
+  if(t.section) add.push({id:'sp'+base, kind:'section', name:t.section, date:defaultDate(), blocks:[]});
+  t.pageIds.forEach((pid,k)=>{
+    const pt = PAGE_TEMPLATES.find(x=>x.id===pid);
+    if(pt) add.push({id:'sp'+(base+k+1), name: pt.pageName||pt.name, blocks: JSON.parse(JSON.stringify(pt.blocks))});
+  });
+  const spaces = curProj().spaces;
+  const first = spaces.length;
+  spaces.push(...add);
+  curPage = first + 1;
+  render();
+  markDirty();
+  toast(`"${t.name}" ${add.length}페이지가 추가됐어요. 옵션의 □를 눌러 선택하세요`);
+}
+
+/* ===== 옵션 선택 블록 =====
+   {type:'option', label:'마감재', ratio:'4/3', parts:[{name:'바닥', options:[{matId, text, on, hide}]}]}
+   - 위 체크표와 아래 사진 제목줄의 ■/□가 같은 데이터(on)라서 항상 같이 바뀜
+   - 사진은 재료 라이브러리 사진(최대 3장)을 그대로 씀. matId 없는 옵션은 글자로만(체크표에만) 나옴
+   - hide:true 면 체크표에만 나오고 사진 줄은 생략 */
+const OPT_RATIOS = ['4/3','3/2','1/1','3/4','16/9'];
+function optName(o){
+  const m = o.matId ? getMat(o.matId) : null;
+  return (o.text||'').trim() || (m ? m.name : (o.matId ? '(삭제된 재료)' : '옵션'));
+}
+function optionBlockHtml(cid, b, toolbarBase){
+  const toolbar = toolbarBase.replace('<div class="blk-tbtn danger"',
+    `<div class="blk-tbtn" onclick="cycleOptRatio('${cid}','${b.id}')" title="사진 비율 바꾸기 (지금 ${b.ratio||'4/3'})"><i class="ti ti-aspect-ratio"></i></div>`+
+    `<div class="blk-tbtn" onclick="toggleOptStack('${cid}','${b.id}')" title="${b.stack?'사진을 옆으로 나란히':'사진을 위아래로 쌓기 (옵션 3개씩 한 줄)'}"><i class="ti ti-${b.stack?'layout-columns':'layout-rows'}"></i></div><div class="blk-tbtn danger"`);
+  const multi = b.parts.length > 1;
+  const head = b.parts.map((part,pi)=>{
+    const partCell = part.name ? `<td class="opt-h-part"><div class="opt-h-part-wrap">[ <span contenteditable data-ph="부위" oninput="renameOptPart('${cid}','${b.id}',${pi},this)">${esc(part.name)}</span> ]${multi?`<span class="opt-mini danger no-print" onclick="removeOptPart('${cid}','${b.id}',${pi})" title="이 부위 삭제"><i class="ti ti-x"></i></span>`:''}</div></td>` : '';
+    const items = part.options.map((o,oi)=>{
+      const key = `${b.id}-${pi}-${oi}`;
+      return `<div class="opt-li ${o.on?'on':''} ${o.hide?'hidden-photo':''}">
+        <span class="opt-box" onclick="toggleOpt('${cid}','${b.id}',${pi},${oi})" title="눌러서 선택/해제">${o.on?'■':'□'}</span>
+        <span class="opt-txt" contenteditable data-ok="${key}" data-ph="옵션 이름" oninput="editOptText('${cid}','${b.id}',${pi},${oi},this)">${esc(optName(o))}</span>
+        <span class="opt-li-tools no-print">
+          ${oi>0?`<span class="opt-mini" onclick="moveOpt('${cid}','${b.id}',${pi},${oi},-1)" title="위로"><i class="ti ti-chevron-up"></i></span>`:''}
+          ${oi<part.options.length-1?`<span class="opt-mini" onclick="moveOpt('${cid}','${b.id}',${pi},${oi},1)" title="아래로"><i class="ti ti-chevron-down"></i></span>`:''}
+          ${o.matId?`<span class="opt-mini" onclick="toggleOptPhoto('${cid}','${b.id}',${pi},${oi})" title="${o.hide?'사진 다시 보이기':'사진 숨기기 (체크표에만 표시)'}"><i class="ti ti-${o.hide?'photo-off':'photo'}"></i></span>`:''}
+          <span class="opt-mini danger" onclick="removeOpt('${cid}','${b.id}',${pi},${oi})" title="옵션 삭제"><i class="ti ti-x"></i></span>
+        </span>
+      </div>`;
+    }).join('');
+    const adds = `<div class="no-print">
+        <span class="opt-add" onclick="openPicker('${cid}','${b.id}',${pi})"><i class="ti ti-plus"></i> 옵션</span>
+        ${pi===b.parts.length-1?` &nbsp;<span class="opt-add" onclick="addOptPart('${cid}','${b.id}')"><i class="ti ti-columns"></i> 부위 추가</span>`:''}
+        ${!part.name?` &nbsp;<span class="opt-add" onclick="nameOptPart('${cid}','${b.id}',${pi})"><i class="ti ti-tag"></i> 부위 이름</span>`:''}
+      </div>`;
+    return partCell + `<td class="opt-h-list">${items || '<span class="no-print" style="color:var(--fg4);font-size:10px">옵션을 추가하세요</span>'}${adds}</td>`;
+  }).join('');
+
+  const groups = [];
+  b.parts.forEach((part,pi)=>part.options.forEach((o,oi)=>{
+    if(!o.matId || o.hide) return;
+    const m = getMat(o.matId); if(!m) return;
+    const imgs = (m.exImgs||[]).slice(0,3);
+    const n = Math.max(1, imgs.length);
+    const span = b.stack ? 1 : n;
+    const pre = multi && part.name ? `[${esc(part.name)}] ` : '';
+    groups.push(`<div class="opt-grp ${o.on?'on':''}" style="grid-column:span ${span}">
+      <div class="opt-cap"><span class="opt-box" onclick="toggleOpt('${cid}','${b.id}',${pi},${oi})">${o.on?'■':'□'}</span><span>${pre}<span data-ok="${b.id}-${pi}-${oi}">${esc(optName(o))}</span></span>
+        <span class="opt-cap-tools no-print"><span class="opt-mini" onclick="toggleOptPhoto('${cid}','${b.id}',${pi},${oi})" title="사진 숨기기 (체크표에만 표시)"><i class="ti ti-photo-off"></i></span></span></div>
+      <div class="opt-photos" style="grid-template-columns:repeat(${b.stack?1:n},1fr)">
+        ${imgs.length ? imgs.map(src=>`<div class="opt-ph"><img src="${src}"></div>`).join('')
+          : `<div class="opt-ph empty no-print">사진 없음<br>재료 라이브러리<br>"${esc(getCatOf(m.id))} › ${esc(m.name)}"에 추가</div>`}
+      </div>
+      ${m.sub?`<div class="opt-sub">${esc(m.sub)}</div>`:''}
+    </div>`);
+  }));
+
+  return `<div class="blk blk-option">${toolbar}
+    <table class="opt-head"><tr>
+      <td class="opt-h-lbl"><div contenteditable data-ph="구분" oninput="renameBlockLabel('${cid}','${b.id}',this)">${esc(b.label)}</div></td>
+      ${head}
+    </tr></table>
+    ${groups.length?`<div class="opt-grid" style="--opt-ratio:${b.ratio||'4/3'}">${groups.join('')}</div>`:''}
+  </div>`;
+}
+function optAt(cid,bId,pi,oi){ return getBlock(cid,bId).parts[pi].options[oi]; }
+function toggleOpt(cid,bId,pi,oi){ const o=optAt(cid,bId,pi,oi); o.on=!o.on; render(); markDirty(); }
+function editOptText(cid,bId,pi,oi,el){
+  const o = optAt(cid,bId,pi,oi);
+  const v = el.textContent.trim();
+  const m = o.matId ? getMat(o.matId) : null;
+  o.text = (m && v===m.name) ? '' : v;
+  document.querySelectorAll(`[data-ok="${bId}-${pi}-${oi}"]`).forEach(x=>{ if(x!==el) x.textContent = el.textContent; });
+  markDirty();
+}
+// 데이터 변경 → 다시 그리기 → 페이지가 넘치면 되돌리고 안내 (빌드 지침 3번 패턴)
+function applyOrRevert(change, revert){
+  change(); render();
+  if(pageContentOverflows()){ revert(); render(); toast(OVERFLOW_MSG); return false; }
+  markDirty(); return true;
+}
+function toggleOptPhoto(cid,bId,pi,oi){
+  const o = optAt(cid,bId,pi,oi);
+  const prev = !!o.hide;
+  applyOrRevert(()=>{ o.hide=!prev; }, ()=>{ o.hide=prev; });
+}
+function removeOpt(cid,bId,pi,oi){
+  getBlock(cid,bId).parts[pi].options.splice(oi,1);
+  render(); markDirty();
+}
+function moveOpt(cid,bId,pi,oi,dir){
+  const arr = getBlock(cid,bId).parts[pi].options;
+  const to = oi+dir; if(to<0||to>=arr.length) return;
+  [arr[oi],arr[to]] = [arr[to],arr[oi]];
+  render(); markDirty();
+}
+function addOptionItem(cid,bId,pi,matId,text){
+  const arr = getBlock(cid,bId).parts[pi].options;
+  if(matId && arr.some(o=>o.matId===matId)){ toast('이미 들어있는 옵션이에요'); return; }
+  const o = {matId:matId||null, text:text||'', on:false, hide:false};
+  applyOrRevert(()=>arr.push(o), ()=>arr.splice(arr.indexOf(o),1));
+}
+function pickTextOption(){
+  const ctx = pickCtx;
+  closePicker();
+  const t = prompt('옵션 이름 (체크표에 글자로만 들어가요)');
+  if(!t || !t.trim()) return;
+  addOptionItem(ctx.containerId, ctx.bId, ctx.partIdx||0, null, t.trim());
+}
+function addOptPart(cid,bId){
+  const parts = getBlock(cid,bId).parts;
+  const part = {name:'부위', options:[]};
+  applyOrRevert(()=>parts.push(part), ()=>parts.splice(parts.indexOf(part),1));
+}
+function removeOptPart(cid,bId,pi){
+  const parts = getBlock(cid,bId).parts;
+  if(parts[pi].options.length && !confirm(`[${parts[pi].name}] 부위와 그 안의 옵션을 삭제할까요?`)) return;
+  parts.splice(pi,1);
+  render(); markDirty();
+}
+function renameOptPart(cid,bId,pi,el){ getBlock(cid,bId).parts[pi].name = el.textContent.trim(); markDirty(); }
+function nameOptPart(cid,bId,pi){ getBlock(cid,bId).parts[pi].name = '부위'; render(); markDirty(); }
+function toggleOptStack(cid,bId){
+  const b = getBlock(cid,bId);
+  const prev = !!b.stack;
+  applyOrRevert(()=>{ b.stack=!prev; }, ()=>{ b.stack=prev; });
+}
+function cycleOptRatio(cid,bId){
+  const b = getBlock(cid,bId);
+  const prev = b.ratio||'4/3';
+  const next = OPT_RATIOS[(OPT_RATIOS.indexOf(prev)+1) % OPT_RATIOS.length];
+  if(applyOrRevert(()=>{ b.ratio=next; }, ()=>{ b.ratio=prev; })) toast(`사진 비율 ${next.replace('/',':')}`);
+}
+
+/* ===== 기본 세트 자동 추가 (한 번만 실행 — 실행 기록은 data.json의 seeds에 남김) ===== */
+let SEEDS = [];
+function applySeeds(){
+  if(SEEDS.includes('dagagu-v1')) return false;
+  seedDagagu();
+  SEEDS.push('dagagu-v1');
+  markDirty();
+  return true;
+}
+function ensureMat(cat, name, sub){
+  if(!DB[cat]) DB[cat] = [];
+  let m = DB[cat].find(x=>x.name===name);
+  if(!m){
+    m = {id:'sd'+Date.now().toString(36)+Math.random().toString(36).slice(2,7), name, sub:sub||'', color:nextColor(), exImgs:[]};
+    DB[cat].push(m);
+  } else if(sub && !m.sub){ m.sub = sub; }
+  return m.id;
+}
+function seedDagagu(){
+  let bn = 0;
+  const O = (cat,name,text,extra)=>({matId:ensureMat(cat,name,extra&&extra.sub), text:text||'', on:false, hide:!!(extra&&extra.hide)});
+  const OB = (label, parts, extra)=>({id:'bdg'+(++bn), type:'option', label, ratio:'3/2', parts, ...(extra||{})});
+  const IMG = (label, w)=>({id:'bdg'+(++bn), type:'image', label, img:null, width:w||520});
+  const H = {hide:true};
+  const PRICE = w=>({sub:`2구 스위치 1개 ${w}원 (2023년 기준)`});
+  const pg = (id, name, pageName, blocks)=>({id, name, pageName, icon:'ti-checkbox', desc:'다가구 · A4 세로', group:'다가구 페이지', orient:'portrait', blocks});
+
+  const sw = pg('dg_sw','스위치/콘센트','스위치/콘센트',[OB('스위치/콘센트',[{name:'',options:[
+    O('스위치','나노','',PRICE('3,700')), O('스위치','아루','',PRICE('6,900')), O('스위치','VONO토글','토글',PRICE('17,000')),
+    O('스위치','르그랑','르그랑-엑셀',PRICE('20,460')), O('스위치','르그랑 아테오','르그랑-아테오',PRICE('33,600')), O('스위치','융','',PRICE('72,200'))]}], {stack:true, ratio:'4/3'})]);
+
+  const unit = [
+    pg('dg_u_floor','세대 · 마감재 바닥','마감재 (바닥, 벽, 천장)',[OB('마감재',[{name:'바닥',options:[
+      O('실내바닥','원목마루'), O('실내바닥','강마루'), O('실내바닥','바닥타일','타일'), O('실내바닥','미크리트'), O('실내바닥','마모륨')]}])]),
+    pg('dg_u_wall','세대 · 마감재 벽/천장','마감재 (바닥, 벽, 천장)',[OB('마감재',[
+      {name:'벽',options:[O('실내벽천장','친환경수성페인트','도장 (친환경수성페인트)',H), O('실내벽천장','실크벽지','도배 (실크벽지)'), O('실내벽천장','목재 벽','목재'), O('실내벽천장','벽타일','타일')]},
+      {name:'천장',options:[O('실내벽천장','친환경수성페인트','도장 (친환경수성페인트)',H), O('실내벽천장','실크천정지','도배 (실크천정지)',H), O('실내벽천장','목재 천장','목재'), O('실내벽천장','벽타일','타일',H)]}])]),
+    pg('dg_u_mold','세대 · 몰딩','몰딩 (바닥, 천장)',[OB('몰딩',[
+      {name:'바닥',options:[O('몰딩','PVC몰딩','PVC 몰딩'), O('몰딩','지정목재몰딩','지정목재 몰딩'), O('몰딩','마이너스몰딩 바닥','마이너스 몰딩')]},
+      {name:'천장',options:[O('몰딩','마이너스몰딩','마이너스 몰딩'), O('몰딩','무몰딩','무(無) 몰딩')]}])]),
+    pg('dg_u_door','세대 · 현관문/중문','현관문, 현관중문',[
+      OB('현관문 (방화문)',[{name:'',options:[O('도어','현관문 주문제작','주문제작'), O('도어','현관문 기성품','기성품')]}]),
+      OB('현관중문',[{name:'',options:[O('도어','기성 중문','기성도어 (영림, 위드지스, 이건라움 etc)')]}])]),
+    pg('dg_u_room','세대 · 방문','방문',[OB('방문',[{name:'',options:[
+      O('도어','방문 도장 히든프레임','현장제작 : 합판 위 우레탄 도장 [도장기준 문프레임 숨김 시공 가능]'),
+      O('도어','방문 도장 프레임노출','현장제작 : 합판 위 우레탄 도장 [문프레임 노출 시공]'),
+      O('도어','방문 목재','현장제작 [목재] : 지정목재 합판 or 합판 위 무늬목 부착'),
+      O('도어','기성 방문','기성도어 (영림, 예림, 예다지 etc)')]}])]),
+    pg('dg_u_win','세대 · 창호 4면처리','창호 4면처리',[OB('창호 4면처리',[{name:'',options:[
+      O('후레싱','하단1면 인조대리석','하단1면 인조대리석 (화이트계열)'), O('후레싱','하단1면 지정목재'), O('후레싱','창호4면 지정목재'), O('후레싱','창호4면금속','창호4면 금속')]}])]),
+    pg('dg_u_attic','세대 · 다락난간','다락난간',[OB('다락난간',[{name:'',options:[
+      O('난간','환봉난간','금속난간 : 환봉'), O('난간','목재 손스침 난간')]}])]),
+  ];
+  const stair = [
+    pg('dg_c_floor','공용계단 · 마감재 바닥','마감재 (바닥, 벽, 천장)',[OB('마감재',[{name:'바닥',options:[
+      O('실내바닥','지정석재'), O('실내바닥','포세린타일','포세린 타일'), O('실내바닥','콘크리트 바닥','콘크리트 마감')]}])]),
+    pg('dg_c_wall','공용계단 · 마감재 벽/천장','마감재 (바닥, 벽, 천장)',[OB('마감재',[
+      {name:'벽',options:[O('실내벽천장','콘크리트 노출','콘크리트 노출 마감'), O('실내벽천장','합판위 도장','도장 (합판위 도장)'), O('실내벽천장','미장 스타코','미장 (스타코, 시멘트 등)'), O('실내벽천장','벽타일','타일')]},
+      {name:'천장',options:[O('실내벽천장','콘크리트 노출','콘크리트 노출 마감',H), O('실내벽천장','합판위 도장','도장 (합판위 도장)',H), O('실내벽천장','미장 스타코','미장 (스타코, 시멘트 등)',H), O('실내벽천장','벽타일','타일',H)]}])]),
+    pg('dg_c_rail','공용계단 · 난간','공용계단 난간',[OB('공용계단 난간',[{name:'',options:[
+      O('난간','유리난간','유리난간 : 투명/불투명/반투명'), O('난간','평철난간','금속난간 : 평철/환봉'), O('계단','솔리드난간','솔리드 금속난간 (컬러 포인트 추천)'), O('난간','메쉬난간')]}])]),
+  ];
+  const ext = [
+    pg('dg_e_wall','실외 · 외장재','외장재',[IMG('조감도',600), OB('외장재',[{name:'메인 재료',options:[]},{name:'포인트 재료',options:[]}])]),
+    pg('dg_e_roof','실외 · 경사지붕','지붕재',[OB('경사지붕',[{name:'',options:[
+      O('경사지붕','오리지널징크','오리지널 징크 [티타늄징크]'), O('경사지붕','알루미늄징크','알루미늄 징크 [알루징크]'), O('경사지붕','칼라강판','칼라강판 [리얼징크]'), O('경사지붕','아스팔트싱글','아스팔트 싱글')]}])]),
+    pg('dg_e_floor','실외 · 외부 바닥재','외부 바닥재',[IMG('배치도 (위치별 색 구분)'), OB('외부 바닥',[
+      {name:'주차장',options:[O('바닥','사고석'), O('바닥','콘크리트폴리싱','콘크리트 폴리싱'), O('바닥','잔디블럭'), O('바닥','석재판석','석재 판석')]},
+      {name:'진입로',options:[O('바닥','바닥용벽돌','바닥용 벽돌'), O('바닥','석재판석','석재 판석',H), O('바닥','콘크리트폴리싱','콘크리트',H)]},
+      {name:'건물주변',options:[O('바닥','사고석','사고석',H), O('바닥','콘크리트폴리싱','콘크리트 폴리싱',H), O('바닥','잔디블럭','잔디블럭',H), O('바닥','석재판석','석재 판석',H)]}])]),
+    pg('dg_e_terrace','실외 · 테라스/난간','테라스, 난간',[IMG('테라스 위치'), OB('테라스',[
+      {name:'바닥재료',options:[O('데크','페데스탈 타일 데크','타일 (페데스탈)'), O('데크','타일 습식시공','타일 (습식시공)')]},
+      {name:'난간',options:[O('난간','평철난간','평철 + 환봉난간살 (세로형)'), O('난간','환봉난간 가로형','환봉난간 (가로형)')]}])]),
+    pg('dg_e_lintel','실외 · 창호 인방처리','창호 인방처리',[OB('창호 인방처리',[{name:'',options:[
+      O('후레싱','창호 상하부만','창호 상하부만 (측면은 벽돌 및 타일 마감)'), O('후레싱','창호4면 철판','창호 4면 : T6 철판마감 (불소수지도장)')]}])]),
+    pg('dg_e_win','실외 · 창호','창호',[OB('창호',[{name:'',options:[
+      O('창호','AL 시스템창호','',{sub:'이건AL(베이직, 스탠다드) / E-PLUS / KCC / 남선 등'}), O('창호','PVC 시스템창호','',{sub:'이건 PVC / 삼익산업 / KCC / 레하우 등'}), O('창호','방화창호')]}])]),
+  ];
+  const sets = [
+    {id:'dg_set_unit', name:'다가구 · 실내 세대 세트', icon:'ti-home', desc:'바닥·벽천장·몰딩·현관문·방문·창호·다락난간·스위치', orient:'portrait', section:'실내 : 임대세대', pageIds:[...unit.map(t=>t.id), sw.id]},
+    {id:'dg_set_stair', name:'다가구 · 공용계단 세트', icon:'ti-stairs', desc:'바닥·벽천장·계단난간·스위치', orient:'portrait', section:'실내 : 공용계단', pageIds:[...stair.map(t=>t.id), sw.id]},
+    {id:'dg_set_ext', name:'다가구 · 실외 세트', icon:'ti-building', desc:'외장재·지붕·외부바닥·테라스·인방·창호', orient:'portrait', section:'실외', pageIds:ext.map(t=>t.id)},
+  ];
+  [...sets, ...unit, ...stair, ...ext, sw].forEach(t=>{ if(!PAGE_TEMPLATES.some(x=>x.id===t.id)) PAGE_TEMPLATES.push(t); });
+}
+
 /* ===== 페이지 추가 / 템플릿 라이브러리 관리 ===== */
 function openTmplPicker(){
   renderTmplGrid();
   document.getElementById('ov-tmpl').classList.add('show');
 }
 function renderTmplGrid(){
-  document.getElementById('tmpl-grid').innerHTML =
-    `<div class="tmpl-card blank" onclick="pickPageTemplate(null)"><i class="ti ti-file-plus"></i><b>빈 페이지</b><p>블록을 직접 구성</p></div>` +
-    PAGE_TEMPLATES.map(t=>`<div class="tmpl-card" onclick="pickPageTemplate('${t.id}')">
+  const card = t=>`<div class="tmpl-card" onclick="pickPageTemplate('${t.id}')">
       <div class="tmpl-card-actions no-print" onclick="event.stopPropagation()">
-        <span onclick="editTemplate('${t.id}')" title="편집"><i class="ti ti-pencil"></i></span>
+        ${t.pageIds?'':`<span onclick="editTemplate('${t.id}')" title="편집"><i class="ti ti-pencil"></i></span>`}
         <span onclick="deleteTemplateFromLibrary('${t.id}')" title="삭제"><i class="ti ti-trash"></i></span>
       </div>
-      <i class="ti ${t.icon}"></i><b>${esc(t.name)}</b><p>${esc(t.desc)}</p>
-    </div>`).join('');
+      <i class="ti ${t.icon}"></i><b>${esc(t.name)}</b>${t.orient==='portrait'?'<span class="tmpl-badge">A4 세로</span>':''}<p>${esc(t.pageIds?`${t.desc} · ${t.pageIds.length+1}페이지`:t.desc)}</p>
+    </div>`;
+  const groups = {};
+  PAGE_TEMPLATES.forEach(t=>{ const g = t.pageIds ? '세트 (여러 페이지 한번에)' : (t.group||'페이지 템플릿'); (groups[g]=groups[g]||[]).push(t); });
+  const order = Object.keys(groups).sort((a,b)=>(b.startsWith('세트')?1:0)-(a.startsWith('세트')?1:0));
+  document.getElementById('tmpl-grid').innerHTML =
+    `<div class="tmpl-card blank" onclick="pickPageTemplate(null)"><i class="ti ti-file-plus"></i><b>빈 페이지</b><p>블록을 직접 구성</p></div>` +
+    `<div class="tmpl-card blank" onclick="addSectionCover()"><i class="ti ti-bookmark"></i><b>섹션 표지</b><p>실외 · 실내:임대세대처럼 묶음을 시작 — 목차·하단 문구 자동</p></div>` +
+    order.map(g=>`<div class="tmpl-group">${esc(g)}</div>` + groups[g].map(card).join('')).join('');
 }
 function closeTmplPicker(){ document.getElementById('ov-tmpl').classList.remove('show'); }
 function pickPageTemplate(tmplId){
   closeTmplPicker();
   if(!tmplId){ addSpace(); toast('빈 페이지가 추가됐어요. 블록을 추가해보세요'); return; }
   const t = PAGE_TEMPLATES.find(t=>t.id===tmplId);
-  addSpace(t.name, t.blocks);
+  if(t.orient && t.orient!==currentOrient()) offerOrientFor(t);
+  if(t.pageIds){ addTemplateSet(t); return; }
+  addSpace(t.pageName||t.name, t.blocks);
   toast(`"${t.name}" 템플릿이 추가됐어요. 이 프로젝트 안에서 자유롭게 수정하세요`);
 }
 function editTemplate(tmplId){
@@ -966,10 +1434,10 @@ function deleteTemplateFromLibrary(tmplId, fromEditor){
 function saveCurrentAsTemplate(){
   markDirty();
   const pg = pages()[curPage];
-  if(pg.type!=='space'){ toast('공간 페이지에서만 템플릿으로 저장할 수 있어요'); return; }
+  if(pg.type!=='space' || isSection(pg.sp)){ toast('공간 페이지에서만 템플릿으로 저장할 수 있어요'); return; }
   const name = prompt('템플릿 이름을 입력하세요', pg.sp.name);
   if(!name) return;
-  PAGE_TEMPLATES.push({id:'pt'+Date.now(), name, icon:'ti-template', desc:'저장된 템플릿', blocks: JSON.parse(JSON.stringify(pg.sp.blocks))});
+  PAGE_TEMPLATES.push({id:'pt'+Date.now(), name, icon:'ti-template', desc:'저장된 템플릿', orient: currentOrient(), blocks: JSON.parse(JSON.stringify(pg.sp.blocks))});
   toast(`"${name}" 템플릿으로 저장됐어요`);
 }
 
@@ -1205,6 +1673,12 @@ function matchesProjectDeep(p, q){
           if(m && ((m.name && m.name.toLowerCase().includes(q)) || (m.sub && m.sub.toLowerCase().includes(q)))) return true;
         }
       }
+      if(b.type==='option'){
+        for(const part of b.parts||[]) for(const o of part.options||[]){
+          const m = o.matId && getMat(o.matId);
+          if((o.text && o.text.toLowerCase().includes(q)) || (m && m.name.toLowerCase().includes(q))) return true;
+        }
+      }
       if(b.type==='gallery'){
         for(const it of b.items||[]){
           if((it.title && it.title.toLowerCase().includes(q)) || (it.desc && it.desc.toLowerCase().includes(q))) return true;
@@ -1290,6 +1764,7 @@ function openNewProjectModal(){
   document.getElementById('proj-name').value = '';
   document.getElementById('proj-addr').value = '';
   document.getElementById('proj-types').value = '';
+  document.getElementById('proj-orient').value = 'landscape';
   document.getElementById('ov-proj').classList.add('show');
 }
 function openEditProjectModal(id){
@@ -1299,6 +1774,7 @@ function openEditProjectModal(id){
   document.getElementById('proj-name').value = p.name;
   document.getElementById('proj-addr').value = p.addr||'';
   document.getElementById('proj-types').value = (p.types||[]).join(', ');
+  document.getElementById('proj-orient').value = p.meta.orient==='portrait' ? 'portrait' : 'landscape';
   document.getElementById('ov-proj').classList.add('show');
 }
 function closeProjModal(){ document.getElementById('ov-proj').classList.remove('show'); }
@@ -1308,16 +1784,18 @@ function saveProjModal(){
   if(!name){ toast('프로젝트명을 입력하세요'); return; }
   const addr = document.getElementById('proj-addr').value.trim();
   const types = document.getElementById('proj-types').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const orient = document.getElementById('proj-orient').value;
   if(editProjId){
     const p = projects.find(x=>x.id===editProjId);
     p.name = name; p.addr = addr; p.types = types;
+    p.meta.orient = orient;
     p.meta.title = name;
     p.meta.subtitle = [...types, addr].filter(Boolean).join(' · ');
   } else {
     const id = 'pj'+Date.now();
     projects.push({
       id, name, addr, types,
-      meta:{logo:'유타건축', title:name, subtitle:[...types,addr].filter(Boolean).join(' · '), date:'', footer:'UTAA · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.'},
+      meta:{logo:'유타건축', title:name, subtitle:[...types,addr].filter(Boolean).join(' · '), date:'', footer:'UTAA · 본 문서는 시공사 견적요청을 위한 기준 자료입니다.', orient},
       spaces:[]
     });
   }
@@ -1367,25 +1845,30 @@ function clearBlockImg(containerId, bId){
 
 /* ===== 재료 선택 오버레이 (모달 — 재료를 "고르는" 액션 UI. 결과물 자체는 아니므로 그대로 유지) ===== */
 function openPicker(containerId, bId){
-  pickCtx = {containerId, bId};
+  pickCtx = {containerId, bId, partIdx: arguments[2]||0};
   const b = getBlock(containerId,bId);
-  document.getElementById('ov-pick-title').textContent = (b.label||'재료') + ' 선택';
+  document.getElementById('ov-pick-title').textContent = (b.label||'재료') + (b.type==='option' ? ' — 옵션 추가' : ' 선택');
   document.getElementById('ov-pick-search').value='';
   renderPickGrid('');
   document.getElementById('ov-pick').classList.add('show');
 }
 function closePicker(){ document.getElementById('ov-pick').classList.remove('show'); }
 function renderPickGrid(q){
-  const all = Object.values(DB).flat().filter(m=>!q || m.name.includes(q) || m.sub.includes(q));
+  const all = Object.values(DB).flat().filter(m=>!q || m.name.includes(q) || (m.sub||'').includes(q) || getCatOf(m.id).includes(q));
   document.getElementById('ov-pick-grid').innerHTML = all.map(m=>`
     <div class="ov-item" onclick="pickMat('${m.id}')">
       <div class="ov-sw" style="${matSwatchStyle(m)}"></div>
       <div><div class="ov-item-nm">${esc(m.name)}</div><div class="ov-item-sub">${esc(getCatOf(m.id))} · ${esc(m.sub)}</div></div>
     </div>`).join('') || `<div style="grid-column:1/-1;color:var(--fg4);font-size:11px;padding:10px">검색 결과 없음</div>`;
+  const b = pickCtx && getBlock(pickCtx.containerId, pickCtx.bId);
+  if(b && b.type==='option'){
+    document.getElementById('ov-pick-grid').innerHTML += `<div class="ov-item" style="grid-column:1/-1;justify-content:center;color:var(--fg3)" onclick="pickTextOption()"><i class="ti ti-forms"></i> 라이브러리 없이 글자로만 추가 (사진 없음)</div>`;
+  }
 }
 function pickMat(matId){
   markDirty();
   const b = getBlock(pickCtx.containerId, pickCtx.bId);
+  if(b.type==='option'){ closePicker(); addOptionItem(pickCtx.containerId, pickCtx.bId, pickCtx.partIdx||0, matId); return; }
   if(!b.matIds.includes(matId)) b.matIds.push(matId);
   closePicker();
   render();
@@ -1471,7 +1954,7 @@ function updateSaveStatus(state, msg){
   else{ t.textContent='저장 설정'; }
 }
 function buildSaveData(){
-  return JSON.stringify({version:2, savedAt:new Date().toISOString(), DB, projects, PAGE_TEMPLATES, BRAND_LOGO, favorites:[]});
+  return JSON.stringify({version:2, savedAt:new Date().toISOString(), DB, projects, PAGE_TEMPLATES, BRAND_LOGO, favorites:[], seeds:SEEDS});
 }
 async function saveToGithub(){
   if(!ghSettings.token){ openGithubSetup(); return; }
@@ -1520,9 +2003,11 @@ async function loadFromGithub(){
     if(content.projects) projects = content.projects;
     if(content.PAGE_TEMPLATES) PAGE_TEMPLATES = content.PAGE_TEMPLATES;
     if(content.BRAND_LOGO) BRAND_LOGO = content.BRAND_LOGO;
+    if(content.seeds) SEEDS = content.seeds;
     updateSaveStatus('saved','불러옴');
+    const seeded = applySeeds();
     render();
-    toast('GitHub에서 데이터를 불러왔어요!');
+    toast(seeded ? 'GitHub에서 불러왔어요 — 다가구 세트 템플릿이 추가됐어요!' : 'GitHub에서 데이터를 불러왔어요!');
   }catch(e){ console.log('불러오기 실패:', e.message); }
 }
 
