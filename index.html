@@ -1354,12 +1354,12 @@ function seedDagagu(){
       O('난간','환봉난간','금속난간 : 환봉'), O('난간','목재 손스침 난간')]}])]),
   ];
   const stair = [
-    pg('dg_c_floor','공용계단 · 마감재 바닥','마감재 (바닥, 벽, 천장)',[OB('마감재',[{name:'바닥',options:[
+    pg('dg_c_floor','공용부분 · 마감재 바닥','마감재 (바닥, 벽, 천장)',[OB('마감재',[{name:'바닥',options:[
       O('실내바닥','지정석재'), O('실내바닥','포세린타일','포세린 타일'), O('실내바닥','콘크리트 바닥','콘크리트 마감')]}])]),
-    pg('dg_c_wall','공용계단 · 마감재 벽/천장','마감재 (바닥, 벽, 천장)',[OB('마감재',[
+    pg('dg_c_wall','공용부분 · 마감재 벽/천장','마감재 (바닥, 벽, 천장)',[OB('마감재',[
       {name:'벽',options:[O('실내벽천장','콘크리트 노출','콘크리트 노출 마감'), O('실내벽천장','합판위 도장','도장 (합판위 도장)'), O('실내벽천장','미장 스타코','미장 (스타코, 시멘트 등)'), O('실내벽천장','벽타일','타일')]},
       {name:'천장',options:[O('실내벽천장','콘크리트 노출','콘크리트 노출 마감',H), O('실내벽천장','합판위 도장','도장 (합판위 도장)',H), O('실내벽천장','미장 스타코','미장 (스타코, 시멘트 등)',H), O('실내벽천장','벽타일','타일',H)]}])]),
-    pg('dg_c_rail','공용계단 · 난간','공용계단 난간',[OB('공용계단 난간',[{name:'',options:[
+    pg('dg_c_rail','공용부분 · 계단 난간','공용계단 난간',[OB('공용계단 난간',[{name:'',options:[
       O('난간','유리난간','유리난간 : 투명/불투명/반투명'), O('난간','평철난간','금속난간 : 평철/환봉'), O('계단','솔리드난간','솔리드 금속난간 (컬러 포인트 추천)'), O('난간','메쉬난간')]}])]),
   ];
   const ext = [
@@ -1380,7 +1380,7 @@ function seedDagagu(){
   ];
   const sets = [
     {id:'dg_set_unit', name:'다가구 · 실내 세대 세트', icon:'ti-home', desc:'바닥·벽천장·몰딩·현관문·방문·창호·다락난간·스위치', orient:'portrait', section:'실내 : 임대세대', pageIds:[...unit.map(t=>t.id), sw.id]},
-    {id:'dg_set_stair', name:'다가구 · 공용계단 세트', icon:'ti-stairs', desc:'바닥·벽천장·계단난간·스위치', orient:'portrait', section:'실내 : 공용계단', pageIds:[...stair.map(t=>t.id), sw.id]},
+    {id:'dg_set_stair', name:'다가구 · 공용부분 세트', icon:'ti-stairs', desc:'바닥·벽천장·계단난간·스위치', orient:'portrait', section:'실내 : 공용부분', pageIds:[...stair.map(t=>t.id), sw.id]},
     {id:'dg_set_ext', name:'다가구 · 실외 세트', icon:'ti-building', desc:'외장재·지붕·외부바닥·테라스·인방·창호', orient:'portrait', section:'실외', pageIds:ext.map(t=>t.id)},
   ];
   [...sets, ...unit, ...stair, ...ext, sw].forEach(t=>{ if(!PAGE_TEMPLATES.some(x=>x.id===t.id)) PAGE_TEMPLATES.push(t); });
