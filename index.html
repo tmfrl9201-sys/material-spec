@@ -196,7 +196,10 @@ body.mode-projects .rail{display:none}
 .lib-cat .cnt{color:var(--fg4);font-size:10px}
 .lib-cat-add{color:var(--fg4);border-top:1px solid var(--border2);margin-top:6px;padding-top:8px}
 .lib-main{flex:1;padding:16px;overflow-y:auto}
-.lib-main-hdr{display:flex;align-items:center;margin-bottom:12px}
+.lib-main-hdr{display:flex;align-items:center;margin-bottom:12px;gap:10px}
+.lib-cat-tools{margin-left:auto;display:flex;gap:6px}
+.lib-cat-tools .btn{padding:4px 10px;font-size:11px}
+.lib-cat-delbtn:hover{background:#fdecea;color:#c0392b;border-color:#f3c6c6}
 .lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
 .mat-card{border:1px solid var(--border2);border-radius:9px;overflow:hidden;position:relative;cursor:pointer;background:#fff}
 .mat-card:hover{border-color:var(--accent)}
@@ -212,6 +215,31 @@ body.mode-projects .rail{display:none}
 .ov-field label{font-size:10.5px;color:var(--fg3);display:block;margin-bottom:4px}
 .ov-field input[type=text]{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-size:12px;font-family:var(--font-sans)}
 .ov-field input[type=color]{width:44px;height:30px;border:1px solid var(--border);border-radius:6px;padding:2px;cursor:pointer}
+/* 재료 대표 사진/색 (콘텐츠 사진은 <img>, 색은 인쇄에서도 유지) */
+.sw-img{overflow:hidden;background:var(--bg2)}
+.sw-img img{width:100%;height:100%;object-fit:cover;display:block}
+.sw-color{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sw-none{background:repeating-linear-gradient(135deg,#f4f4f4 0 6px,#ececec 6px 12px)}
+/* 재료 편집창: 대표 색상 */
+#ov-mat .ov-box{max-height:88vh;overflow-y:auto}
+.mc-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mc-sw{width:30px;height:30px;border-radius:6px;border:1px solid var(--border)}
+.mc-txt{font-size:11px;color:var(--fg3);flex:1;min-width:90px}
+.mc-row .btn{padding:4px 9px;font-size:11px}
+.mc-row .btn.on{background:var(--fg);color:#fff;border-color:var(--fg)}
+.mc-drop{margin-top:8px;display:none}
+.mc-drop.show{display:block}
+.mc-drop-stage{position:relative;display:flex;justify-content:center;background:var(--bg);border-radius:8px;padding:6px}
+.mc-drop-stage img{max-width:100%;max-height:260px;cursor:crosshair;display:block}
+.mc-drop-hint{font-size:10.5px;color:var(--fg3);margin-top:5px;display:flex;align-items:center;gap:6px}
+.mc-drop-live{width:16px;height:16px;border-radius:4px;border:1px solid var(--border);display:inline-block}
+.mc-drop-tabs{display:flex;gap:5px;margin-top:6px}
+.mc-drop-tabs img{width:38px;height:38px;object-fit:cover;border-radius:5px;cursor:pointer;border:2px solid transparent;opacity:.6}
+.mc-drop-tabs img.on{border-color:var(--fg);opacity:1}
+.mat-photo-mv{position:absolute;bottom:3px;display:none;gap:2px;left:50%;transform:translateX(-50%);z-index:2}
+.mat-photo-mv span{width:18px;height:16px;border-radius:4px;background:rgba(0,0,0,.6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;cursor:pointer}
+.mat-photo-slot.has-img:hover .mat-photo-mv{display:flex}
+.mat-photo-badge{position:absolute;top:3px;left:3px;font-size:8.5px;background:rgba(0,0,0,.6);color:#fff;border-radius:3px;padding:0 4px;z-index:2;pointer-events:none}
 .ov-actions{padding:10px 16px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:8px}
 .mat-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .mat-photo-slot{aspect-ratio:1/1;border-radius:7px;position:relative;background:var(--bg2);border:1.3px dashed var(--border);overflow:hidden}
@@ -323,6 +351,21 @@ body.mode-projects .rail{display:none}
 .opt-head td{border:1px solid #333;padding:5px 8px;vertical-align:middle}
 .opt-h-lbl{background:#e6e6e6;text-align:center;font-weight:600;width:84px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .opt-h-part{text-align:center;width:58px;white-space:nowrap;color:var(--fg2)}
+.opt-h-part.colored{color:var(--fg);font-weight:600;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.opt-h-part .opt-mini{display:none}
+.opt-h-part:hover .opt-mini{display:flex}
+.opt-part-tag{padding:0 5px;border-radius:3px;margin-right:4px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.color-pop{position:fixed;z-index:60;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.15);padding:10px;width:204px}
+.cp-title{font-size:11px;font-weight:600;margin-bottom:8px;color:var(--fg2)}
+.cp-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
+.cp-sw{aspect-ratio:1/1;border-radius:4px;cursor:pointer;border:1px solid rgba(0,0,0,.12)}
+.cp-sw:hover{transform:scale(1.15)}
+.cp-sw.on{outline:2px solid var(--fg);outline-offset:1px}
+.cp-row{display:flex;justify-content:space-between;align-items:center;margin-top:9px;font-size:11px;color:var(--fg3)}
+.cp-custom{display:flex;align-items:center;gap:4px;cursor:pointer;position:relative}
+.cp-custom input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.cp-custom:hover,.cp-none:hover{color:var(--fg)}
+.cp-none{display:flex;align-items:center;gap:4px;cursor:pointer}
 .opt-h-part-wrap{display:flex;align-items:center;justify-content:center;gap:1px}
 .opt-h-list{line-height:1.65}
 .opt-li{display:flex;align-items:flex-start;gap:4px;position:relative}
@@ -347,6 +390,12 @@ body.mode-projects .rail{display:none}
 .opt-photos{display:grid;gap:8px}
 .opt-ph{aspect-ratio:var(--opt-ratio,4/3);overflow:hidden;background:var(--bg2)}
 .opt-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.opt-ph{position:relative}
+.opt-ph-tools{position:absolute;top:3px;right:3px;display:none;gap:2px;z-index:2}
+.opt-ph:hover .opt-ph-tools{display:flex}
+.opt-ph-tools span{width:18px;height:18px;border-radius:4px;background:rgba(0,0,0,.6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer}
+.opt-ph-tools span:hover{background:rgba(0,0,0,.85)}
+.opt-ph-tools span.danger:hover{background:#c0392b}
 .opt-ph.empty{background:none;border:1.3px dashed var(--border);display:flex;align-items:center;justify-content:center;text-align:center;font-size:9.5px;color:var(--fg4);line-height:1.4;padding:4px}
 .opt-ph.empty.add{cursor:pointer;flex-direction:column;gap:3px}
 .opt-ph.empty.add:hover{border-color:var(--accent);color:var(--accent)}
@@ -559,8 +608,15 @@ body.mode-projects .app-home-txt,body.mode-projects .app-home-sep{display:none}
     <div class="ov-hdr"><b id="ov-mat-title">새 재료</b><span class="ov-close" onclick="closeMatModal()"><i class="ti ti-x"></i></span></div>
     <div class="ov-field"><label>재료명</label><input type="text" id="mat-name" placeholder="예) 삼한C1 그레이토담"></div>
     <div class="ov-field"><label>설명(색상/규격 등)</label><input type="text" id="mat-sub" placeholder="예) 그레이"></div>
-    <div class="ov-field"><label>대표 색상</label><input type="color" id="mat-color" value="#c8c0b8"></div>
-    <div class="ov-field"><label>예시 사진 (최대 3장)</label><div class="mat-photo-grid" id="mat-photo-grid"></div></div>
+    <div class="ov-field"><label>예시 사진 (최대 3장 · 첫 번째가 대표 사진)</label><div class="mat-photo-grid" id="mat-photo-grid"></div></div>
+    <div class="ov-field"><label>대표 색상</label>
+      <div class="mc-row">
+        <div class="mc-sw" id="mat-color-sw"></div><span class="mc-txt" id="mat-color-txt"></span>
+        <button class="btn" id="mat-drop-btn" onclick="toggleEyedrop()"><i class="ti ti-color-picker"></i> 사진에서 찍기</button>
+        <button class="btn" onclick="clearMatColor()">색 없음</button>
+      </div>
+      <div class="mc-drop" id="mat-drop"></div>
+    </div>
     <div class="ov-actions">
       <button class="btn" onclick="closeMatModal()">취소</button>
       <button class="btn btn-dark" onclick="saveMatModal()">저장</button>
@@ -619,9 +675,66 @@ function getMat(id){for(const v of Object.values(DB)){const m=v.find(m=>m.id===i
 let BRAND_LOGO = null;
 
 function getCatOf(id){for(const[c,ms] of Object.entries(DB)){if(ms.find(m=>m.id===id))return c;}return '';}
-function matSwatchStyle(m){
-  if(m.exImgs && m.exImgs.length) return `background-image:url('${m.exImgs[0]}');background-size:cover;background-position:center`;
-  return `background:${m.color}`;
+// 재료 대표 이미지: 사진 있으면 <img>(인쇄 시 배경그래픽 꺼져도 나옴), 없으면 대표색, 색도 없으면 빗금 빈칸
+function matSwatchHtml(m, cls){
+  if(m.exImgs && m.exImgs.length) return `<div class="${cls} sw-img"><img src="${m.exImgs[0]}" alt=""></div>`;
+  if(m.color) return `<div class="${cls} sw-color" style="background:${m.color}"></div>`;
+  return `<div class="${cls} sw-none"></div>`;
+}
+
+/* ===== 대표색 = 대표 사진에서 추출 =====
+   m.color     : '#rrggbb' 또는 '' (색 없음)
+   m.colorSrc  : 'pick'(스포이드로 직접 찍음 — 사진이 바뀌어도 유지) | 'auto'(대표 사진 가운데 평균) | ''(사진 없음 → 색 없음)
+   랜덤 배정은 하지 않음. 사진이 없으면 색도 지정하지 않음. */
+const _cvCache = new Map();
+function loadImgEl(src){ return new Promise(r=>{ const i=new Image(); i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; }); }
+async function imgCanvas(src){
+  if(!src) return null;
+  if(_cvCache.has(src)) return _cvCache.get(src);
+  const img = await loadImgEl(src); if(!img || !img.naturalWidth) return null;
+  const w = Math.min(400, img.naturalWidth), h = Math.max(1, Math.round(img.naturalHeight*w/img.naturalWidth));
+  const cv = document.createElement('canvas'); cv.width=w; cv.height=h;
+  const g = cv.getContext('2d', {willReadFrequently:true});
+  g.fillStyle='#fff'; g.fillRect(0,0,w,h); g.drawImage(img,0,0,w,h);
+  const o = {g, w, h};
+  if(_cvCache.size>30) _cvCache.clear();
+  _cvCache.set(src, o);
+  return o;
+}
+function rgbHex(r,g,b){ return '#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join(''); }
+function avgColorAt(o, cx, cy, r){
+  const x0=Math.max(0,Math.floor(cx-r)), y0=Math.max(0,Math.floor(cy-r));
+  const x1=Math.min(o.w,Math.ceil(cx+r+1)), y1=Math.min(o.h,Math.ceil(cy+r+1));
+  if(x1<=x0 || y1<=y0) return '';
+  const d = o.g.getImageData(x0,y0,x1-x0,y1-y0).data;
+  let R=0,G=0,B=0,n=0;
+  for(let i=0;i<d.length;i+=4){ R+=d[i]; G+=d[i+1]; B+=d[i+2]; n++; }
+  return n ? rgbHex(R/n,G/n,B/n) : '';
+}
+// 대표 사진 가운데(가로·세로 절반 영역) 평균색
+async function autoMatColor(src){
+  const o = await imgCanvas(src); if(!o) return '';
+  return avgColorAt(o, o.w/2, o.h/2, Math.min(o.w,o.h)/4);
+}
+// 사진이 바뀐 재료의 대표색 갱신 (직접 찍은 색은 그대로)
+async function refreshMatColor(m){
+  if(m.colorSrc==='pick' && m.color) return;
+  const src = (m.exImgs||[])[0];
+  const c = src ? await autoMatColor(src) : '';
+  m.color = c; m.colorSrc = c ? 'auto' : '';
+}
+// 예전 데이터: 대표색이 전부 랜덤 팔레트에서 배정돼 있었음 → 한 번만 사진 기준으로 다시 계산 (사진 없으면 색 없음)
+let _dataLoaded = false;
+async function migrateMatColors(){
+  if(!_dataLoaded || SEEDS.includes('color-v1')) return 0;
+  let n = 0;
+  for(const m of Object.values(DB).flat()){
+    if(m.colorSrc==='pick') continue;
+    await refreshMatColor(m); n++;
+  }
+  SEEDS.push('color-v1');
+  render(); markDirty(); historyReset();
+  return n;
 }
 
 let projects = [];
@@ -905,7 +1018,7 @@ function blockHtml(container, containerId, b, i){
     const chips = b.matIds.map(id=>{
       const mat = getMat(id); if(!mat) return '';
       return `<div class="mat-chip" onclick="openPicker('${containerId}','${b.id}')">
-        <div class="mat-sw" style="${matSwatchStyle(mat)}"></div>
+        ${matSwatchHtml(mat,'mat-sw')}
         <div><div class="mat-nm">${esc(mat.name)}</div><div class="mat-cat">${esc(getCatOf(mat.id))} · ${esc(mat.sub)}</div></div>
         <div class="mat-chip-del no-print" onclick="event.stopPropagation();removeMat('${containerId}','${b.id}','${id}')"><i class="ti ti-x"></i></div>
       </div>`;
@@ -1765,7 +1878,7 @@ function optionBlockHtml(cid, b, toolbarBase){
     `<div class="blk-tbtn" onclick="toggleOptStack('${cid}','${b.id}')" title="${b.stack?'사진을 옆으로 나란히':'사진을 위아래로 쌓기 (옵션 3개씩 한 줄)'}"><i class="ti ti-${b.stack?'layout-columns':'layout-rows'}"></i></div><div class="blk-tbtn danger"`);
   const multi = b.parts.length > 1;
   const head = b.parts.map((part,pi)=>{
-    const partCell = part.name ? `<td class="opt-h-part"><div class="opt-h-part-wrap">[ <span contenteditable data-ph="부위" oninput="renameOptPart('${cid}','${b.id}',${pi},this)">${esc(part.name)}</span> ]${multi?`<span class="opt-mini danger no-print" onclick="removeOptPart('${cid}','${b.id}',${pi})" title="이 부위 삭제"><i class="ti ti-x"></i></span>`:''}</div></td>` : '';
+    const partCell = part.name ? `<td class="opt-h-part ${part.color?'colored':''}" style="${part.color?`background:${part.color}`:''}"><div class="opt-h-part-wrap">[ <span contenteditable data-ph="부위" oninput="renameOptPart('${cid}','${b.id}',${pi},this)">${esc(part.name)}</span> ]<span class="opt-mini no-print" onclick="openPartColor(event,'${cid}','${b.id}',${pi})" title="부위 색 (셀 배경색)"><i class="ti ti-palette"></i></span>${multi?`<span class="opt-mini danger no-print" onclick="removeOptPart('${cid}','${b.id}',${pi})" title="이 부위 삭제"><i class="ti ti-x"></i></span>`:''}</div></td>` : '';
     const items = part.options.map((o,oi)=>{
       const key = `${b.id}-${pi}-${oi}`;
       return `<div class="opt-li ${o.on?'on':''} ${o.hide?'hidden-photo':''}">
@@ -1791,19 +1904,24 @@ function optionBlockHtml(cid, b, toolbarBase){
   b.parts.forEach((part,pi)=>part.options.forEach((o,oi)=>{
     if(!o.matId || o.hide) return;
     const m = getMat(o.matId); if(!m) return;
-    const imgs = (m.exImgs||[]).slice(0,3);
+    const pics = optPics(o, m);
+    const imgs = pics.map(p=>p.src);
+    const libN = (m.exImgs||[]).length;
+    const offN = libN - imgs.length;
     const n = Math.max(1, imgs.length);
     const span = b.stack ? 1 : n;
-    const pre = multi && part.name ? `[${esc(part.name)}] ` : '';
+    const pre = multi && part.name ? (part.color ? `<span class="opt-part-tag" style="background:${part.color}">${esc(part.name)}</span>` : `[${esc(part.name)}] `) : '';
     groups.push(`<div class="opt-grp ${o.on?'on':''}" style="grid-column:span ${span}">
       <div class="opt-cap"><span class="opt-box" onclick="toggleOpt('${cid}','${b.id}',${pi},${oi})">${o.on?'■':'□'}</span><span>${pre}<span data-ok="${b.id}-${pi}-${oi}">${esc(optName(o))}</span></span>
         <span class="opt-cap-tools no-print">
           ${m.sub && o.hideSub ? `<span class="opt-mini" onclick="toggleOptSub('${cid}','${b.id}',${pi},${oi})" title="라이브러리 공통 설명 다시 보이기"><i class="ti ti-books"></i></span>` : ''}
-          ${imgs.length && imgs.length<3 ? `<label class="opt-mini" title="사진 추가 (라이브러리에 저장, 최대 3장)"><i class="ti ti-photo-plus"></i><input type="file" accept="image/*" multiple hidden onchange="addMatPhotos('${m.id}',this.files);this.value=''"></label>` : ''}
+          ${offN>0 && imgs.length ? `<span class="opt-mini" onclick="showOptPics('${cid}','${b.id}',${pi},${oi})" title="뺀 사진 ${offN}장 다시 넣기"><i class="ti ti-photo-up"></i></span>` : ''}
+          ${imgs.length && libN<3 ? `<label class="opt-mini" title="사진 추가 (라이브러리에 저장, 최대 3장)"><i class="ti ti-photo-plus"></i><input type="file" accept="image/*" multiple hidden onchange="addMatPhotos('${m.id}',this.files);this.value=''"></label>` : ''}
           <span class="opt-mini" onclick="toggleOptPhoto('${cid}','${b.id}',${pi},${oi})" title="사진 숨기기 (체크표에만 표시)"><i class="ti ti-photo-off"></i></span>
         </span></div>
       <div class="opt-photos" style="grid-template-columns:repeat(${b.stack?1:n},1fr)" ondragover="if(event.dataTransfer.types.includes('Files')){event.preventDefault();this.classList.add('drop')}" ondragleave="this.classList.remove('drop')" ondrop="this.classList.remove('drop');if(event.dataTransfer.files.length){event.preventDefault();addMatPhotos('${m.id}',event.dataTransfer.files)}">
-        ${imgs.length ? imgs.map(src=>`<div class="opt-ph"><img src="${src}"></div>`).join('')
+        ${imgs.length ? pics.map((p,k)=>`<div class="opt-ph"><img src="${p.src}"><div class="opt-ph-tools no-print">${k>0?`<span onclick="moveOptPic('${cid}','${b.id}',${pi},${oi},${k},-1)" title="왼쪽으로"><i class="ti ti-chevron-left"></i></span>`:''}${k<imgs.length-1?`<span onclick="moveOptPic('${cid}','${b.id}',${pi},${oi},${k},1)" title="오른쪽으로"><i class="ti ti-chevron-right"></i></span>`:''}<span class="danger" onclick="hideOptPic('${cid}','${b.id}',${pi},${oi},${p.i})" title="이 페이지에서 이 사진 빼기 (라이브러리 사진은 그대로)"><i class="ti ti-x"></i></span></div></div>`).join('')
+          : libN ? `<div class="opt-ph empty add no-print" onclick="showOptPics('${cid}','${b.id}',${pi},${oi})" title="뺀 사진 다시 넣기"><i class="ti ti-photo-up"></i>사진을 모두 뺐어요<br><span>눌러서 다시 넣기 (${libN}장)</span></div>`
           : `<label class="opt-ph empty add no-print" title="클릭하거나 사진을 끌어다 놓으세요"><i class="ti ti-photo-plus"></i>사진 추가 (최대 3장)<br><span>라이브러리 "${esc(getCatOf(m.id))} › ${esc(m.name)}"에 저장돼요</span><input type="file" accept="image/*" multiple hidden onchange="addMatPhotos('${m.id}',this.files);this.value=''"></label>`}
       </div>
       ${m.sub && !o.hideSub ? `<div class="opt-sub-wrap"><div class="opt-sub lib" contenteditable data-sub="${m.id}" title="라이브러리 공통 설명 — 고치면 이 재료를 쓰는 모든 프로젝트에 반영돼요" oninput="editMatSub('${m.id}',this)">${esc(m.sub)}</div><span class="opt-mini no-print" onclick="toggleOptSub('${cid}','${b.id}',${pi},${oi})" title="이 페이지에서만 숨기기"><i class="ti ti-eye-off"></i></span></div>` : ''}
@@ -1891,6 +2009,7 @@ async function addMatPhotos(matId, fileList){
   const before = m.exImgs.length;
   const ok = applyOrRevert(()=>{ m.exImgs.push(...urls); }, ()=>{ m.exImgs.splice(before); });
   if(!ok) return;
+  if(before===0){ await refreshMatColor(m); markDirty(); }   // 첫 사진 → 대표색 자동
   const skipped = files.length - urls.length;
   toast(`라이브러리 "${getCatOf(m.id)} › ${m.name}"에 사진 ${urls.length}장 저장 — 이 재료를 쓰는 모든 페이지에 나와요${skipped>0?` (최대 3장이라 ${skipped}장은 뺐어요)`:''}`);
 }
@@ -1906,6 +2025,41 @@ function editMatSub(matId, el){
   markDirty();
 }
 function optAt(cid,bId,pi,oi){ return getBlock(cid,bId).parts[pi].options[oi]; }
+/* 옵션 사진 순서·빼기 — 이 페이지(옵션)에만 저장. 라이브러리 사진은 그대로.
+   o.picOrder: 라이브러리 사진 번호 순서 (없으면 라이브러리 순서). 라이브러리에 새로 생긴 사진은 끝에 붙음
+   o.picOff  : 이 페이지에서 뺀 사진 번호 */
+function optPicOrder(o, m){
+  const n = (m.exImgs||[]).length;
+  const ord = (o.picOrder||[]).filter((i,k,a)=>Number.isInteger(i) && i>=0 && i<n && a.indexOf(i)===k);
+  for(let i=0;i<n;i++) if(!ord.includes(i)) ord.push(i);
+  return ord;
+}
+function optPics(o, m){
+  const off = o.picOff||[];
+  return optPicOrder(o, m).filter(i=>!off.includes(i)).slice(0,3).map(i=>({src:m.exImgs[i], i}));
+}
+function moveOptPic(cid,bId,pi,oi,k,dir){
+  const o = optAt(cid,bId,pi,oi); const m = getMat(o.matId); if(!m) return;
+  const ord = optPicOrder(o, m);
+  const vis = optPics(o, m).map(p=>p.i);
+  const j = k+dir; if(j<0 || j>=vis.length) return;
+  const a = ord.indexOf(vis[k]), b = ord.indexOf(vis[j]);
+  [ord[a], ord[b]] = [ord[b], ord[a]];
+  o.picOrder = ord;
+  render(); markDirty();
+}
+function hideOptPic(cid,bId,pi,oi,idx){
+  const o = optAt(cid,bId,pi,oi);
+  const prev = o.picOff ? [...o.picOff] : null;
+  if(_hist.timer) historyCommit();
+  if(applyOrRevert(()=>{ o.picOff = [...(o.picOff||[]), idx]; }, ()=>{ if(prev) o.picOff = prev; else delete o.picOff; }))
+    showUndo('이 페이지에서 사진을 뺐어요 (라이브러리 사진은 그대로예요)');
+}
+function showOptPics(cid,bId,pi,oi){
+  const o = optAt(cid,bId,pi,oi);
+  const prev = o.picOff;
+  applyOrRevert(()=>{ delete o.picOff; }, ()=>{ o.picOff = prev; });
+}
 function toggleOpt(cid,bId,pi,oi){ const o=optAt(cid,bId,pi,oi); o.on=!o.on; render(); markDirty(); }
 function editOptText(cid,bId,pi,oi,el){
   const o = optAt(cid,bId,pi,oi);
@@ -1960,6 +2114,47 @@ function removeOptPart(cid,bId,pi){
   parts.splice(pi,1);
   render(); markDirty();
 }
+/* 부위 색 — [부위] 셀 배경색. 사진 위 제목줄의 부위 표시도 같은 색 */
+const PART_COLORS = ['#FFF2CC','#FCE5CD','#F4CCCC','#EAD1DC','#D9D2E9','#CFE2F3','#D0E0E3','#D9EAD3',
+                     '#FFD966','#F6B26B','#EA9999','#D5A6BD','#B4A7D6','#9FC5E8','#A2C4C9','#B6D7A8'];
+let _pcCtx = null;
+function openPartColor(ev,cid,bId,pi){
+  ev.stopPropagation();
+  closePartColor();
+  const part = getBlock(cid,bId).parts[pi];
+  _pcCtx = {cid,bId,pi};
+  const cur = (part.color||'').toUpperCase();
+  const pop = document.createElement('div');
+  pop.id = 'part-color-pop'; pop.className = 'color-pop no-print';
+  pop.innerHTML = `<div class="cp-title">[${esc(part.name)}] 부위 색</div>
+    <div class="cp-grid">${PART_COLORS.map(c=>`<span class="cp-sw ${c===cur?'on':''}" style="background:${c}" title="${c}" onclick="setPartColor('${c}')"></span>`).join('')}</div>
+    <div class="cp-row">
+      <label class="cp-custom" title="직접 고르기"><input type="color" value="${part.color||'#ffe599'}" oninput="setPartColor(this.value,true)"><i class="ti ti-color-picker"></i> 직접</label>
+      <span class="cp-none" onclick="setPartColor('')"><i class="ti ti-ban"></i> 색 없음</span>
+    </div>`;
+  document.body.appendChild(pop);
+  const r = ev.currentTarget.getBoundingClientRect();
+  const pw = pop.offsetWidth, ph = pop.offsetHeight;
+  let x = r.left, y = r.bottom + 6;
+  if(x + pw > innerWidth - 8) x = innerWidth - pw - 8;
+  if(y + ph > innerHeight - 8) y = r.top - ph - 6;
+  pop.style.left = Math.max(8,x) + 'px'; pop.style.top = Math.max(8,y) + 'px';
+  setTimeout(()=>document.addEventListener('mousedown', _pcOutside), 0);
+}
+function _pcOutside(e){ const pop = document.getElementById('part-color-pop'); if(pop && !pop.contains(e.target)) closePartColor(); }
+function closePartColor(){
+  const pop = document.getElementById('part-color-pop'); if(pop) pop.remove();
+  document.removeEventListener('mousedown', _pcOutside);
+  _pcCtx = null;
+}
+function setPartColor(c, keepOpen){
+  if(!_pcCtx) return;
+  const {cid,bId,pi} = _pcCtx;
+  const b = getBlock(cid,bId); if(!b || !b.parts[pi]) { closePartColor(); return; }
+  if(c) b.parts[pi].color = c; else delete b.parts[pi].color;
+  render(); markDirty();
+  if(!keepOpen) closePartColor();
+}
 function renameOptPart(cid,bId,pi,el){ getBlock(cid,bId).parts[pi].name = el.textContent.trim(); markDirty(); }
 function nameOptPart(cid,bId,pi){ getBlock(cid,bId).parts[pi].name = '부위'; render(); markDirty(); }
 function toggleOptStack(cid,bId){
@@ -1987,7 +2182,7 @@ function ensureMat(cat, name, sub){
   if(!DB[cat]) DB[cat] = [];
   let m = DB[cat].find(x=>x.name===name);
   if(!m){
-    m = {id:uid('sd'), name, sub:sub||'', color:nextColor(), exImgs:[]};
+    m = {id:uid('sd'), name, sub:sub||'', color:'', exImgs:[]};
     DB[cat].push(m);
   } else if(sub && !m.sub){ m.sub = sub; }
   return m.id;
@@ -2163,7 +2358,8 @@ function goProjectsList(){
 }
 function renderLibrary(){
   const cats = Object.keys(DB);
-  const catsHtml = cats.map(c=>`<div class="lib-cat ${c===curLibCat?'on':''}" onclick="selLibCat('${c}')">
+  if(curLibCat && !DB[curLibCat]) curLibCat = cats[0] || null;
+  const catsHtml = cats.map(c=>`<div class="lib-cat ${c===curLibCat?'on':''}" data-c="${esc(c)}" onclick="selLibCat(this.dataset.c)" ondblclick="renameLibCategory()" title="두 번 클릭하면 이름 바꾸기">
       <span>${esc(c)}</span><span class="cnt">${DB[c].length}</span>
     </div>`).join('') + `<div class="lib-cat lib-cat-add" onclick="addLibCategory()"><i class="ti ti-plus" style="font-size:11px"></i> 새 카테고리</div>`;
 
@@ -2171,71 +2367,219 @@ function renderLibrary(){
   const grid = mats.map(m=>`
     <div class="mat-card" onclick="openMatModal('${m.id}')">
       <div class="mat-card-del no-print" onclick="event.stopPropagation();deleteMat('${m.id}')"><i class="ti ti-x"></i></div>
-      <div class="mat-card-sw" style="${matSwatchStyle(m)}"></div>
+      ${matSwatchHtml(m,'mat-card-sw')}
       <div class="mat-card-body"><div class="mat-card-nm">${esc(m.name)}</div><div class="mat-card-sub">${esc(m.sub)}</div></div>
     </div>`).join('') + `<div class="mat-add-card" onclick="openMatModal()"><i class="ti ti-plus" style="font-size:18px"></i>새 재료</div>`;
 
   document.getElementById('lib-root').innerHTML = `
     <div class="lib-cats"><div class="lib-cats-hdr">카테고리</div>${catsHtml}</div>
     <div class="lib-main">
-      <div class="lib-main-hdr"><b style="font-size:13px">${esc(curLibCat||'')}</b></div>
+      <div class="lib-main-hdr"><b style="font-size:13px">${esc(curLibCat||'')}</b>
+        ${curLibCat?`<span class="lib-cat-tools"><button class="btn" onclick="renameLibCategory()"><i class="ti ti-pencil"></i> 이름 바꾸기</button><button class="btn lib-cat-delbtn" onclick="deleteLibCategory()"><i class="ti ti-trash"></i> 카테고리 삭제</button></span>`:''}</div>
       <div class="lib-grid">${grid}</div>
     </div>`;
 }
 function selLibCat(c){ curLibCat=c; renderLibrary(); }
 function addLibCategory(){
-  markDirty();
-  const name = prompt('새 카테고리 이름을 입력하세요');
-  if(!name || DB[name]) return;
+  const name = (prompt('새 카테고리 이름을 입력하세요')||'').trim();
+  if(!name) return;
+  if(DB[name]){ toast('이미 있는 카테고리예요'); curLibCat = name; renderLibrary(); return; }
   DB[name] = [];
+  markDirty();
   curLibCat = name;
   renderLibrary();
 }
+// 카테고리 이름 바꾸기 — 순서는 그대로, 재료 id는 그대로라 프로젝트 페이지는 영향 없음
+function renameLibCategory(){
+  const old = curLibCat; if(!old || !DB[old]) return;
+  const nw = (prompt('카테고리 이름', old)||'').trim();
+  if(!nw || nw===old) return;
+  if(DB[nw]){ toast('같은 이름의 카테고리가 이미 있어요'); return; }
+  const nd = {};
+  Object.keys(DB).forEach(k=>{ nd[k===old?nw:k] = DB[k]; });
+  DB = nd; curLibCat = nw;
+  if(_lastNewCat===old) _lastNewCat = nw;
+  renderLibrary(); markDirty();
+  toast(`카테고리 이름을 "${nw}"(으)로 바꿨어요`);
+}
+// 이 재료들이 프로젝트·템플릿 페이지에 몇 군데 쓰였는지
+function countMatUsage(ids){
+  const set = new Set(ids); let n = 0;
+  const visit = bl=>(bl||[]).forEach(b=>{
+    if(b.type==='material') n += (b.matIds||[]).filter(id=>set.has(id)).length;
+    if(b.type==='option') (b.parts||[]).forEach(p=>(p.options||[]).forEach(o=>{ if(set.has(o.matId)) n++; }));
+  });
+  projects.forEach(p=>(p.spaces||[]).forEach(sp=>visit(sp.blocks)));
+  PAGE_TEMPLATES.forEach(t=>visit(t.blocks));
+  return n;
+}
+function deleteLibCategory(){
+  const cat = curLibCat; if(!cat || !DB[cat]) return;
+  const mats = DB[cat];
+  if(mats.length){
+    const used = countMatUsage(mats.map(m=>m.id));
+    const msg = `"${cat}" 카테고리와 그 안의 재료 ${mats.length}개를 삭제할까요?` +
+      (used ? `\n\n이 재료들은 프로젝트·템플릿 페이지 ${used}곳에 쓰이고 있어요. 삭제하면 그 자리에는 "(삭제된 재료)"로 남아요.` : '') +
+      `\n\n(삭제 직후 "되돌리기"로 복구할 수 있어요)`;
+    if(!confirm(msg)) return;
+  }
+  if(_hist.timer) historyCommit();   // 직전 작업과 섞이지 않게 → "되돌리기"는 삭제만 되돌림
+  delete DB[cat];
+  curLibCat = Object.keys(DB)[0] || null;
+  renderLibrary(); markDirty();
+  showUndo(`"${cat}" 카테고리를 삭제했어요${mats.length?` (재료 ${mats.length}개)`:''}`);
+}
 let tempExImgs = [];
+let tempColor = '', tempColorSrc = '', _dropIdx = 0;
 function openMatModal(matId){
   editMatId = matId || null;
   const m = matId ? getMat(matId) : null;
   document.getElementById('ov-mat-title').textContent = m ? '재료 편집' : '새 재료';
   document.getElementById('mat-name').value = m ? m.name : '';
   document.getElementById('mat-sub').value = m ? m.sub : '';
-  document.getElementById('mat-color').value = m ? m.color : '#c8c0b8';
   tempExImgs = m ? [...(m.exImgs||[])] : [];
+  tempColor = m ? (m.color||'') : '';
+  tempColorSrc = m ? (m.colorSrc||'') : '';
+  // 직접 찍은 색이 아니면 지금 사진 기준으로 다시 보여줌
+  if(tempColorSrc!=='pick') tempColorSrc = tempColor ? 'auto' : '';
+  closeEyedrop();
   renderMatPhotoGrid();
   document.getElementById('ov-mat').classList.add('show');
 }
 function renderMatPhotoGrid(){
   let html = '';
+  const n = tempExImgs.filter(Boolean).length;
   for(let i=0;i<3;i++){
     const img = tempExImgs[i];
     html += `<div class="mat-photo-slot ${img?'has-img':''}">
       ${img?`<img src="${img}">`:''}
+      ${img&&i===0&&n>1?`<span class="mat-photo-badge">대표</span>`:''}
       <input type="file" accept="image/*" onchange="uploadMatPhoto(${i},this)">
       <i class="ti ti-camera-plus cam"></i>
-      ${img?`<div class="mat-photo-del" onclick="event.preventDefault();delMatPhoto(${i})"><i class="ti ti-x"></i></div>`:''}
+      ${img?`<div class="mat-photo-del" onclick="event.preventDefault();delMatPhoto(${i})" title="사진 삭제"><i class="ti ti-x"></i></div>`:''}
+      ${img&&n>1?`<div class="mat-photo-mv">${i>0?`<span onclick="event.preventDefault();moveMatPhoto(${i},-1)" title="앞으로"><i class="ti ti-chevron-left"></i></span>`:''}${i<n-1?`<span onclick="event.preventDefault();moveMatPhoto(${i},1)" title="뒤로"><i class="ti ti-chevron-right"></i></span>`:''}</div>`:''}
     </div>`;
   }
   document.getElementById('mat-photo-grid').innerHTML = html;
+  updateMatColorUi();
+}
+// 대표 사진이 바뀌면(직접 찍은 색이 아닐 때) 대표색 자동 갱신
+async function syncAutoColor(){
+  if(tempColorSrc==='pick') return;
+  const src = tempExImgs.filter(Boolean)[0];
+  const c = src ? await autoMatColor(src) : '';
+  tempColor = c; tempColorSrc = c ? 'auto' : '';
+  updateMatColorUi();
+}
+function updateMatColorUi(){
+  const sw = document.getElementById('mat-color-sw'); if(!sw) return;
+  sw.className = 'mc-sw ' + (tempColor ? '' : 'sw-none');
+  sw.style.background = tempColor || '';
+  const has = tempExImgs.some(Boolean);
+  document.getElementById('mat-color-txt').textContent =
+    tempColor ? (tempColorSrc==='pick' ? `${tempColor} · 사진에서 직접 찍음` : `${tempColor} · 대표 사진에서 자동`)
+              : (has ? '색 없음' : '색 없음 (사진을 넣으면 자동으로 정해져요)');
+  const btn = document.getElementById('mat-drop-btn');
+  btn.disabled = !has; btn.style.opacity = has ? '' : '.4';
 }
 function uploadMatPhoto(idx, input){
   const f = input.files[0]; if(!f) return;
-  shrinkImage(f, 1200, 0.82).then(url=>{ if(url){ tempExImgs[idx] = url; renderMatPhotoGrid(); } });
+  shrinkImage(f, 1200, 0.82).then(url=>{
+    if(!url) return;
+    tempExImgs[idx] = url; tempExImgs = tempExImgs.filter(Boolean);
+    renderMatPhotoGrid(); syncAutoColor();
+    if(document.getElementById('mat-drop').classList.contains('show')) renderEyedrop();
+  });
 }
-function delMatPhoto(idx){ tempExImgs.splice(idx,1); renderMatPhotoGrid(); }
-function closeMatModal(){ document.getElementById('ov-mat').classList.remove('show'); }
-function saveMatModal(){
-  markDirty();
+function delMatPhoto(idx){
+  tempExImgs.splice(idx,1);
+  if(!tempExImgs.some(Boolean)){ tempColorSrc=''; closeEyedrop(); }
+  renderMatPhotoGrid(); syncAutoColor();
+  if(document.getElementById('mat-drop').classList.contains('show')){ _dropIdx = Math.min(_dropIdx, tempExImgs.length-1); renderEyedrop(); }
+}
+function moveMatPhoto(i, dir){
+  const j = i+dir; if(j<0 || j>=tempExImgs.length) return;
+  [tempExImgs[i], tempExImgs[j]] = [tempExImgs[j], tempExImgs[i]];
+  renderMatPhotoGrid(); syncAutoColor();
+}
+function clearMatColor(){ tempColor=''; tempColorSrc=''; closeEyedrop(); updateMatColorUi(); toast('대표색을 지정하지 않아요 — 사진이 바뀌면 다시 자동으로 정해져요'); }
+/* 스포이드: 사진을 크게 띄우고 원하는 지점을 클릭 */
+function toggleEyedrop(){
+  const box = document.getElementById('mat-drop');
+  if(box.classList.contains('show')){ closeEyedrop(); return; }
+  if(!tempExImgs.some(Boolean)) return;
+  _dropIdx = 0; box.classList.add('show');
+  document.getElementById('mat-drop-btn').classList.add('on');
+  renderEyedrop();
+}
+function closeEyedrop(){
+  const box = document.getElementById('mat-drop'); if(!box) return;
+  box.classList.remove('show'); box.innerHTML='';
+  const b = document.getElementById('mat-drop-btn'); if(b) b.classList.remove('on');
+}
+function renderEyedrop(){
+  const imgs = tempExImgs.filter(Boolean);
+  if(!imgs.length){ closeEyedrop(); return; }
+  const src = imgs[_dropIdx] || imgs[0];
+  document.getElementById('mat-drop').innerHTML = `
+    <div class="mc-drop-stage"><img id="mat-drop-img" src="${src}" onmousemove="eyedropMove(event)" onclick="eyedropPick(event)"></div>
+    <div class="mc-drop-hint"><span class="mc-drop-live" id="mat-drop-live"></span><span id="mat-drop-live-txt">색을 찍을 곳을 클릭하세요</span></div>
+    ${imgs.length>1?`<div class="mc-drop-tabs">${imgs.map((u,i)=>`<img src="${u}" class="${i===_dropIdx?'on':''}" onclick="_dropIdx=${i};renderEyedrop()">`).join('')}</div>`:''}`;
+  imgCanvas(src); // 미리 준비
+}
+async function eyedropColorAt(ev){
+  const el = ev.currentTarget || ev.target;
+  const o = await imgCanvas(el.getAttribute('src')); if(!o) return '';
+  const r = el.getBoundingClientRect();
+  const fx = (ev.clientX - r.left)/r.width, fy = (ev.clientY - r.top)/r.height;
+  return avgColorAt(o, fx*o.w, fy*o.h, Math.max(2, o.w/100));
+}
+async function eyedropMove(ev){
+  const c = await eyedropColorAt({currentTarget:ev.currentTarget, clientX:ev.clientX, clientY:ev.clientY});
+  const live = document.getElementById('mat-drop-live'); if(!live || !c) return;
+  live.style.background = c;
+  document.getElementById('mat-drop-live-txt').textContent = `${c} — 클릭하면 이 색으로 정해요`;
+}
+async function eyedropPick(ev){
+  const c = await eyedropColorAt({currentTarget:ev.currentTarget, clientX:ev.clientX, clientY:ev.clientY});
+  if(!c) return;
+  tempColor = c; tempColorSrc = 'pick';
+  updateMatColorUi();
+  closeEyedrop();
+}
+function closeMatModal(){ closeEyedrop(); document.getElementById('ov-mat').classList.remove('show'); }
+// 라이브러리 사진 순서·삭제가 바뀌면, 옵션 블록에 저장된 "이 페이지 사진 순서/뺀 사진" 번호를 새 위치로 옮겨줌
+function forEachOption(fn){
+  const visit = bl=>(bl||[]).forEach(b=>{ if(b.type==='option') (b.parts||[]).forEach(p=>(p.options||[]).forEach(fn)); });
+  projects.forEach(p=>(p.spaces||[]).forEach(s=>visit(s.blocks)));
+  PAGE_TEMPLATES.forEach(t=>visit(t.blocks));
+}
+function remapMatPics(matId, oldArr, newArr){
+  const used = new Set();
+  const map = oldArr.map(s=>{ let j=-1; newArr.forEach((x,k)=>{ if(j<0 && x===s && !used.has(k)) j=k; }); if(j>=0) used.add(j); return j; });
+  const fix = arr => arr.map(i=>map[i]).filter(i=>i!==undefined && i>=0);
+  forEachOption(o=>{
+    if(o.matId!==matId) return;
+    if(o.picOrder) o.picOrder = fix(o.picOrder);
+    if(o.picOff){ o.picOff = fix(o.picOff); if(!o.picOff.length) delete o.picOff; }
+  });
+}
+async function saveMatModal(){
   const name = document.getElementById('mat-name').value.trim();
   if(!name){ toast('재료명을 입력하세요'); return; }
   const sub = document.getElementById('mat-sub').value.trim();
-  const color = document.getElementById('mat-color').value;
   const exImgs = tempExImgs.filter(Boolean);
+  if(!exImgs.length){ tempColor=''; tempColorSrc=''; }
+  else if(tempColorSrc!=='pick'){ tempColor = await autoMatColor(exImgs[0]); tempColorSrc = tempColor ? 'auto' : ''; }
   if(editMatId){
     const m = getMat(editMatId);
-    m.name = name; m.sub = sub; m.color = color; m.exImgs = exImgs;
+    remapMatPics(m.id, m.exImgs||[], exImgs);
+    m.name = name; m.sub = sub; m.color = tempColor; m.colorSrc = tempColorSrc; m.exImgs = exImgs;
   } else {
     if(!curLibCat){ toast('카테고리를 먼저 선택하세요'); return; }
-    DB[curLibCat].push({id:'m'+Date.now(), name, sub, color, exImgs});
+    DB[curLibCat].push({id:uid('m'), name, sub, color:tempColor, colorSrc:tempColorSrc, exImgs});
   }
+  markDirty();
   closeMatModal();
   renderLibrary();
   toast('저장됐어요');
@@ -2248,9 +2592,7 @@ function deleteMat(matId){
 }
 
 /* ===== 재료 사진 일괄 업로드 ===== */
-const COLORS = ["#c8c0b8","#e8e0d8","#d0cec8","#707070","#c0a060","#b8b8b8","#808080","#e0d8c0","#c09080","#f0ede8","#d0b888","#a8a8a4","#b09060","#a88848","#c0c0bc","#505050","#806040","#909090","#404040","#b89050"];
-let colorIdx = 0;
-function nextColor(){ return COLORS[colorIdx++ % COLORS.length]; }
+// (대표색 랜덤 배정 팔레트는 2026.11.09 제거 — 대표색은 사진에서 추출)
 
 function parseUlName(filename){
   const base = filename.replace(/\.[^.]+$/, '');
@@ -2328,15 +2670,15 @@ function renderUlPreview(){
   document.getElementById('ul-confirm-btn').disabled = (newCount+addCount)===0;
 }
 function closeBulkUpload(){ document.getElementById('ov-bulk').classList.remove('show'); }
-function confirmBulkUpload(){
-  markDirty();
+async function confirmBulkUpload(){
   const groups = ulParsed.groups || [];
   let applied = 0;
+  const touched = [];
   for(const g of groups){
     if(!DB[g.cat]) DB[g.cat] = [];
     let m = DB[g.cat].find(x=>x.name===g.name);
     if(!m){
-      m = {id:'u'+Date.now()+Math.random().toString(36).slice(2,7), name:g.name, sub:g.sub||'', color:nextColor(), exImgs:[]};
+      m = {id:uid('u'), name:g.name, sub:g.sub||'', color:'', exImgs:[]};
       DB[g.cat].push(m);
     }
     let added = false;
@@ -2345,9 +2687,11 @@ function confirmBulkUpload(){
       m.exImgs.push(url);
       added = true;
     }
-    if(added) applied++;
+    if(added){ applied++; touched.push(m); }
   }
   closeBulkUpload();
+  for(const m of touched) await refreshMatColor(m);   // 대표 사진에서 대표색
+  markDirty();
   renderLibrary();
   toast(`${applied}개 재료에 사진을 반영했어요`);
 }
@@ -2561,7 +2905,7 @@ function renderPickGrid(q){
   const all = Object.values(DB).flat().filter(m=>!q || m.name.includes(q) || (m.sub||'').includes(q) || getCatOf(m.id).includes(q));
   document.getElementById('ov-pick-grid').innerHTML = all.map(m=>`
     <div class="ov-item" onclick="pickMat('${m.id}')">
-      <div class="ov-sw" style="${matSwatchStyle(m)}"></div>
+      ${matSwatchHtml(m,'ov-sw')}
       <div><div class="ov-item-nm">${esc(m.name)}</div><div class="ov-item-sub">${esc(getCatOf(m.id))} · ${esc(m.sub)}</div></div>
     </div>`).join('') || `<div style="grid-column:1/-1;color:var(--fg4);font-size:11px;padding:10px">검색 결과 없음</div>`;
   renderPickNew(q, all);
@@ -2605,7 +2949,7 @@ function createMatFromPicker(){
   }
   if(!DB[cat]) DB[cat] = [];
   let m = DB[cat].find(x=>x.name===name);
-  if(!m){ m = {id:uid('m'), name, sub:'', color:nextColor(), exImgs:[]}; DB[cat].push(m); }
+  if(!m){ m = {id:uid('m'), name, sub:'', color:'', exImgs:[]}; DB[cat].push(m); }
   _lastNewCat = cat;
   markDirty();
   pickMat(m.id);
@@ -2809,6 +3153,7 @@ async function loadFromGithub(){
     if(content.PAGE_TEMPLATES) PAGE_TEMPLATES = content.PAGE_TEMPLATES;
     if(content.BRAND_LOGO) BRAND_LOGO = content.BRAND_LOGO;
     if(content.seeds) SEEDS = content.seeds;
+    _dataLoaded = true;
     updateSaveStatus('saved','불러옴');
     const seeded = applySeeds();
     historyReset();
@@ -2822,7 +3167,7 @@ loadGhSettings();
 historyReset();
 _routePending = !!ghSettings.token && !!_initialRoute && _initialRoute!=='#/' && _initialRoute!=='#';
 render();
-if(ghSettings.token) loadFromGithub().finally(()=>{ if(_routePending){ _routePending = false; syncRoute(); } setTimeout(shrinkOversizedImages, 1500); });
+if(ghSettings.token) loadFromGithub().finally(()=>{ if(_routePending){ _routePending = false; syncRoute(); } setTimeout(async()=>{ await migrateMatColors(); shrinkOversizedImages(); }, 1500); });
 </script>
 </body>
 </html>
