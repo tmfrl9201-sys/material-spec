@@ -385,6 +385,25 @@ body.mode-projects .rail{display:none}
 .opt-grp{min-width:0}
 .opt-cap{background:#ececec;text-align:center;font-size:10.5px;padding:2px 6px;margin-bottom:5px;display:flex;align-items:center;justify-content:center;gap:4px;position:relative;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .opt-grp.on .opt-cap{font-weight:700}
+.opt-cap[draggable=true]{cursor:grab}
+.opt-grip{position:absolute;left:3px;top:50%;transform:translateY(-50%);color:var(--fg4);font-size:11px;display:none}
+.opt-grp:hover .opt-grip{display:block}
+.opt-grp{position:relative}
+.opt-grp.drag-src{opacity:.35}
+.opt-grp.drop-l{box-shadow:-3px 0 0 var(--accent)}
+.opt-grp.drop-r{box-shadow:3px 0 0 var(--accent)}
+.opt-gap{position:relative;min-height:40px;border-radius:4px}
+.opt-gap .opt-mini{position:absolute;top:3px;right:3px;display:none}
+.opt-gap.tail{display:none}
+.opt-grid.dragging .opt-gap.tail{display:block}
+@media screen{
+  .opt-gap{border:1.3px dashed transparent}
+  .opt-grid:hover .opt-gap:not(.tail){border-color:var(--border2)}
+  .opt-gap:hover .opt-mini{display:flex}
+  .opt-grid.dragging .opt-gap{border-color:var(--border);background:rgba(0,0,0,.02)}
+  .opt-gap.drop{border-color:var(--accent)!important;background:var(--accent-bg)!important}
+  .thumb-page .opt-gap{border-color:transparent!important;background:none!important}
+}
 .opt-cap-tools{position:absolute;right:3px;top:50%;transform:translateY(-50%);display:none;gap:1px}
 .opt-grp:hover .opt-cap-tools{display:flex}
 .opt-photos{display:grid;gap:8px}
@@ -1903,6 +1922,7 @@ function optionBlockHtml(cid, b, toolbarBase){
   const groups = [];
   b.parts.forEach((part,pi)=>part.options.forEach((o,oi)=>{
     if(!o.matId || o.hide) return;
+    if(!o.id) o.id = uid('o');
     const m = getMat(o.matId); if(!m) return;
     const pics = optPics(o, m);
     const imgs = pics.map(p=>p.src);
@@ -1911,8 +1931,8 @@ function optionBlockHtml(cid, b, toolbarBase){
     const n = Math.max(1, imgs.length);
     const span = b.stack ? 1 : n;
     const pre = multi && part.name ? (part.color ? `<span class="opt-part-tag" style="background:${part.color}">${esc(part.name)}</span>` : `[${esc(part.name)}] `) : '';
-    groups.push(`<div class="opt-grp ${o.on?'on':''}" style="grid-column:span ${span}">
-      <div class="opt-cap"><span class="opt-box" onclick="toggleOpt('${cid}','${b.id}',${pi},${oi})">${o.on?'■':'□'}</span><span>${pre}<span data-ok="${b.id}-${pi}-${oi}">${esc(optName(o))}</span></span>
+    groups.push({id:o.id, span, html:`<div class="opt-grp ${o.on?'on':''}" data-gid="${o.id}" style="grid-column:span ${span}" ondragover="optGrpOver(event,this)" ondragleave="this.classList.remove('drop-l','drop-r')" ondrop="optGrpDrop(event,'${cid}','${b.id}','${o.id}',this)">
+      <div class="opt-cap" draggable="true" ondragstart="optGrpDragStart(event,'${b.id}','${o.id}')" ondragend="optGrpDragEnd()" title="끌어서 자리 옮기기"><span class="opt-grip no-print"><i class="ti ti-grip-vertical"></i></span><span class="opt-box" onclick="toggleOpt('${cid}','${b.id}',${pi},${oi})">${o.on?'■':'□'}</span><span>${pre}<span data-ok="${b.id}-${pi}-${oi}">${esc(optName(o))}</span></span>
         <span class="opt-cap-tools no-print">
           ${m.sub && o.hideSub ? `<span class="opt-mini" onclick="toggleOptSub('${cid}','${b.id}',${pi},${oi})" title="라이브러리 공통 설명 다시 보이기"><i class="ti ti-books"></i></span>` : ''}
           ${offN>0 && imgs.length ? `<span class="opt-mini" onclick="showOptPics('${cid}','${b.id}',${pi},${oi})" title="뺀 사진 ${offN}장 다시 넣기"><i class="ti ti-photo-up"></i></span>` : ''}
@@ -1926,15 +1946,22 @@ function optionBlockHtml(cid, b, toolbarBase){
       </div>
       ${m.sub && !o.hideSub ? `<div class="opt-sub-wrap"><div class="opt-sub lib" contenteditable data-sub="${m.id}" title="라이브러리 공통 설명 — 고치면 이 재료를 쓰는 모든 프로젝트에 반영돼요" oninput="editMatSub('${m.id}',this)">${esc(m.sub)}</div><span class="opt-mini no-print" onclick="toggleOptSub('${cid}','${b.id}',${pi},${oi})" title="이 페이지에서만 숨기기"><i class="ti ti-eye-off"></i></span></div>` : ''}
       <div class="opt-note" contenteditable data-ph="설명 (이 프로젝트에만)" oninput="editOptNote('${cid}','${b.id}',${pi},${oi},this)">${esc(o.note)}</div>
-    </div>`);
+    </div>`});
   }));
+  const cells = optGridCells(b, groups);
+  const used = cells.reduce((a,c)=>a+c.span,0);
+  const extra = (3 - used%3)%3 + 3;   // 끌고 있을 때만 보이는 빈 자리 (지금 줄 나머지 + 한 줄 더)
+  const gridHtml = cells.map((c,k)=> c.gap
+      ? `<div class="opt-gap" data-k="${k}" ondragover="optGapOver(event,this)" ondragleave="this.classList.remove('drop')" ondrop="optGapDrop(event,'${cid}','${b.id}',${k},this)"><span class="opt-mini no-print" onclick="removeOptGap('${cid}','${b.id}',${k})" title="빈칸 없애기"><i class="ti ti-x"></i></span></div>`
+      : c.html).join('')
+    + Array.from({length:extra},(_,j)=>`<div class="opt-gap tail no-print" ondragover="optGapOver(event,this)" ondragleave="this.classList.remove('drop')" ondrop="optGapDrop(event,'${cid}','${b.id}',${cells.length+j},this)"></div>`).join('');
 
   return `<div class="blk blk-option">${toolbar}
     <table class="opt-head"><tr>
       <td class="opt-h-lbl"><div contenteditable data-ph="구분" oninput="renameBlockLabel('${cid}','${b.id}',this)">${esc(b.label)}</div></td>
       ${head}
     </tr></table>
-    ${groups.length?`<div class="opt-grid" style="--opt-ratio:${b.ratio||'4/3'}">${groups.join('')}</div>`:''}
+    ${groups.length?`<div class="opt-grid" data-bid="${b.id}" style="--opt-ratio:${b.ratio||'4/3'}">${gridHtml}</div>`:''}
   </div>`;
 }
 // 프로젝트 페이지에서 옵션에 사진을 넣으면 → 라이브러리 재료(exImgs)에 저장 → 이 재료를 쓰는 모든 페이지에 반영
@@ -2025,6 +2052,92 @@ function editMatSub(matId, el){
   markDirty();
 }
 function optAt(cid,bId,pi,oi){ return getBlock(cid,bId).parts[pi].options[oi]; }
+/* ===== 옵션 사진 묶음(제목줄+사진) 자리 옮기기 =====
+   b.grpOrder = [옵션id | '_'(빈칸)] — 사진 줄의 배치 순서. 체크표 순서와는 별개(체크표는 그대로).
+   목록에 없는 묶음(새로 추가된 옵션)은 끝에 붙음. '_'는 빈칸 — 인쇄 시 아무것도 안 보이지만 자리는 차지(줄 바꿈 용도).
+   끌어서 다른 묶음 위에 놓으면 그 앞/뒤로 끼워 넣고, 빈칸 위에 놓으면 빈칸과 자리를 맞바꿈(원래 자리는 빈칸으로 남음). */
+function optGridCells(b, groups){
+  const byId = new Map(groups.map(g=>[g.id,g]));
+  const out = [], seen = new Set();
+  (b.grpOrder||[]).forEach(x=>{
+    if(x==='_') out.push({gap:true, span:1});
+    else if(byId.has(x) && !seen.has(x)){ out.push(byId.get(x)); seen.add(x); }
+  });
+  groups.forEach(g=>{ if(!seen.has(g.id)) out.push(g); });
+  while(out.length && out[out.length-1].gap) out.pop();       // 끝의 빈칸은 의미 없음
+  return out;
+}
+// 지금 화면에 보이는 배치를 id 목록으로 (숨긴 옵션 등은 빠짐)
+function curGrpList(b){
+  const ids = [];
+  b.parts.forEach(p=>p.options.forEach(o=>{ if(o.matId && !o.hide && getMat(o.matId)){ if(!o.id) o.id = uid('o'); ids.push({id:o.id, span:1}); } }));
+  return optGridCells(b, ids).map(c=>c.gap ? '_' : c.id);
+}
+function setGrpOrder(cid, bId, list){
+  const b = getBlock(cid,bId);
+  while(list.length && list[list.length-1]==='_') list.pop();
+  const prev = b.grpOrder ? [...b.grpOrder] : null;
+  if(_hist.timer) historyCommit();
+  applyOrRevert(()=>{ b.grpOrder = list; }, ()=>{ if(prev) b.grpOrder = prev; else delete b.grpOrder; });
+}
+let _grpDrag = null;
+function optGrpDragStart(ev, bId, gid){
+  _grpDrag = {bId, gid};
+  ev.dataTransfer.setData('text/x-optgrp', gid);
+  ev.dataTransfer.effectAllowed = 'move';
+  const grid = document.querySelector(`#page-root .opt-grid[data-bid="${bId}"]`);
+  if(grid) setTimeout(()=>grid.classList.add('dragging'), 0);
+  const grp = ev.target.closest('.opt-grp'); if(grp){ try{ ev.dataTransfer.setDragImage(grp, 20, 12); }catch(e){} setTimeout(()=>grp.classList.add('drag-src'),0); }
+}
+function optGrpDragEnd(){
+  _grpDrag = null;
+  document.querySelectorAll('#page-root .opt-grid.dragging').forEach(g=>g.classList.remove('dragging'));
+  document.querySelectorAll('#page-root .drag-src,#page-root .drop,#page-root .drop-l,#page-root .drop-r').forEach(e=>e.classList.remove('drag-src','drop','drop-l','drop-r'));
+}
+function _grpOk(ev, el){
+  if(!_grpDrag || !ev.dataTransfer.types.includes('text/x-optgrp')) return false;
+  const grid = el.closest('.opt-grid');
+  return grid && grid.dataset.bid===_grpDrag.bId;      // 같은 블록 안에서만
+}
+function optGrpOver(ev, el){
+  if(!_grpOk(ev, el) || el.dataset.gid===_grpDrag.gid) return;
+  ev.preventDefault();
+  const r = el.getBoundingClientRect(), right = ev.clientX > r.left + r.width/2;
+  el.classList.toggle('drop-r', right); el.classList.toggle('drop-l', !right);
+}
+function optGrpDrop(ev, cid, bId, gid, el){
+  if(!_grpOk(ev, el)) return;
+  ev.preventDefault();
+  const src = _grpDrag.gid;
+  const right = el.classList.contains('drop-r');
+  optGrpDragEnd();
+  if(src===gid) return;
+  const b = getBlock(cid,bId);
+  const list = curGrpList(b);
+  list.splice(list.indexOf(src), 1);
+  const t = list.indexOf(gid);
+  list.splice(right ? t+1 : t, 0, src);
+  setGrpOrder(cid, bId, list);
+}
+function optGapOver(ev, el){ if(!_grpOk(ev, el)) return; ev.preventDefault(); el.classList.add('drop'); }
+function optGapDrop(ev, cid, bId, k, el){
+  if(!_grpOk(ev, el)) return;
+  ev.preventDefault();
+  const src = _grpDrag.gid;
+  optGrpDragEnd();
+  const b = getBlock(cid,bId);
+  const list = curGrpList(b);
+  while(list.length <= k) list.push('_');
+  const s = list.indexOf(src);
+  [list[s], list[k]] = [list[k], list[s]];   // 빈칸과 맞바꿈 → 원래 자리는 빈칸
+  setGrpOrder(cid, bId, list);
+}
+function removeOptGap(cid, bId, k){
+  const list = curGrpList(getBlock(cid,bId));
+  if(list[k]!=='_') return;
+  list.splice(k,1);
+  setGrpOrder(cid, bId, list);
+}
 /* 옵션 사진 순서·빼기 — 이 페이지(옵션)에만 저장. 라이브러리 사진은 그대로.
    o.picOrder: 라이브러리 사진 번호 순서 (없으면 라이브러리 순서). 라이브러리에 새로 생긴 사진은 끝에 붙음
    o.picOff  : 이 페이지에서 뺀 사진 번호 */
