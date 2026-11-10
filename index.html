@@ -111,7 +111,61 @@ body.mode-editor .zoom-pill,body.mode-template .zoom-pill{display:flex}
 .sp-hdr-logo{font-size:9px;color:var(--fg4);text-align:right}
 .sp-name{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin:8px 0 10px}
 
-.blocks-flow{display:flex;flex-wrap:wrap;align-content:flex-start;gap:14px;flex:1}
+.blocks-flow{--bgap:14px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:var(--bgap);flex:1}
+/* 세로 칸 (아래로 쌓은 블록 묶음) */
+.blk-col{display:flex;flex-direction:column;gap:var(--bgap);min-width:0}
+.blk-col>.blk{flex:none!important;width:100%}
+.blk-col>.blk-img{max-width:100%}
+/* 블록 끌어 옮기기 표시 */
+.blk.drag-src{opacity:.35}
+.blk.dz-l{box-shadow:-3px 0 0 var(--accent)}
+.blk.dz-r{box-shadow:3px 0 0 var(--accent)}
+.blk.dz-t{box-shadow:0 -3px 0 var(--accent)}
+.blk.dz-b{box-shadow:0 3px 0 var(--accent)}
+.blocks-flow.dz-end{outline:2px dashed var(--accent);outline-offset:4px;border-radius:6px}
+.blk-tbtn.grip{cursor:grab}
+.blk-tbtn.lock-on{width:auto;padding:0 6px;gap:4px;color:var(--fg2)}
+.blk-tlabel{font-size:10px}
+/* 너비 조절 손잡이 (오른쪽 가장자리) */
+.blk-w-handle{position:absolute;top:8px;bottom:8px;right:-6px;width:8px;cursor:ew-resize;display:none;z-index:2}
+.blk:hover>.blk-w-handle{display:block}
+.blk-w-handle::after{content:'';position:absolute;left:3px;top:50%;height:26px;margin-top:-13px;width:3px;border-radius:2px;background:var(--accent);opacity:.55}
+.blk-w-badge{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:9.5px;background:var(--fg);color:#fff;border-radius:4px;padding:1px 5px;white-space:nowrap;display:none}
+.wsizing .blk-w-badge{display:block}
+.wsizing{outline:1.5px dashed var(--accent);outline-offset:2px;border-radius:6px}
+/* 잠금 */
+.blk.locked:hover{background:none}
+.blk.locked>*:not(.blk-toolbar){pointer-events:none}
+.blk.locked .no-print:not(.blk-toolbar){display:none!important}
+.blk.locked .blk-toolbar{border-color:var(--border)}
+/* 사진 틀 안 확대·이동 */
+.crop-frame{position:relative;overflow:hidden}
+.crop-frame img{transform-origin:center center}
+.crop-btn{position:absolute;right:2px;bottom:2px;width:16px;height:16px;border-radius:4px;background:rgba(0,0,0,.6);color:#fff;display:none;align-items:center;justify-content:center;font-size:9px;cursor:pointer;z-index:2}
+.crop-frame:hover .crop-btn{display:flex}
+.crop-frame.cropping{outline:2px solid var(--accent);outline-offset:1px;cursor:move;z-index:5}
+.crop-frame.cropping.panning{cursor:grabbing}
+.crop-frame.cropping .crop-btn,.crop-frame.cropping .opt-ph-tools{display:none!important}
+.crop-bar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;width:auto;padding:8px 10px}
+.crop-bar input[type=range]{width:110px}
+.crop-pct{font-size:10.5px;color:var(--fg3);min-width:34px}
+.crop-dpi{flex-basis:100%;font-size:10.5px;font-weight:600;padding:3px 7px;border-radius:5px}
+.crop-dpi.ok{background:#e6f4ea;color:#1e7e3e}
+.crop-dpi.mid{background:#fff4d6;color:#8a6100}
+.crop-dpi.low{background:#fdecea;color:#b3261e}
+.lowres-badge{position:absolute;top:5px;left:5px;font-size:9.5px;font-weight:600;background:rgba(179,38,30,.9);color:#fff;border-radius:4px;padding:1px 5px;display:flex;align-items:center;gap:3px;pointer-events:auto}
+.mat-card{position:relative}
+.mat-photo-px{position:absolute;left:3px;bottom:3px;font-size:8.5px;background:rgba(0,0,0,.55);color:#fff;border-radius:3px;padding:0 4px;z-index:2;pointer-events:none}
+.mat-photo-px.low{background:rgba(179,38,30,.9)}
+.crop-hint{flex-basis:100%;font-size:10px;color:var(--fg4)}
+/* 서식 팝업 공통 버튼 */
+.fp-row{display:flex;align-items:center;gap:5px;margin-bottom:7px}
+.fp-lbl{font-size:10.5px;color:var(--fg3);width:30px}
+.fp-val{font-size:11px;min-width:20px;text-align:center}
+.fp-btn{min-width:22px;height:22px;padding:0 4px;border:1px solid var(--border);border-radius:5px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--fg2);background:#fff;user-select:none}
+.fp-btn:hover{border-color:var(--fg3);color:var(--fg)}
+.fp-btn.on{background:var(--fg);color:#fff;border-color:var(--fg)}
+.fp-btn.wide{padding:0 8px;font-size:11px}
 .blk{position:relative;border-radius:8px;padding:4px}
 .blk:hover{background:rgba(45,106,224,0.035)}
 .blk-toolbar{position:absolute;top:-11px;right:2px;display:none;gap:2px;background:#fff;border:1px solid var(--border2);border-radius:6px;padding:2px;box-shadow:0 2px 8px rgba(0,0,0,.08);z-index:3}
@@ -198,6 +252,13 @@ body.mode-projects .rail{display:none}
 .lib-main{flex:1;padding:16px;overflow-y:auto}
 .lib-main-hdr{display:flex;align-items:center;margin-bottom:12px;gap:10px}
 .lib-cat-tools{margin-left:auto;display:flex;gap:6px}
+.lib-search{display:flex;align-items:center;gap:8px;border:1px solid var(--border);border-radius:8px;padding:0 10px;margin-bottom:14px;background:#fff}
+.lib-search:focus-within{border-color:var(--fg3)}
+.lib-search i{color:var(--fg3);font-size:14px}
+.lib-search input{flex:1;border:none;outline:none;font:inherit;font-size:12.5px;padding:9px 0;background:none}
+.lib-q-hint{font-size:11px;color:var(--fg3)}
+.lib-empty{font-size:12px;color:var(--fg3);padding:30px 0;text-align:center}
+.mat-card-cat{font-size:9.5px;color:var(--fg3);margin-bottom:1px}
 .lib-cat-tools .btn{padding:4px 10px;font-size:11px}
 .lib-cat-delbtn:hover{background:#fdecea;color:#c0392b;border-color:#f3c6c6}
 .lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
@@ -449,7 +510,7 @@ label.opt-mini{margin:0}
 .sp-toc-name{font-size:11px;color:var(--fg3);display:flex;align-items:center;gap:6px;margin-bottom:8px}
 .sp-toc-name span[contenteditable]{color:var(--fg);font-weight:700;font-size:12px;padding:1px 4px}
 .sp-toc-name .hint{font-size:10px;color:var(--fg4)}
-.pg-space.in-section .blocks-flow{gap:12px}
+.pg-space.in-section .blocks-flow{--bgap:12px}
 .sp-foot.auto{display:flex;justify-content:space-between;align-items:flex-end;text-align:right;color:var(--fg2)}
 .sp-foot.auto .pno{color:var(--fg3)}
 .sp-foot.auto .ftxt{border-bottom:1px solid var(--fg4);padding-bottom:1px}
@@ -695,8 +756,11 @@ let BRAND_LOGO = null;
 
 function getCatOf(id){for(const[c,ms] of Object.entries(DB)){if(ms.find(m=>m.id===id))return c;}return '';}
 // 재료 대표 이미지: 사진 있으면 <img>(인쇄 시 배경그래픽 꺼져도 나옴), 없으면 대표색, 색도 없으면 빗금 빈칸
-function matSwatchHtml(m, cls){
-  if(m.exImgs && m.exImgs.length) return `<div class="${cls} sw-img"><img src="${m.exImgs[0]}" alt=""></div>`;
+function matSwatchHtml(m, cls, cropKey){
+  if(m.exImgs && m.exImgs.length){
+    if(cropKey) return `<div class="${cls} sw-img crop-frame" data-crop="${cropKey}" onclick="event.stopPropagation()" ondblclick="startCrop(this)" title="두 번 클릭: 사진 확대·이동"><img src="${m.exImgs[0]}" alt="" style="${cropCss(cropGet(cropKey))}"><span class="crop-btn no-print" onclick="event.stopPropagation();startCrop(this.parentNode)" title="사진 확대·이동"><i class="ti ti-zoom-in"></i></span></div>`;
+    return `<div class="${cls} sw-img"><img src="${m.exImgs[0]}" alt=""></div>`;
+  }
   if(m.color) return `<div class="${cls} sw-color" style="background:${m.color}"></div>`;
   return `<div class="${cls} sw-none"></div>`;
 }
@@ -975,7 +1039,13 @@ function blocksAreaHtml(container, containerId){
         </div>
       </div>`;
   }
-  return `${addBar}<div class="blocks-flow">${container.blocks.map((b,i)=>blockHtml(container,containerId,b,i)).join('')}</div>`;
+  // 위 블록 "아래로 쌓기"(b.under)한 블록들은 한 세로 칸(.blk-col)으로 묶음 — 옆 칸과 나란히 놓여서 빈 공간 활용
+  const cols = [];
+  container.blocks.forEach((b,i)=>{ if(b.under && cols.length) cols[cols.length-1].push([b,i]); else cols.push([[b,i]]); });
+  const inner = cols.map(col => col.length===1
+      ? blockHtml(container, containerId, col[0][0], col[0][1], false)
+      : `<div class="blk-col" style="${colFlexCss(col[0][0])}">${col.map(([b,i])=>blockHtml(container, containerId, b, i, true)).join('')}</div>`).join('');
+  return `${addBar}<div class="blocks-flow" ondragover="blkFlowOver(event,this)" ondragleave="this.classList.remove('dz-end')" ondrop="blkFlowDrop(event,'${containerId}',this)">${inner}</div>`;
 }
 
 /* ===== 공간 페이지 (프로젝트 안, 블록 자유 구성) ===== */
@@ -1025,10 +1095,18 @@ function renameContainer(containerId, el){
 }
 
 /* ===== 블록 렌더링 (재료 / 이미지 / 텍스트 / 예시카드) ===== */
-function blockHtml(container, containerId, b, i){
-  const toolbar = `<div class="blk-toolbar no-print">
-    ${i>0?`<div class="blk-tbtn" onclick="moveBlock('${containerId}','${b.id}',-1)" title="위로"><i class="ti ti-chevron-up"></i></div>`:''}
-    ${i<container.blocks.length-1?`<div class="blk-tbtn" onclick="moveBlock('${containerId}','${b.id}',1)" title="아래로"><i class="ti ti-chevron-down"></i></div>`:''}
+function blockHtml(container, containerId, b, i, inCol){
+  return finishBlockHtml(blockInnerHtml(container, containerId, b, i), containerId, b, inCol);
+}
+function blockInnerHtml(container, containerId, b, i){
+  const toolbar = b.locked
+    ? `<div class="blk-toolbar no-print"><div class="blk-tbtn lock-on" onclick="toggleBlockLock('${containerId}','${b.id}')" title="잠금 풀기"><i class="ti ti-lock"></i> <span class="blk-tlabel">잠김 · 풀기</span></div></div>`
+    : `<div class="blk-toolbar no-print">
+    <div class="blk-tbtn grip" draggable="true" ondragstart="blkDragStart(event,'${containerId}','${b.id}')" ondragend="blkDragEnd()" title="끌어서 옮기기 — 다른 블록의 왼쪽·오른쪽에 놓으면 옆에, 위·아래에 놓으면 같은 칸에 쌓여요"><i class="ti ti-arrows-move"></i></div>
+    ${b.under?`<div class="blk-tbtn" onclick="unstackBlock('${containerId}','${b.id}')" title="쌓기 풀기 (옆 칸으로 빼기)"><i class="ti ti-layout-columns"></i></div>`:''}
+    ${i>0?`<div class="blk-tbtn" onclick="moveBlock('${containerId}','${b.id}',-1)" title="앞으로"><i class="ti ti-chevron-up"></i></div>`:''}
+    ${i<container.blocks.length-1?`<div class="blk-tbtn" onclick="moveBlock('${containerId}','${b.id}',1)" title="뒤로"><i class="ti ti-chevron-down"></i></div>`:''}
+    <div class="blk-tbtn" onclick="toggleBlockLock('${containerId}','${b.id}')" title="잠그기 — 수정·이동·삭제·크기 조절을 막아요"><i class="ti ti-lock-open"></i></div>
     <div class="blk-tbtn danger" onclick="removeBlock('${containerId}','${b.id}')" title="삭제"><i class="ti ti-trash"></i></div>
   </div>`;
 
@@ -1037,7 +1115,7 @@ function blockHtml(container, containerId, b, i){
     const chips = b.matIds.map(id=>{
       const mat = getMat(id); if(!mat) return '';
       return `<div class="mat-chip" onclick="openPicker('${containerId}','${b.id}')">
-        ${matSwatchHtml(mat,'mat-sw')}
+        ${matSwatchHtml(mat,'mat-sw', `m|${containerId}|${b.id}|${id}`)}
         <div><div class="mat-nm">${esc(mat.name)}</div><div class="mat-cat">${esc(getCatOf(mat.id))} · ${esc(mat.sub)}</div></div>
         <div class="mat-chip-del no-print" onclick="event.stopPropagation();removeMat('${containerId}','${b.id}','${id}')"><i class="ti ti-x"></i></div>
       </div>`;
@@ -1052,10 +1130,11 @@ function blockHtml(container, containerId, b, i){
   }
   if(b.type==='image'){
     const ar = b.ar || 4/3;
-    const imgToolbar = b.img ? toolbar.replace('<div class="blk-tbtn danger"',
-      `<div class="blk-tbtn" onclick="fitImgRatio('${containerId}','${b.id}')" title="사진 원본 비율로 (지금 ${ratioLabel(ar)})"><i class="ti ti-aspect-ratio"></i></div><div class="blk-tbtn danger"`) : toolbar;
-    return `<div class="blk blk-img" style="flex:0 0 ${b.width||220}px">${imgToolbar}
-      <div class="blk-lbl" contenteditable data-ph="이미지 라벨" oninput="renameBlockLabel('${containerId}','${b.id}',this)">${esc(b.label)}</div>
+    const fmtBtn = `<div class="blk-tbtn" onclick="openLblFormat(event,'${containerId}','${b.id}')" title="글자 서식 (크기·색·굵기·정렬)"><i class="ti ti-typography"></i></div>`;
+    const imgToolbar = b.locked ? toolbar : toolbar.replace('<div class="blk-tbtn danger"',
+      (b.img?`<div class="blk-tbtn" onclick="fitImgRatio('${containerId}','${b.id}')" title="사진 원본 비율로 (지금 ${ratioLabel(ar)})"><i class="ti ti-aspect-ratio"></i></div>`:'') + fmtBtn + `<div class="blk-tbtn danger"`);
+    return `<div class="blk blk-img" style="flex:0 0 ${b.width||220}px;width:${b.width||220}px">${imgToolbar}
+      <div class="blk-lbl" style="${lblStyleCss(b.ls)}" contenteditable data-ph="이미지 라벨" oninput="renameBlockLabel('${containerId}','${b.id}',this)">${esc(b.label)}</div>
       <div class="img-slot-main ${b.img?'has-img':''}" style="aspect-ratio:${ar}">
         <div class="img-edge-r no-print" onmousedown="startImgFrame(event,'${containerId}','${b.id}','w')" title="끌어서 가로 비율 조절 (사진은 늘어나지 않고 잘려 보여요)"></div>
         <div class="img-edge-b no-print" onmousedown="startImgFrame(event,'${containerId}','${b.id}','h')" title="끌어서 세로 비율 조절 (사진은 늘어나지 않고 잘려 보여요)"></div>
@@ -1094,6 +1173,369 @@ function blockHtml(container, containerId, b, i){
     <div class="blk-lbl" contenteditable data-ph="텍스트 블록 제목" oninput="renameBlockLabel('${containerId}','${b.id}',this)">${esc(b.label)}</div>
     <div class="blk-text-content" contenteditable data-ph="내용을 입력하세요..." oninput="updateBlockText('${containerId}','${b.id}',this)">${esc(b.content||'')}</div>
   </div>`;
+}
+
+/* ===== 블록 배치 (2026.11.10) =====
+   b.w     : 칸 너비 % (없으면 블록 종류별 기본 너비). 세로 칸(.blk-col)은 맨 위 블록의 w를 씀
+   b.under : true면 바로 앞 블록 "아래로 쌓기" — 같은 세로 칸에 들어감 → 옆 칸과 나란히 놓여 빈 공간 활용
+   b.locked: 잠금 — 글자 수정·이동·삭제·크기 조절·사진 확대 불가 (잠금 풀기 버튼만 남음)
+   b.ls    : 이미지 블록 라벨 글자 서식 {fs, color, bold, al} */
+function wFlexCss(w){ return `0 0 calc(${w}% - var(--bgap) * ${(1-w/100).toFixed(4)})`; }
+function colFlexCss(head){
+  if(head.w) return `flex:${wFlexCss(head.w)}`;
+  if(head.type==='image') return `flex:0 0 ${head.width||220}px`;
+  if(head.type==='material') return 'flex:0 0 200px';
+  if(head.type==='text') return 'flex:1 1 260px';
+  return 'flex:1 1 100%';
+}
+function finishBlockHtml(html, containerId, b, inCol){
+  html = html.trimStart();
+  const cls = `blk ${b.locked?'locked ':''}${b.under?'stacked ':''}`;
+  const style = (!inCol && b.w && b.type!=='image') ? ` style="flex:${wFlexCss(b.w)}"` : '';
+  html = html.replace(/^<div class="blk /, `<div data-bid="${b.id}"${style} ondragover="blkDragOver(event,this)" ondragleave="blkDragLeave(this)" ondrop="blkDrop(event,'${containerId}','${b.id}',this)" class="${cls}`);
+  if(b.locked) html = html.replace(/contenteditable/g, 'data-ce-off').replace(/draggable="true"/g, '');
+  if(!b.locked && b.type!=='image')
+    html = html.replace(/<\/div>\s*$/, `<div class="blk-w-handle no-print" onmousedown="startBlockWidth(event,'${containerId}','${b.id}')" ondblclick="resetBlockWidth('${containerId}','${b.id}')" title="끌어서 너비 조절 (두 번 클릭: 기본 너비)"><span class="blk-w-badge"></span></div></div>`);
+  return html;
+}
+function colHeadIndex(blocks, i){ while(i>0 && blocks[i].under) i--; return i; }
+function snapshotBlocks(c){
+  const snap = c.blocks.map(b=>({b, under:b.under, w:b.w}));
+  return ()=>{ c.blocks = snap.map(x=>{ if(x.under) x.b.under = true; else delete x.b.under; if(x.w!=null) x.b.w = x.w; else delete x.b.w; return x.b; }); };
+}
+// 블록을 목록에서 빼낼 때: 세로 칸 맨 위였다면 바로 아래 블록이 칸의 맨 위가 되고 칸 너비를 이어받음
+function detachBlock(arr, si){
+  const src = arr[si], next = arr[si+1];
+  if(!src.under && next && next.under){ delete next.under; if(next.w==null && src.w!=null) next.w = src.w; }
+  arr.splice(si,1);
+  delete src.under;
+  return src;
+}
+// z: 'l'(왼쪽 옆 칸) | 'r'(오른쪽 옆 칸) | 't'(같은 칸 위) | 'b'(같은 칸 아래) | 'end'(맨 끝)
+function moveBlockRel(cid, srcId, tgtId, z){
+  const c = resolveContainer(cid);
+  const restore = snapshotBlocks(c);
+  if(_hist.timer) historyCommit();
+  applyOrRevert(()=>{
+    const arr = c.blocks.slice();
+    const src = detachBlock(arr, arr.findIndex(b=>b.id===srcId));
+    const ti = tgtId ? arr.findIndex(b=>b.id===tgtId) : -1;
+    if(ti<0 || z==='end'){ arr.push(src); }
+    else {
+      const tgt = arr[ti];
+      const head = colHeadIndex(arr, ti);
+      let end = ti; while(end+1<arr.length && arr[end+1].under) end++;
+      if(z==='l') arr.splice(head, 0, src);
+      else if(z==='r') arr.splice(end+1, 0, src);
+      else if(z==='b'){ src.under = true; arr.splice(ti+1, 0, src); }
+      else {
+        if(tgt.under) src.under = true;
+        else { if(tgt.w!=null){ src.w = tgt.w; delete tgt.w; } else delete src.w; }
+        tgt.under = true; arr.splice(ti, 0, src);
+      }
+    }
+    if(arr[0]) delete arr[0].under;
+    c.blocks = arr;
+  }, restore);
+}
+let _blkDrag = null;
+function blkDragStart(ev, cid, bId){
+  ev.stopPropagation();
+  _blkDrag = {cid, bId};
+  ev.dataTransfer.setData('text/x-blk', bId);
+  ev.dataTransfer.effectAllowed = 'move';
+  const el = ev.target.closest('.blk');
+  try{ ev.dataTransfer.setDragImage(el, 16, 16); }catch(e){}
+  setTimeout(()=>{ el.classList.add('drag-src'); const f = el.closest('.blocks-flow'); if(f) f.classList.add('blk-dragging'); }, 0);
+}
+function blkDragEnd(){
+  _blkDrag = null;
+  document.querySelectorAll('#page-root .drag-src,#page-root .blk-dragging,#page-root .dz-l,#page-root .dz-r,#page-root .dz-t,#page-root .dz-b,#page-root .dz-end')
+    .forEach(e=>e.classList.remove('drag-src','blk-dragging','dz-l','dz-r','dz-t','dz-b','dz-end'));
+}
+function _blkOk(ev){ return _blkDrag && ev.dataTransfer.types.includes('text/x-blk'); }
+function _blkZone(ev, el){
+  const r = el.getBoundingClientRect();
+  const d = {l: ev.clientX-r.left, r: r.right-ev.clientX, t: ev.clientY-r.top, b: r.bottom-ev.clientY};
+  return Object.keys(d).reduce((a,k)=> d[k]<d[a] ? k : a, 'l');
+}
+function blkDragOver(ev, el){
+  if(!_blkOk(ev)) return;
+  ev.preventDefault(); ev.stopPropagation();
+  el.closest('.blocks-flow')?.classList.remove('dz-end');
+  if(el.dataset.bid===_blkDrag.bId) return;
+  const z = _blkZone(ev, el);
+  el.classList.remove('dz-l','dz-r','dz-t','dz-b'); el.classList.add('dz-'+z);
+}
+function blkDragLeave(el){ el.classList.remove('dz-l','dz-r','dz-t','dz-b'); }
+function blkDrop(ev, cid, tgtId, el){
+  if(!_blkOk(ev)) return;
+  ev.preventDefault(); ev.stopPropagation();
+  const z = _blkZone(ev, el), src = _blkDrag.bId, scid = _blkDrag.cid;
+  blkDragEnd();
+  if(scid!==cid || src===tgtId) return;
+  moveBlockRel(cid, src, tgtId, z);
+}
+// 블록 사이 빈 곳(흐름 영역 자체)에 놓으면 맨 끝으로
+function blkFlowOver(ev, flow){ if(!_blkOk(ev) || ev.target!==flow) return; ev.preventDefault(); flow.classList.add('dz-end'); }
+function blkFlowDrop(ev, cid, flow){
+  if(!_blkOk(ev) || ev.target!==flow) return;
+  ev.preventDefault();
+  const src = _blkDrag.bId, scid = _blkDrag.cid; blkDragEnd();
+  if(scid===cid) moveBlockRel(cid, src, null, 'end');
+}
+function unstackBlock(cid, bId){
+  const b = getBlock(cid, bId);
+  applyOrRevert(()=>{ delete b.under; }, ()=>{ b.under = true; });
+}
+// 너비 조절 — 오른쪽 가장자리를 끌기. 자주 쓰는 비율(1/4, 1/3, 1/2, 2/3, 3/4, 전체)에 달라붙음
+const W_SNAPS = [20, 25, 100/3, 40, 50, 60, 200/3, 75, 80, 100];
+function startBlockWidth(e, cid, bId){
+  e.preventDefault(); e.stopPropagation();
+  const c = resolveContainer(cid);
+  const head = c.blocks[colHeadIndex(c.blocks, c.blocks.findIndex(x=>x.id===bId))];
+  const blockEl = e.target.closest('.blk');
+  const target = blockEl.closest('.blk-col') || blockEl;
+  const flow = blockEl.closest('.blocks-flow');
+  const Zf = flow.getBoundingClientRect().width / flow.offsetWidth || 1;
+  const FW = flow.clientWidth, w0 = target.getBoundingClientRect().width / Zf, x0 = e.clientX;
+  const prev = head.w;
+  let live = prev || w0 / FW * 100;
+  const badge = e.target.closest('.blk-w-handle').querySelector('.blk-w-badge');
+  target.classList.add('wsizing');
+  function onMove(ev){
+    let pct = Math.max(12, Math.min(100, (w0 + (ev.clientX - x0)/Zf) / FW * 100));
+    for(const sn of W_SNAPS) if(Math.abs(pct - sn) < 2.2){ pct = sn; break; }
+    live = pct;
+    target.style.flex = wFlexCss(pct);
+    badge.textContent = Math.round(pct) + '%';
+  }
+  function onUp(){
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+    target.classList.remove('wsizing');
+    const v = Math.round(live*100)/100;
+    if(prev!=null && Math.abs(v-prev)<0.3){ render(); return; }
+    applyOrRevert(()=>{ head.w = v; }, ()=>{ if(prev!=null) head.w = prev; else delete head.w; });
+  }
+  badge.textContent = Math.round(live) + '%';
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+function resetBlockWidth(cid, bId){
+  const c = resolveContainer(cid);
+  const head = c.blocks[colHeadIndex(c.blocks, c.blocks.findIndex(x=>x.id===bId))];
+  if(head.w==null) return;
+  const prev = head.w;
+  applyOrRevert(()=>{ delete head.w; }, ()=>{ head.w = prev; });
+}
+function toggleBlockLock(cid, bId){
+  const b = getBlock(cid, bId);
+  if(b.locked) delete b.locked; else b.locked = true;
+  render(); markDirty();
+  toast(b.locked ? '블록을 잠갔어요 — 수정·이동·삭제가 막혀요' : '잠금을 풀었어요');
+}
+/* 이미지 블록 라벨 글자 서식 */
+const LBL_FS = [8,9,10,11,12,13,14,16,18,20,24,28];
+const TEXT_COLORS = ['#9a9a9a','#666666','#333333','#000000','#2d6ae0','#1f8f5f','#d35400','#c0392b'];
+function lblStyleCss(ls){
+  if(!ls) return '';
+  let css = '';
+  if(ls.fs) css += `font-size:${ls.fs}px;letter-spacing:${ls.fs>=12?'0':'.4px'};`;
+  if(ls.color) css += `color:${ls.color};`;
+  if(ls.bold===false) css += 'font-weight:400;';
+  if(ls.al) css += `text-align:${ls.al};`;
+  return css;
+}
+let _fmtCtx = null;
+function openLblFormat(ev, cid, bId){
+  ev.stopPropagation();
+  closeLblFormat(); closePartColor();
+  _fmtCtx = {cid, bId};
+  const pop = document.createElement('div');
+  pop.id = 'lbl-fmt-pop'; pop.className = 'color-pop fmt-pop no-print';
+  document.body.appendChild(pop);
+  renderLblFormat();
+  const r = ev.currentTarget.getBoundingClientRect();
+  let x = r.left - 80, y = r.bottom + 6;
+  if(x + pop.offsetWidth > innerWidth - 8) x = innerWidth - pop.offsetWidth - 8;
+  if(y + pop.offsetHeight > innerHeight - 8) y = r.top - pop.offsetHeight - 6;
+  pop.style.left = Math.max(8,x)+'px'; pop.style.top = Math.max(8,y)+'px';
+  setTimeout(()=>document.addEventListener('mousedown', _fmtOutside), 0);
+}
+function renderLblFormat(){
+  const pop = document.getElementById('lbl-fmt-pop'); if(!pop || !_fmtCtx) return;
+  const b = getBlock(_fmtCtx.cid, _fmtCtx.bId); if(!b){ closeLblFormat(); return; }
+  const ls = b.ls || {};
+  const fs = ls.fs || 9, bold = ls.bold!==false, al = ls.al || 'left', col = (ls.color||'').toLowerCase();
+  pop.innerHTML = `<div class="cp-title">이미지 블록 글자</div>
+    <div class="fp-row"><span class="fp-lbl">크기</span>
+      <span class="fp-btn" onclick="setLblStyle('fs',-1)" title="작게">−</span><b class="fp-val">${fs}</b><span class="fp-btn" onclick="setLblStyle('fs',1)" title="크게">+</span>
+      <span class="fp-btn ${bold?'on':''}" style="margin-left:auto;font-weight:800" onclick="setLblStyle('bold')" title="굵게">B</span></div>
+    <div class="fp-row"><span class="fp-lbl">정렬</span>
+      ${[['left','ti-align-left','왼쪽'],['center','ti-align-center','가운데'],['right','ti-align-right','오른쪽']].map(([v,ic,t])=>`<span class="fp-btn ${al===v?'on':''}" onclick="setLblStyle('al','${v}')" title="${t}"><i class="ti ${ic}"></i></span>`).join('')}</div>
+    <div class="fp-lbl" style="margin:8px 0 5px">색</div>
+    <div class="cp-grid">${TEXT_COLORS.map(c=>`<span class="cp-sw ${c===col?'on':''}" style="background:${c}" title="${c}" onclick="setLblStyle('color','${c}')"></span>`).join('')}</div>
+    <div class="cp-row">
+      <label class="cp-custom"><input type="color" value="${ls.color||'#333333'}" oninput="setLblStyle('color',this.value,true)"><i class="ti ti-color-picker"></i> 직접</label>
+      <span class="cp-none" onclick="setLblStyle('reset')"><i class="ti ti-restore"></i> 기본값</span>
+    </div>`;
+}
+function _fmtOutside(e){ const pop = document.getElementById('lbl-fmt-pop'); if(pop && !pop.contains(e.target)) closeLblFormat(); }
+function closeLblFormat(){ const pop = document.getElementById('lbl-fmt-pop'); if(pop) pop.remove(); document.removeEventListener('mousedown', _fmtOutside); _fmtCtx = null; }
+function setLblStyle(k, v, live){
+  if(!_fmtCtx) return;
+  const b = getBlock(_fmtCtx.cid, _fmtCtx.bId); if(!b) return;
+  const prev = b.ls ? {...b.ls} : null;
+  const ls = {...(b.ls||{})};
+  if(k==='fs'){ const cur = ls.fs || 9; let i = LBL_FS.indexOf(cur); if(i<0) i = 1; i = Math.max(0, Math.min(LBL_FS.length-1, i+v)); ls.fs = LBL_FS[i]; }
+  else if(k==='bold') ls.bold = ls.bold===false ? true : false;
+  else if(k==='reset'){ b.ls = null; }
+  else ls[k] = v;
+  const next = k==='reset' ? null : ls;
+  applyOrRevert(()=>{ if(next) b.ls = next; else delete b.ls; }, ()=>{ if(prev) b.ls = prev; else delete b.ls; });
+  renderLblFormat();
+}
+
+/* ===== 사진 틀 안에서 확대·이동 (재료 블록 칩, 옵션 사진) =====
+   틀 크기는 그대로, 사진만 확대(최대 5배)하고 끌어서 보이는 부분을 옮김.
+   재료 블록: b.crops[matId] / 옵션: o.crops[라이브러리 사진 번호] = {z, x, y}  (x,y = 틀 크기 대비 % 이동)
+   들어가는 법: 사진 두 번 클릭 또는 돋보기 버튼 → 휠로 확대, 끌어서 이동 → 바깥 클릭·Enter로 완료, Esc로 취소 */
+function cropStore(key, create){
+  const [t, cid, bId, ...r] = key.split('|');
+  const b = getBlock(cid, bId); if(!b) return null;
+  let holder;
+  if(t==='m') holder = b;
+  else { holder = ((b.parts||[])[+r[0]]||{options:[]}).options[+r[1]]; if(!holder) return null; }
+  if(!holder.crops && create) holder.crops = {};
+  return {holder, obj:holder.crops||null, k: t==='m' ? r[0] : r[2]};
+}
+function cropGet(key){ const st = cropStore(key); return (st && st.obj && st.obj[st.k]) || null; }
+function cropCss(c){ return c && c.z>1.001 ? `transform:translate(${c.x}%,${c.y}%) scale(${c.z})` : ''; }
+let _crop = null;
+function startCrop(frame){
+  if(_crop) endCrop(true);
+  if(!frame || frame.closest('.blk.locked') || frame.closest('.thumb-page')) return;
+  const img = frame.querySelector('img'); if(!img) return;
+  const c = Object.assign({z:1, x:0, y:0}, cropGet(frame.dataset.crop)||{});
+  _crop = {frame, img, key:frame.dataset.crop, c, orig:{...c}};
+  frame.classList.add('cropping');
+  const bar = document.createElement('div');
+  bar.id = 'crop-bar'; bar.className = 'color-pop crop-bar no-print';
+  bar.innerHTML = `<span class="fp-btn" onclick="cropZoom(1/1.2)" title="축소">−</span>
+    <input type="range" min="100" max="500" step="1" id="crop-range" oninput="cropSetZoom(this.value/100)">
+    <span class="fp-btn" onclick="cropZoom(1.2)" title="확대">+</span>
+    <span class="crop-pct" id="crop-pct"></span>
+    <span class="crop-dpi" id="crop-dpi"></span>
+    <span class="fp-btn wide" onclick="cropReset()" title="확대 없이 원래대로">원래대로</span>
+    <span class="fp-btn wide on" onclick="endCrop(true)">완료</span>
+    <div class="crop-hint">휠: 확대·축소 · 끌기: 위치 이동 · Esc: 취소</div>`;
+  document.body.appendChild(bar);
+  const r = frame.getBoundingClientRect();
+  let x = r.left + r.width/2 - bar.offsetWidth/2, y = r.bottom + 8;
+  if(y + bar.offsetHeight > innerHeight - 8) y = r.top - bar.offsetHeight - 8;
+  bar.style.left = Math.max(8, Math.min(innerWidth - bar.offsetWidth - 8, x)) + 'px';
+  bar.style.top = Math.max(8, y) + 'px';
+  frame.addEventListener('mousedown', _cropDown);
+  document.addEventListener('wheel', _cropWheel, {capture:true, passive:false});
+  document.addEventListener('mousedown', _cropOutside, true);
+  document.addEventListener('keydown', _cropKey, true);
+  cropApply();
+}
+function cropApply(){
+  if(!_crop) return;
+  const c = _crop.c;
+  c.z = Math.max(1, Math.min(5, c.z));
+  const lim = (c.z - 1) * 50;
+  c.x = Math.max(-lim, Math.min(lim, c.x)); c.y = Math.max(-lim, Math.min(lim, c.y));
+  _crop.img.style.transform = c.z>1.001 ? `translate(${c.x}%,${c.y}%) scale(${c.z})` : '';
+  const rg = document.getElementById('crop-range'); if(rg) rg.value = Math.round(c.z*100);
+  const pc = document.getElementById('crop-pct'); if(pc) pc.textContent = Math.round(c.z*100) + '%';
+  const dp = document.getElementById('crop-dpi');
+  if(dp){
+    const d = printDpi(_crop.frame, _crop.img, c.z);
+    if(!d){ dp.textContent=''; }
+    else {
+      const lv = d>=200 ? 'ok' : d>=120 ? 'mid' : 'low';
+      dp.className = 'crop-dpi ' + lv;
+      dp.textContent = `인쇄 약 ${d}dpi · ` + (lv==='ok' ? '선명해요' : lv==='mid' ? '보통이에요' : '인쇄하면 흐릴 수 있어요');
+      dp.title = `원본 사진 ${_crop.img.naturalWidth}×${_crop.img.naturalHeight}px — 인쇄물은 200dpi 이상이면 깨끗하게 보여요. 더 키우려면 큰 원본 사진으로 바꿔 주세요.`;
+    }
+  }
+}
+/* 인쇄 해상도 추정 — 페이지 794px = 종이 210.05mm. 틀을 덮는(object-fit:cover) 사진이 z배 확대됐을 때
+   틀 너비에 들어가는 원본 픽셀 수 ÷ 종이 위 틀 너비(inch) */
+function printDpi(frame, img, z){
+  const nw = img.naturalWidth, nh = img.naturalHeight; if(!nw || !nh) return 0;
+  const root = document.getElementById('page-root');
+  const pageScale = root.getBoundingClientRect().width / 794 || 1;   // 화면 확대 배율
+  const r = frame.getBoundingClientRect();
+  const fw = r.width / pageScale, fh = r.height / pageScale;           // 페이지 좌표(px)
+  const cover = Math.max(fw/nw, fh/nh);                                  // 원본 1px → 페이지 몇 px
+  const srcPxPerPagePx = 1 / (cover * (z||1));
+  const mmPerPagePx = 210.05 / 794;
+  return Math.round(srcPxPerPagePx * 25.4 / mmPerPagePx);
+}
+/* 라이브러리 저해상도 표시 — 긴 변이 LOWRES_PX 미만이면 인쇄 시 흐릴 수 있음 (사진 칸 약 6cm 기준 200dpi ≈ 470px) */
+const LOWRES_PX = 500;
+function whenImgReady(img, fn){ if(img.complete && img.naturalWidth) fn(); else img.addEventListener('load', fn, {once:true}); }
+function markLowRes(root){
+  if(!root) return;
+  root.querySelectorAll('.mat-card').forEach(card=>{
+    const img = card.querySelector('.sw-img img'); if(!img) return;
+    whenImgReady(img, ()=>{
+      const n = Math.max(img.naturalWidth, img.naturalHeight);
+      if(n && n < LOWRES_PX && !card.querySelector('.lowres-badge'))
+        card.insertAdjacentHTML('beforeend', `<span class="lowres-badge" title="대표 사진이 ${img.naturalWidth}×${img.naturalHeight}px로 작아요 — 인쇄하면 흐릴 수 있어요. 긴 변 1000px 이상 사진으로 바꾸면 좋아요."><i class="ti ti-alert-triangle"></i> 저해상도 ${n}px</span>`);
+    });
+  });
+}
+function cropZoom(f){ if(!_crop) return; _crop.c.z *= f; cropApply(); }
+function cropSetZoom(z){ if(!_crop) return; _crop.c.z = z; cropApply(); }
+function cropReset(){ if(!_crop) return; _crop.c = {z:1, x:0, y:0}; cropApply(); }
+function _cropWheel(e){
+  if(!_crop || !_crop.frame.contains(e.target)) return;
+  e.preventDefault(); e.stopPropagation();
+  const dy = e.deltaMode===1 ? e.deltaY*40 : e.deltaY;
+  cropZoom(Math.pow(1.0015, -dy));
+}
+function _cropDown(e){
+  if(!_crop) return;
+  e.preventDefault(); e.stopPropagation();
+  const r = _crop.frame.getBoundingClientRect();
+  const sx = e.clientX, sy = e.clientY, cx = _crop.c.x, cy = _crop.c.y;
+  _crop.frame.classList.add('panning');
+  function mv(ev){ _crop.c.x = cx + (ev.clientX-sx)/r.width*100; _crop.c.y = cy + (ev.clientY-sy)/r.height*100; cropApply(); }
+  function up(){ document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); if(_crop) _crop.frame.classList.remove('panning'); }
+  document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
+}
+function _cropOutside(e){
+  if(!_crop) return;
+  const bar = document.getElementById('crop-bar');
+  if(_crop.frame.contains(e.target) || (bar && bar.contains(e.target))) return;
+  endCrop(true);
+}
+function _cropKey(e){
+  if(!_crop) return;
+  if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); endCrop(false); }
+  else if(e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); endCrop(true); }
+}
+function endCrop(commit){
+  if(!_crop) return;
+  const {frame, img, key, c, orig} = _crop;
+  _crop = null;
+  frame.classList.remove('cropping','panning');
+  frame.removeEventListener('mousedown', _cropDown);
+  document.removeEventListener('wheel', _cropWheel, {capture:true});
+  document.removeEventListener('mousedown', _cropOutside, true);
+  document.removeEventListener('keydown', _cropKey, true);
+  const bar = document.getElementById('crop-bar'); if(bar) bar.remove();
+  const same = Math.abs(c.z-orig.z)<0.001 && Math.abs(c.x-orig.x)<0.01 && Math.abs(c.y-orig.y)<0.01;
+  if(!commit || same){ img.style.transform = cropCss(orig).replace('transform:',''); return; }
+  const st = cropStore(key, true); if(!st) return;
+  if(c.z<=1.001){ delete st.obj[st.k]; if(!Object.keys(st.obj).length) delete st.holder.crops; }
+  else st.obj[st.k] = {z:+c.z.toFixed(3), x:+c.x.toFixed(2), y:+c.y.toFixed(2)};
+  markDirty(); render();
 }
 
 // 겹치지 않는 id (같은 밀리초에 여러 개 만들어도 안전)
@@ -1160,19 +1602,27 @@ function uploadGalImg(containerId, bId, idx, input){
   });
 }
 function removeBlock(containerId, bId){
-  markDirty();
   const c = resolveContainer(containerId);
-  c.blocks = c.blocks.filter(b=>b.id!==bId);
+  const i = c.blocks.findIndex(b=>b.id===bId);
+  if(i<0 || c.blocks[i].locked) return;
+  const arr = c.blocks.slice();
+  detachBlock(arr, i);
+  if(arr[0]) delete arr[0].under;
+  c.blocks = arr;
+  markDirty();
   render();
 }
 function moveBlock(containerId, bId, dir){
-  markDirty();
   const c = resolveContainer(containerId);
   const idx = c.blocks.findIndex(b=>b.id===bId);
   const newIdx = idx+dir;
   if(newIdx<0 || newIdx>=c.blocks.length) return;
-  [c.blocks[idx], c.blocks[newIdx]] = [c.blocks[newIdx], c.blocks[idx]];
-  render();
+  if(c.blocks[newIdx].locked){ toast('옆 블록이 잠겨 있어서 자리를 바꿀 수 없어요'); return; }
+  const restore = snapshotBlocks(c);
+  applyOrRevert(()=>{
+    [c.blocks[idx], c.blocks[newIdx]] = [c.blocks[newIdx], c.blocks[idx]];
+    if(c.blocks[0]) delete c.blocks[0].under;
+  }, restore);
 }
 function renameBlockLabel(containerId, bId, el){
   markDirty();
@@ -1203,7 +1653,7 @@ function startImgFrame(e, containerId, bId, axis){
   const slot = e.target.closest('.img-slot-main');
   const blockEl = slot.closest('.blk-img');
   const flowEl = blockEl.closest('.blocks-flow');
-  const maxW = flowEl ? flowEl.clientWidth : 700;
+  const maxW = (blockEl.closest('.blk-col')||flowEl) ? (blockEl.closest('.blk-col')||flowEl).clientWidth : 700;
   const imgEl = slot.querySelector('img');
   const natural = imgEl && imgEl.naturalWidth ? imgEl.naturalWidth/imgEl.naturalHeight : null;
   const Zf = blockEl.getBoundingClientRect().width / blockEl.offsetWidth || 1;   // 페이지 확대 배율
@@ -1221,7 +1671,7 @@ function startImgFrame(e, containerId, bId, axis){
       liveAr = snapRatio(Math.max(0.25, Math.min(4, w / r.height)), natural);
       const sw = liveAr * r.height;
       liveBlockW = Math.round(sw + extra);
-      blockEl.style.flex = `0 0 ${liveBlockW}px`;
+      blockEl.style.flex = `0 0 ${liveBlockW}px`; blockEl.style.width = liveBlockW+'px';
     } else {
       const h = Math.max(40, r.height + (ev.clientY - startY)/Zf);
       liveAr = snapRatio(Math.max(0.25, Math.min(4, r.width / h)), natural);
@@ -1272,7 +1722,7 @@ function startImgResize(e, containerId, bId){
   e.preventDefault(); e.stopPropagation();
   const blockEl = e.target.closest('.blk-img');
   const flowEl = blockEl.closest('.blocks-flow');
-  const maxByRow = flowEl ? flowEl.clientWidth : 700;
+  const maxByRow = (blockEl.closest('.blk-col')||flowEl) ? (blockEl.closest('.blk-col')||flowEl).clientWidth : 700;
   const startX = e.clientX;
   const startW = blockEl.offsetWidth;
   const Zf = blockEl.getBoundingClientRect().width / blockEl.offsetWidth || 1;   // 페이지 확대 배율
@@ -1280,7 +1730,7 @@ function startImgResize(e, containerId, bId){
   let liveW = startW;
   function onMove(ev){
     liveW = Math.max(110, Math.min(maxByRow, startW + (ev.clientX - startX)/Zf));
-    blockEl.style.flex = `0 0 ${liveW}px`;
+    blockEl.style.flex = `0 0 ${liveW}px`; blockEl.style.width = liveW+'px';
   }
   function onUp(){
     document.removeEventListener('mousemove', onMove);
@@ -1940,7 +2390,7 @@ function optionBlockHtml(cid, b, toolbarBase){
           <span class="opt-mini" onclick="toggleOptPhoto('${cid}','${b.id}',${pi},${oi})" title="사진 숨기기 (체크표에만 표시)"><i class="ti ti-photo-off"></i></span>
         </span></div>
       <div class="opt-photos" style="grid-template-columns:repeat(${b.stack?1:n},1fr)" ondragover="if(event.dataTransfer.types.includes('Files')){event.preventDefault();this.classList.add('drop')}" ondragleave="this.classList.remove('drop')" ondrop="this.classList.remove('drop');if(event.dataTransfer.files.length){event.preventDefault();addMatPhotos('${m.id}',event.dataTransfer.files)}">
-        ${imgs.length ? pics.map((p,k)=>`<div class="opt-ph"><img src="${p.src}"><div class="opt-ph-tools no-print">${k>0?`<span onclick="moveOptPic('${cid}','${b.id}',${pi},${oi},${k},-1)" title="왼쪽으로"><i class="ti ti-chevron-left"></i></span>`:''}${k<imgs.length-1?`<span onclick="moveOptPic('${cid}','${b.id}',${pi},${oi},${k},1)" title="오른쪽으로"><i class="ti ti-chevron-right"></i></span>`:''}<span class="danger" onclick="hideOptPic('${cid}','${b.id}',${pi},${oi},${p.i})" title="이 페이지에서 이 사진 빼기 (라이브러리 사진은 그대로)"><i class="ti ti-x"></i></span></div></div>`).join('')
+        ${imgs.length ? pics.map((p,k)=>`<div class="opt-ph crop-frame" data-crop="o|${cid}|${b.id}|${pi}|${oi}|${p.i}" ondblclick="startCrop(this)"><img src="${p.src}" style="${cropCss((o.crops||{})[p.i])}"><div class="opt-ph-tools no-print"><span onclick="event.stopPropagation();startCrop(this.closest('.opt-ph'))" title="사진 확대·이동 (두 번 클릭해도 돼요)"><i class="ti ti-zoom-in"></i></span>${k>0?`<span onclick="moveOptPic('${cid}','${b.id}',${pi},${oi},${k},-1)" title="왼쪽으로"><i class="ti ti-chevron-left"></i></span>`:''}${k<imgs.length-1?`<span onclick="moveOptPic('${cid}','${b.id}',${pi},${oi},${k},1)" title="오른쪽으로"><i class="ti ti-chevron-right"></i></span>`:''}<span class="danger" onclick="hideOptPic('${cid}','${b.id}',${pi},${oi},${p.i})" title="이 페이지에서 이 사진 빼기 (라이브러리 사진은 그대로)"><i class="ti ti-x"></i></span></div></div>`).join('')
           : libN ? `<div class="opt-ph empty add no-print" onclick="showOptPics('${cid}','${b.id}',${pi},${oi})" title="뺀 사진 다시 넣기"><i class="ti ti-photo-up"></i>사진을 모두 뺐어요<br><span>눌러서 다시 넣기 (${libN}장)</span></div>`
           : `<label class="opt-ph empty add no-print" title="클릭하거나 사진을 끌어다 놓으세요"><i class="ti ti-photo-plus"></i>사진 추가 (최대 3장)<br><span>라이브러리 "${esc(getCatOf(m.id))} › ${esc(m.name)}"에 저장돼요</span><input type="file" accept="image/*" multiple hidden onchange="addMatPhotos('${m.id}',this.files);this.value=''"></label>`}
       </div>
@@ -2476,23 +2926,57 @@ function renderLibrary(){
       <span>${esc(c)}</span><span class="cnt">${DB[c].length}</span>
     </div>`).join('') + `<div class="lib-cat lib-cat-add" onclick="addLibCategory()"><i class="ti ti-plus" style="font-size:11px"></i> 새 카테고리</div>`;
 
-  const mats = curLibCat ? (DB[curLibCat]||[]) : [];
-  const grid = mats.map(m=>`
-    <div class="mat-card" onclick="openMatModal('${m.id}')">
-      <div class="mat-card-del no-print" onclick="event.stopPropagation();deleteMat('${m.id}')"><i class="ti ti-x"></i></div>
-      ${matSwatchHtml(m,'mat-card-sw')}
-      <div class="mat-card-body"><div class="mat-card-nm">${esc(m.name)}</div><div class="mat-card-sub">${esc(m.sub)}</div></div>
-    </div>`).join('') + `<div class="mat-add-card" onclick="openMatModal()"><i class="ti ti-plus" style="font-size:18px"></i>새 재료</div>`;
-
   document.getElementById('lib-root').innerHTML = `
     <div class="lib-cats"><div class="lib-cats-hdr">카테고리</div>${catsHtml}</div>
     <div class="lib-main">
-      <div class="lib-main-hdr"><b style="font-size:13px">${esc(curLibCat||'')}</b>
-        ${curLibCat?`<span class="lib-cat-tools"><button class="btn" onclick="renameLibCategory()"><i class="ti ti-pencil"></i> 이름 바꾸기</button><button class="btn lib-cat-delbtn" onclick="deleteLibCategory()"><i class="ti ti-trash"></i> 카테고리 삭제</button></span>`:''}</div>
-      <div class="lib-grid">${grid}</div>
+      <div class="lib-search"><i class="ti ti-search"></i>
+        <input id="lib-q" type="search" placeholder="재료 검색 — 이름·설명·카테고리 (전체 카테고리에서 찾아요)" value="${esc(libQuery)}" oninput="setLibQuery(this.value)" onkeydown="if(event.key==='Escape'){this.value='';setLibQuery('')}">
+      </div>
+      <div id="lib-body"></div>
+    </div>`;
+  renderLibBody();
+  if(libQuery){ const q = document.getElementById('lib-q'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+}
+/* 재료 라이브러리 검색 — 띄어쓰기로 여러 단어(모두 포함), 띄어쓰기·대소문자 무시 */
+let libQuery = '';
+function libNorm(t){ return (t||'').toLowerCase().replace(/\s+/g,''); }
+function searchMats(q){
+  const terms = q.split(/\s+/).map(libNorm).filter(Boolean);
+  if(!terms.length) return [];
+  const out = [];
+  Object.keys(DB).forEach(cat=>DB[cat].forEach(m=>{
+    const hay = libNorm(m.name) + '|' + libNorm(m.sub) + '|' + libNorm(cat);
+    if(terms.every(t=>hay.includes(t))) out.push({m, cat});
+  }));
+  return out;
+}
+function setLibQuery(v){ libQuery = v; renderLibBody(); }
+function matCardHtml(m, cat){
+  return `<div class="mat-card" onclick="openMatModal('${m.id}')">
+      <div class="mat-card-del no-print" onclick="event.stopPropagation();deleteMat('${m.id}')"><i class="ti ti-x"></i></div>
+      ${matSwatchHtml(m,'mat-card-sw')}
+      <div class="mat-card-body">${cat?`<div class="mat-card-cat">${esc(cat)}</div>`:''}<div class="mat-card-nm">${esc(m.name)}</div><div class="mat-card-sub">${esc(m.sub)}</div></div>
     </div>`;
 }
-function selLibCat(c){ curLibCat=c; renderLibrary(); }
+function renderLibBody(){
+  const body = document.getElementById('lib-body'); if(!body) return;
+  document.querySelectorAll('#lib-root .lib-cat[data-c]').forEach(el=>el.classList.toggle('on', !libQuery.trim() && el.dataset.c===curLibCat));
+  if(libQuery.trim()){
+    const res = searchMats(libQuery);
+    body.innerHTML = `<div class="lib-main-hdr"><b style="font-size:13px">검색 결과 ${res.length}개</b><span class="lib-q-hint">"${esc(libQuery.trim())}"</span>
+        <span class="lib-cat-tools"><button class="btn" onclick="document.getElementById('lib-q').value='';setLibQuery('')"><i class="ti ti-x"></i> 검색 지우기</button></span></div>
+      ${res.length ? `<div class="lib-grid">${res.map(r=>matCardHtml(r.m, r.cat)).join('')}</div>`
+                   : `<div class="lib-empty">찾는 재료가 없어요. 다른 단어로 찾아보거나, 왼쪽에서 카테고리를 골라 "새 재료"로 추가하세요.</div>`}`;
+    markLowRes(body);
+    return;
+  }
+  const mats = curLibCat ? (DB[curLibCat]||[]) : [];
+  body.innerHTML = `<div class="lib-main-hdr"><b style="font-size:13px">${esc(curLibCat||'')}</b>
+        ${curLibCat?`<span class="lib-cat-tools"><button class="btn" onclick="renameLibCategory()"><i class="ti ti-pencil"></i> 이름 바꾸기</button><button class="btn lib-cat-delbtn" onclick="deleteLibCategory()"><i class="ti ti-trash"></i> 카테고리 삭제</button></span>`:''}</div>
+      <div class="lib-grid">${mats.map(m=>matCardHtml(m)).join('')}<div class="mat-add-card" onclick="openMatModal()"><i class="ti ti-plus" style="font-size:18px"></i>새 재료</div></div>`;
+  markLowRes(body);
+}
+function selLibCat(c){ curLibCat=c; libQuery=''; renderLibrary(); }
 function addLibCategory(){
   const name = (prompt('새 카테고리 이름을 입력하세요')||'').trim();
   if(!name) return;
@@ -2573,7 +3057,12 @@ function renderMatPhotoGrid(){
       ${img&&n>1?`<div class="mat-photo-mv">${i>0?`<span onclick="event.preventDefault();moveMatPhoto(${i},-1)" title="앞으로"><i class="ti ti-chevron-left"></i></span>`:''}${i<n-1?`<span onclick="event.preventDefault();moveMatPhoto(${i},1)" title="뒤로"><i class="ti ti-chevron-right"></i></span>`:''}</div>`:''}
     </div>`;
   }
-  document.getElementById('mat-photo-grid').innerHTML = html;
+  const grid = document.getElementById('mat-photo-grid');
+  grid.innerHTML = html;
+  grid.querySelectorAll('.mat-photo-slot.has-img > img').forEach(img=>whenImgReady(img, ()=>{
+    const n = Math.max(img.naturalWidth, img.naturalHeight);
+    img.parentNode.insertAdjacentHTML('beforeend', `<span class="mat-photo-px ${n<LOWRES_PX?'low':''}" title="${n<LOWRES_PX?'작은 사진 — 인쇄하면 흐릴 수 있어요':'원본 크기'}">${img.naturalWidth}×${img.naturalHeight}</span>`);
+  }));
   updateMatColorUi();
 }
 // 대표 사진이 바뀌면(직접 찍은 색이 아닐 때) 대표색 자동 갱신
@@ -2675,6 +3164,7 @@ function remapMatPics(matId, oldArr, newArr){
     if(o.matId!==matId) return;
     if(o.picOrder) o.picOrder = fix(o.picOrder);
     if(o.picOff){ o.picOff = fix(o.picOff); if(!o.picOff.length) delete o.picOff; }
+    if(o.crops){ const nc = {}; Object.keys(o.crops).forEach(k=>{ const j = map[+k]; if(j!==undefined && j>=0) nc[j] = o.crops[k]; }); if(Object.keys(nc).length) o.crops = nc; else delete o.crops; }
   });
 }
 async function saveMatModal(){
