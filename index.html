@@ -773,11 +773,158 @@ function getMat(id){for(const v of Object.values(DB)){const m=v.find(m=>m.id===i
 let BRAND_LOGO = null;
 
 function getCatOf(id){for(const[c,ms] of Object.entries(DB)){if(ms.find(m=>m.id===id))return c;}return '';}
+/* ===== 사진 파일 분리 (2026.11.10) — data.json 용량 한도 없애기 =====
+   사진은 저장소 images/<내용 해시>.jpg 파일로 따로 두고, 데이터엔 'gh:images/xxx.jpg' 경로만 저장.
+   - 새로 넣은 사진은 처음엔 data URL(base64) 그대로 데이터에 들어감 → 저장할 때 externalizeImages()가 경로로 바꾸고
+     flushImages()가 아직 안 올라간 사진을 한 번의 커밋으로 올린 "다음에" data.json을 저장 (경로만 있고 파일 없는 상태가 생기지 않게)
+   - 같은 사진은 같은 해시 → 같은 파일 (중복 업로드·중복 저장 없음)
+   - 화면 표시는 imgSrc(): 이번에 넣은 사진은 메모리의 data URL, 나머지는 raw.githubusercontent.com 주소 (공개 저장소)
+   - 로고(BRAND_LOGO)는 투명 PNG·작아서 그대로 둠 */
+const IMG_REF = 'gh:';
+const _imgMem = new Map();      // path → data URL (이번 세션에 넣은 사진 — 올리기 전/직후에도 바로 보이게)
+const _imgPending = new Map();  // path → base64 (아직 GitHub에 없는 사진)
+const _imgKnown = new Set();    // GitHub에 이미 있는 사진 경로
+function imgRepo(){ return {owner: ghSettings.owner || 'tmfrl9201-sys', repo: ghSettings.repo || 'material-spec'}; }
+function imgSrc(ref){
+  if(!ref || typeof ref!=='string') return '';
+  if(!ref.startsWith(IMG_REF)) return ref;
+  const p = ref.slice(IMG_REF.length);
+  if(_imgMem.has(p)) return _imgMem.get(p);
+  const {owner, repo} = imgRepo();
+  return `https://raw.githubusercontent.com/${owner}/${repo}/main/${p}`;
+}
+function isImgData(v){ return typeof v==='string' && v.startsWith('data:image'); }
+async function hashStr(s){
+  if(window.crypto && crypto.subtle){
+    const buf = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(s));
+    return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,20);
+  }
+  return sha1Hex(new TextEncoder().encode(s)).slice(0,20);    // https가 아닌 곳 대비 (같은 결과)
+}
+function sha1Hex(bytes){
+  const ml = bytes.length, nBlocks = ((ml + 8) >> 6) + 1, w = new Uint32Array(nBlocks*16);
+  for(let i=0;i<ml;i++) w[i>>2] |= bytes[i] << (24 - (i&3)*8);
+  w[ml>>2] |= 0x80 << (24 - (ml&3)*8);
+  w[nBlocks*16-1] = ml*8 >>> 0; w[nBlocks*16-2] = Math.floor(ml*8 / 4294967296);
+  let h0=0x67452301,h1=0xEFCDAB89,h2=0x98BADCFE,h3=0x10325476,h4=0xC3D2E1F0; const W = new Uint32Array(80);
+  for(let blk=0; blk<nBlocks; blk++){
+    for(let t=0;t<16;t++) W[t] = w[blk*16+t];
+    for(let t=16;t<80;t++){ const x = W[t-3]^W[t-8]^W[t-14]^W[t-16]; W[t] = (x<<1)|(x>>>31); }
+    let a=h0,b=h1,c=h2,d=h3,e=h4;
+    for(let t=0;t<80;t++){
+      const f = t<20 ? (b&c)|(~b&d) : t<40 ? b^c^d : t<60 ? (b&c)|(b&d)|(c&d) : b^c^d;
+      const k = t<20 ? 0x5A827999 : t<40 ? 0x6ED9EBA1 : t<60 ? 0x8F1BBCDC : 0xCA62C1D6;
+      const tmp = (((a<<5)|(a>>>27)) + f + e + k + W[t]) >>> 0;
+      e=d; d=c; c=(b<<30)|(b>>>2); b=a; a=tmp;
+    }
+    h0=(h0+a)>>>0; h1=(h1+b)>>>0; h2=(h2+c)>>>0; h3=(h3+d)>>>0; h4=(h4+e)>>>0;
+  }
+  return [h0,h1,h2,h3,h4].map(v=>v.toString(16).padStart(8,'0')).join('');
+}
+async function storeImage(dataUrl){
+  const m = /^data:image\/([\w.+-]+);base64,(.*)$/s.exec(dataUrl||''); if(!m) return dataUrl;
+  const ext = m[1]==='jpeg' ? 'jpg' : m[1].replace(/[^\w]/g,'');
+  const path = `images/${await hashStr(m[2])}.${ext}`;
+  _imgMem.set(path, dataUrl);
+  if(!_imgKnown.has(path)) _imgPending.set(path, m[2]);
+  return IMG_REF + path;
+}
+// 데이터 안의 사진 자리(라이브러리 사진, 이미지 블록, 예시 카드)를 모두 훑음
+function forEachImageSlot(fn){
+  Object.values(DB).flat().forEach(m=>{ (m.exImgs||[]).forEach((_,i)=>fn(m.exImgs, i)); });
+  const blocksOf = arr=>(arr||[]).forEach(b=>{ if(b.type==='image') fn(b,'img'); (b.items||[]).forEach(it=>fn(it,'img')); });
+  projects.forEach(p=>(p.spaces||[]).forEach(sp=>blocksOf(sp.blocks)));
+  PAGE_TEMPLATES.forEach(t=>blocksOf(t.blocks));
+}
+async function externalizeImages(){
+  const jobs = [];
+  forEachImageSlot((obj,key)=>{ if(isImgData(obj[key])) jobs.push([obj,key]); });
+  for(const [obj,key] of jobs){ const v = obj[key]; if(isImgData(v)) obj[key] = await storeImage(v); }
+  return jobs.length;
+}
+async function ghApi(path, opts={}){
+  for(let attempt=0; ; attempt++){
+    const r = await fetch(`https://api.github.com/repos/${ghSettings.owner}/${ghSettings.repo}/${path}`, {
+      cache:'no-store', ...opts,
+      headers:{'Authorization':`token ${ghSettings.token}`, 'Accept':'application/vnd.github.v3+json', ...(opts.body?{'Content-Type':'application/json'}:{})}});
+    if(r.ok) return r.status===204 ? {} : r.json();
+    let msg=''; try{ msg = (await r.json()).message || ''; }catch(_){}
+    // GitHub "너무 빨리 만들지 마세요"(secondary rate limit) → 잠깐 쉬고 다시
+    if((r.status===403 || r.status===429) && /rate limit|abuse/i.test(msg) && attempt<4){ await _sleep(20000*(attempt+1)); continue; }
+    if(r.status>=500 && attempt<3){ await _sleep(1500*(attempt+1)); continue; }
+    const e = new Error(`${r.status} ${msg}`); e.status = r.status; throw e;
+  }
+}
+// 저장소에 이미 있는 사진 목록 (한 번만 조회)
+let _imgListLoaded = false;
+async function loadImageList(){
+  if(_imgListLoaded || !ghSettings.token) return;
+  try{
+    const t = await ghApi(`git/trees/main:images?t=${Date.now()}`);
+    (t.tree||[]).forEach(e=>{ if(e.type==='blob') _imgKnown.add('images/'+e.path); });
+    _imgListLoaded = true;
+  }catch(e){ if(e.status===404) _imgListLoaded = true; }   // images 폴더가 아직 없음
+  [..._imgPending.keys()].forEach(p=>{ if(_imgKnown.has(p)) _imgPending.delete(p); });
+}
+let _flushing = null;
+// 아직 안 올라간 사진을 묶어서 커밋 하나로 올림 (git blobs → tree → commit → ref)
+async function flushImages(onProgress){
+  if(_flushing) return _flushing;
+  _flushing = (async()=>{
+    await loadImageList();
+    const total = _imgPending.size; let done = 0;
+    while(_imgPending.size){
+      const batch = [..._imgPending.entries()].slice(0, 30);
+      const entries = [];
+      for(const [path, b64] of batch){
+        const bl = await ghApi('git/blobs', {method:'POST', body:JSON.stringify({content:b64, encoding:'base64'})});
+        entries.push({path, mode:'100644', type:'blob', sha:bl.sha});
+        done++; if(onProgress) onProgress(done, total);
+        if(total > 10) await _sleep(700);       // 한 번에 많이 올릴 때 GitHub 속도 제한 피하기
+      }
+      for(let attempt=0; ; attempt++){
+        const ref = await ghApi(`git/ref/heads/main?t=${Date.now()}`);
+        const head = ref.object.sha;
+        const cm = await ghApi(`git/commits/${head}`);
+        const tree = await ghApi('git/trees', {method:'POST', body:JSON.stringify({base_tree:cm.tree.sha, tree:entries})});
+        const nc = await ghApi('git/commits', {method:'POST', body:JSON.stringify({message:`사진 ${entries.length}장 추가`, tree:tree.sha, parents:[head]})});
+        try{ await ghApi('git/refs/heads/main', {method:'PATCH', body:JSON.stringify({sha:nc.sha, force:false})}); break; }
+        catch(e){ if(attempt>=5 || !(e.status===422 || e.status===409)) throw e; await _sleep(800*(attempt+1)); }   // 그 사이 다른 저장이 끼어듦 → 최신 위에 다시
+      }
+      batch.forEach(([path])=>{ _imgPending.delete(path); _imgKnown.add(path); });
+    }
+    return true;
+  })().finally(()=>{ _flushing = null; });
+  return _flushing;
+}
+// 저장 직전: 새 사진을 파일로 바꾸고 올림 → 그다음 data.json 저장
+async function prepareImagesForSave(){
+  const n = await externalizeImages();
+  if(!_imgPending.size) return;
+  const total = _imgPending.size;
+  const t = document.getElementById('save-status-txt');
+  await flushImages((d, tot)=>{ if(t && tot>3) t.textContent = `사진 올리는 중 ${d}/${tot}`; });
+  if(total > 10) toast(`사진 ${total}장을 파일로 옮겨 저장했어요 — 이제 데이터 용량 걱정 없이 사진을 넣을 수 있어요`);
+}
+// 불러온 데이터에 있는 경로들은 이미 올라간 사진
+function markLoadedImagesKnown(){
+  forEachImageSlot((obj,key)=>{ const v = obj[key]; if(typeof v==='string' && v.startsWith(IMG_REF)) _imgKnown.add(v.slice(IMG_REF.length)); });
+}
+// 예전 데이터(사진이 data.json 안에 들어 있음) → 한 번 파일로 옮기고 저장
+async function migrateImagesToFiles(){
+  if(!_dataLoaded || !ghSettings.token) return 0;
+  let n = 0; forEachImageSlot((obj,key)=>{ if(isImgData(obj[key])) n++; });
+  if(!n) return 0;
+  if(n > 10) toast(`사진 ${n}장을 data.json 밖 파일로 옮기는 중이에요 — 몇 분 걸릴 수 있으니 창을 닫지 마세요`);
+  markDirty();
+  saveToGithub();
+  return n;
+}
 // 재료 대표 이미지: 사진 있으면 <img>(인쇄 시 배경그래픽 꺼져도 나옴), 없으면 대표색, 색도 없으면 빗금 빈칸
 function matSwatchHtml(m, cls, cropKey){
   if(m.exImgs && m.exImgs.length){
-    if(cropKey) return `<div class="${cls} sw-img crop-frame" data-crop="${cropKey}" onclick="event.stopPropagation()" ondblclick="startCrop(this)" title="두 번 클릭: 사진 확대·이동"><img src="${m.exImgs[0]}" alt="" style="${cropCss(cropGet(cropKey))}"><span class="crop-btn no-print" onclick="event.stopPropagation();startCrop(this.parentNode)" title="사진 확대·이동"><i class="ti ti-zoom-in"></i></span></div>`;
-    return `<div class="${cls} sw-img"><img src="${m.exImgs[0]}" alt=""></div>`;
+    if(cropKey) return `<div class="${cls} sw-img crop-frame" data-crop="${cropKey}" onclick="event.stopPropagation()" ondblclick="startCrop(this)" title="두 번 클릭: 사진 확대·이동"><img src="${imgSrc(m.exImgs[0])}" alt="" style="${cropCss(cropGet(cropKey))}"><span class="crop-btn no-print" onclick="event.stopPropagation();startCrop(this.parentNode)" title="사진 확대·이동"><i class="ti ti-zoom-in"></i></span></div>`;
+    return `<div class="${cls} sw-img"><img src="${imgSrc(m.exImgs[0])}" alt=""></div>`;
   }
   if(m.color) return `<div class="${cls} sw-color" style="background:${m.color}"></div>`;
   return `<div class="${cls} sw-none"></div>`;
@@ -788,7 +935,7 @@ function matSwatchHtml(m, cls, cropKey){
    m.colorSrc  : 'pick'(스포이드로 직접 찍음 — 사진이 바뀌어도 유지) | 'auto'(대표 사진 가운데 평균) | ''(사진 없음 → 색 없음)
    랜덤 배정은 하지 않음. 사진이 없으면 색도 지정하지 않음. */
 const _cvCache = new Map();
-function loadImgEl(src){ return new Promise(r=>{ const i=new Image(); i.onload=()=>r(i); i.onerror=()=>r(null); i.src=src; }); }
+function loadImgEl(src){ return new Promise(r=>{ const i=new Image(); const u = imgSrc(src); if(/^https?:/.test(u)) i.crossOrigin='anonymous'; i.onload=()=>r(i); i.onerror=()=>r(null); i.src=u; }); }
 async function imgCanvas(src){
   if(!src) return null;
   if(_cvCache.has(src)) return _cvCache.get(src);
@@ -994,7 +1141,14 @@ function printPages(list){
   let st = document.getElementById('page-size-style');
   if(!st){ st = document.createElement('style'); st.id = 'page-size-style'; document.head.appendChild(st); }
   st.textContent = portrait ? '@page{ size: 210.05mm 297.15mm; margin: 0; }' : '@page{ size: 210.05mm 148.66mm; margin: 0; }';
-  window.print();
+  // 사진이 파일 주소라 다 불러온 뒤에 인쇄 (최대 20초)
+  const imgs = [...document.querySelectorAll('#print-all-pages img')].filter(i=>!i.complete);
+  if(!imgs.length){ window.print(); return Promise.resolve(); }
+  toast(`사진 ${imgs.length}장 불러오는 중… 잠시 후 인쇄 창이 열려요`);
+  return Promise.race([
+    Promise.all(imgs.map(i=>new Promise(r=>{ i.addEventListener('load',r,{once:true}); i.addEventListener('error',r,{once:true}); }))),
+    _sleep(20000)
+  ]).then(()=>window.print());
 }
 
 function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
@@ -1157,7 +1311,7 @@ function blockInnerHtml(container, containerId, b, i){
         <div class="img-edge-r no-print" onmousedown="startImgFrame(event,'${containerId}','${b.id}','w')" title="끌어서 가로 비율 조절 (사진은 늘어나지 않고 잘려 보여요)"></div>
         <div class="img-edge-b no-print" onmousedown="startImgFrame(event,'${containerId}','${b.id}','h')" title="끌어서 세로 비율 조절 (사진은 늘어나지 않고 잘려 보여요)"></div>
         <div class="img-ratio-badge no-print"></div>
-        ${b.img?`<img src="${b.img}">`:''}
+        ${b.img?`<img src="${imgSrc(b.img)}">`:''}
         <input type="file" accept="image/*" class="no-print" onchange="uploadBlockImg('${containerId}','${b.id}',this)">
         <div class="iup-hint no-print"><i class="ti ti-camera" style="font-size:18px"></i>이미지 업로드</div>
         <div class="iup-del no-print" onclick="event.stopPropagation();clearBlockImg('${containerId}','${b.id}')"><i class="ti ti-x"></i></div>
@@ -1170,7 +1324,7 @@ function blockInnerHtml(container, containerId, b, i){
       <div class="gal-card">
         <div class="gal-card-del no-print" onclick="removeGalItem('${containerId}','${b.id}',${ii})"><i class="ti ti-x"></i></div>
         <div class="gal-img ${it.img?'has-img':''}">
-          ${it.img?`<img src="${it.img}">`:''}
+          ${it.img?`<img src="${imgSrc(it.img)}">`:''}
           <input type="file" accept="image/*" class="no-print" onchange="uploadGalImg('${containerId}','${b.id}',${ii},this)">
           <div class="gal-hint no-print"><i class="ti ti-camera"></i></div>
         </div>
@@ -1749,7 +1903,7 @@ function fitImgRatio(containerId, bId){
                            ()=>{ b.ar = prevAr; b.width = prevW; }, true);
     if(t>0) toast(`사진 원본 비율 ${ratioLabel(nat)}로 맞췄어요${t<1?' (페이지에 맞게 크기를 줄였어요)':''}`);
   };
-  im.src = b.img;
+  im.src = imgSrc(b.img);
 }
 function startImgResize(e, containerId, bId){
   e.preventDefault(); e.stopPropagation();
@@ -2707,7 +2861,7 @@ function optPicOrder(o, m){
 }
 function optPics(o, m){
   const off = o.picOff||[];
-  return optPicOrder(o, m).filter(i=>!off.includes(i)).slice(0,3).map(i=>({src:m.exImgs[i], i}));
+  return optPicOrder(o, m).filter(i=>!off.includes(i)).slice(0,3).map(i=>({src:imgSrc(m.exImgs[i]), i}));
 }
 function moveOptPic(cid,bId,pi,oi,k,dir){
   const o = optAt(cid,bId,pi,oi); const m = getMat(o.matId); if(!m) return;
@@ -3157,7 +3311,7 @@ function renderMatPhotoGrid(){
   for(let i=0;i<3;i++){
     const img = tempExImgs[i];
     html += `<div class="mat-photo-slot ${img?'has-img':''}">
-      ${img?`<img src="${img}">`:''}
+      ${img?`<img src="${imgSrc(img)}">`:''}
       ${img&&i===0&&n>1?`<span class="mat-photo-badge">대표</span>`:''}
       <input type="file" accept="image/*" onchange="uploadMatPhoto(${i},this)">
       <i class="ti ti-camera-plus cam"></i>
@@ -3232,9 +3386,9 @@ function renderEyedrop(){
   if(!imgs.length){ closeEyedrop(); return; }
   const src = imgs[_dropIdx] || imgs[0];
   document.getElementById('mat-drop').innerHTML = `
-    <div class="mc-drop-stage"><img id="mat-drop-img" src="${src}" onmousemove="eyedropMove(event)" onclick="eyedropPick(event)"></div>
+    <div class="mc-drop-stage"><img id="mat-drop-img" src="${imgSrc(src)}" onmousemove="eyedropMove(event)" onclick="eyedropPick(event)"></div>
     <div class="mc-drop-hint"><span class="mc-drop-live" id="mat-drop-live"></span><span id="mat-drop-live-txt">색을 찍을 곳을 클릭하세요</span></div>
-    ${imgs.length>1?`<div class="mc-drop-tabs">${imgs.map((u,i)=>`<img src="${u}" class="${i===_dropIdx?'on':''}" onclick="_dropIdx=${i};renderEyedrop()">`).join('')}</div>`:''}`;
+    ${imgs.length>1?`<div class="mc-drop-tabs">${imgs.map((u,i)=>`<img src="${imgSrc(u)}" class="${i===_dropIdx?'on':''}" onclick="_dropIdx=${i};renderEyedrop()">`).join('')}</div>`:''}`;
   imgCanvas(src); // 미리 준비
 }
 async function eyedropColorAt(ev){
@@ -3798,6 +3952,7 @@ async function saveToGithub(){
   updateSaveStatus('saving');
   let ok = false, fatal = '', lastErr = '', sizeMB = '0';
   try{
+    await prepareImagesForSave();      // 새 사진 → images/ 파일로 올린 뒤에 data.json 저장
     const saveContent = buildSaveData();
     const b64 = btoa(unescape(encodeURIComponent(saveContent)));
     sizeMB = (b64.length*3/4/1048576).toFixed(1);
@@ -3864,6 +4019,7 @@ async function loadFromGithub(){
     if(content.PAGE_TEMPLATES) PAGE_TEMPLATES = content.PAGE_TEMPLATES;
     if(content.BRAND_LOGO) BRAND_LOGO = content.BRAND_LOGO;
     if(content.seeds) SEEDS = content.seeds;
+    markLoadedImagesKnown();
     _dataLoaded = true;
     updateSaveStatus('saved','불러옴');
     const seeded = applySeeds();
@@ -3878,7 +4034,7 @@ loadGhSettings();
 historyReset();
 _routePending = !!ghSettings.token && !!_initialRoute && _initialRoute!=='#/' && _initialRoute!=='#';
 render();
-if(ghSettings.token) loadFromGithub().finally(()=>{ if(_routePending){ _routePending = false; syncRoute(); } setTimeout(async()=>{ await migrateMatColors(); shrinkOversizedImages(); }, 1500); });
+if(ghSettings.token) loadFromGithub().finally(()=>{ if(_routePending){ _routePending = false; syncRoute(); } setTimeout(async()=>{ await migrateMatColors(); await shrinkOversizedImages(); migrateImagesToFiles(); }, 1500); });
 </script>
 </body>
 </html>
