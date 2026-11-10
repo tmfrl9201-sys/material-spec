@@ -257,6 +257,35 @@ body.mode-projects .rail{display:none}
 .lib-search i{color:var(--fg3);font-size:14px}
 .lib-search input{flex:1;border:none;outline:none;font:inherit;font-size:12.5px;padding:9px 0;background:none}
 .lib-q-hint{font-size:11px;color:var(--fg3)}
+/* 사용법 연습 */
+.btn-tut{background:#fff8dc;border-color:#f2d27a;color:#7a5a00}
+.btn-tut:hover{background:#fff1bf}
+.tut-badge{font-size:10.5px;font-weight:600;background:#fff1bf;color:#7a5a00;border:1px solid #f2d27a;border-radius:5px;padding:1px 7px;margin-left:6px;vertical-align:middle}
+#tut-panel{position:fixed;right:18px;bottom:18px;width:318px;max-height:min(620px,calc(100vh - 110px));display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.18);z-index:55;font-size:12px}
+#tut-panel.min{width:auto;max-height:none;background:none;border:none;box-shadow:none}
+.tut-min{background:var(--fg);color:#fff;border-radius:20px;padding:8px 14px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.tut-hd{display:flex;align-items:center;gap:6px;padding:11px 13px 6px;font-size:13px}
+.tut-note{font-size:10px;background:#fff1bf;color:#7a5a00;border-radius:4px;padding:1px 6px}
+.tut-x{margin-left:auto;cursor:pointer;color:var(--fg3);padding:2px 4px}
+.tut-prog{display:flex;align-items:center;gap:8px;padding:0 13px 8px;font-size:10.5px;color:var(--fg3)}
+.tut-bar{flex:1;height:5px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.tut-bar i{display:block;height:100%;background:#f2c230;border-radius:3px;transition:width .3s}
+.tut-steps{list-style:none;margin:0;padding:0 8px;overflow-y:auto;flex:1}
+.tut-steps li{border-radius:8px;margin-bottom:2px}
+.tut-steps li.cur{background:#fffaea;border:1px solid #f6e3a6}
+.tut-st{display:flex;align-items:center;gap:8px;padding:6px 6px;cursor:pointer;color:var(--fg2)}
+.tut-steps li.cur .tut-st{color:var(--fg);font-weight:600}
+.tut-ck{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:9.5px;color:var(--fg3);flex-shrink:0}
+.tut-steps li.done .tut-ck{background:#2e9e5b;border-color:#2e9e5b;color:#fff}
+.tut-steps li.done:not(.cur) .tut-st{color:var(--fg3)}
+.tut-body{padding:0 10px 10px 32px;line-height:1.6;color:var(--fg2);font-size:11.5px}
+.tut-act{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.tut-act .btn{padding:4px 10px;font-size:11px}
+.tut-ft{display:flex;align-items:center;gap:8px;padding:9px 13px;border-top:1px solid var(--border2);font-size:10px;color:var(--fg3)}
+.tut-ft .btn{margin-left:auto;padding:5px 11px;font-size:11px}
+@keyframes tutPulse{0%{box-shadow:0 0 0 0 rgba(242,194,48,.9)}70%{box-shadow:0 0 0 12px rgba(242,194,48,0)}100%{box-shadow:0 0 0 0 rgba(242,194,48,0)}}
+.tut-hl{outline:3px solid #f2c230!important;outline-offset:3px;animation:tutPulse 1s ease-out 3;border-radius:6px;position:relative;z-index:6}
+@media print{ #tut-panel,.tut-badge{display:none!important} }
 .lib-usage{margin-top:22px;padding-top:12px;border-top:1px solid var(--border2);font-size:11px;color:var(--fg2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .lib-usage-sub{color:var(--fg3)}
 .lib-clean-btn{margin-left:auto;padding:3px 10px;font-size:10.5px}
@@ -1120,6 +1149,7 @@ function resolveContainer(containerId){
 function pages(){ return [{type:'cover'}, ...curProj().spaces.map(sp=>({type:'space', sp}))]; }
 
 function render(){
+  if(_tut && !(mode==='library' || (mode==='editor' && curProjId===TUT_ID))){ exitTutorial(); return; }   // 연습 프로젝트를 벗어나면 연습 끝
   document.body.className = 'mode-'+mode;
   document.getElementById('page-root').style.display = (mode==='library'||mode==='projects') ? 'none' : 'block';
   document.getElementById('lib-root').style.display = mode==='library' ? 'flex' : 'none';
@@ -1158,12 +1188,13 @@ function renderTopBar(){
       <h1><i class="ti ti-building"></i> 프로젝트</h1>
       <span class="hint"><i class="ti ti-info-circle"></i> 프로젝트를 골라서 열거나 새로 만드세요.</span>
       <div class="spacer"></div>
+      <button class="btn btn-tut" onclick="startTutorial()" title="저장되지 않는 예시 프로젝트에서 모든 기능을 직접 눌러 보며 배워요"><i class="ti ti-school"></i> 사용법 연습하기</button>
       <button class="btn" onclick="openMatLibrary()"><i class="ti ti-palette"></i> 재료 라이브러리</button>
       <button class="btn btn-dark" onclick="openNewProjectModal()"><i class="ti ti-plus"></i> 새 프로젝트</button>`;
   } else {
     bar.innerHTML = `
       <button class="btn" onclick="goProjectsList()" title="목록으로"><i class="ti ti-arrow-left"></i></button>
-      <h1>${esc(curProj().meta.title)} — 재료 마감리스트</h1>
+      <h1>${esc(curProj().meta.title)} — 재료 마감리스트${_tut?' <span class="tut-badge">연습 중 · 저장 안 됨</span>':''}</h1>
       <span class="hint"><i class="ti ti-info-circle"></i> 화면을 그대로 클릭해서 수정하세요. 지금 이 화면이 곧 결과물이에요.</span>
       <div class="spacer"></div>
       <button class="btn" onclick="openMatLibrary()"><i class="ti ti-palette"></i> 재료 라이브러리</button>
@@ -1245,6 +1276,7 @@ function printProject(){
   printPages(pages());
 }
 function printPages(list){
+  if(_tut){ _tut.print++; setTimeout(tutCheck, 0); }
   const portrait = currentOrient()==='portrait';
   const cls = 'print-page' + (portrait?' portrait':'');
   document.getElementById('print-all-pages').innerHTML = list.map(pg => `<div class="${cls}">${pageHtml(pg)}</div>`).join('');
@@ -1820,6 +1852,216 @@ function endCrop(commit){
   markDirty(); render();
 }
 
+/* ===== 사용법 연습 (튜토리얼 프로젝트, 2026.11.10) =====
+   프로젝트 목록 상단 "사용법 연습하기" → 예시 프로젝트를 메모리에만 만들어 열고, 오른쪽 아래 안내 창에서 단계별로 직접 해 봄.
+   - 연습 중엔 저장 안 함(markDirty·saveToGithub에서 막음). 끝내거나 목록으로 나가면 시작 전 상태(라이브러리 포함)로 그대로 되돌림
+   - 각 단계는 실제로 해 보면 자동으로 ✓ (데이터 변화·실행취소·검색·PDF 횟수로 판단) */
+const TUT_ID = 'tutorial-practice';
+let _tut = null;   // {snap, imgStore, done:Set, cur, undo, print, searched, init, open}
+function tutPlanSvg(){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="440" viewBox="0 0 800 440">
+  <rect width="800" height="440" fill="#f4f3ef"/>
+  <rect x="60" y="40" width="420" height="200" fill="#e9e6df" stroke="#f2c230" stroke-width="7"/>
+  <text x="270" y="148" font-family="sans-serif" font-size="26" fill="#8a7a3c" text-anchor="middle">주차장</text>
+  <rect x="60" y="250" width="420" height="70" fill="#e6ebef" stroke="#3a7bd5" stroke-width="7"/>
+  <text x="270" y="294" font-family="sans-serif" font-size="24" fill="#3a6aa0" text-anchor="middle">진입로</text>
+  <rect x="500" y="40" width="240" height="280" fill="#ffffff" stroke="#999" stroke-width="2"/>
+  <text x="620" y="185" font-family="sans-serif" font-size="24" fill="#777" text-anchor="middle">건물</text>
+  <rect x="40" y="340" width="720" height="60" fill="#f1e4ec" stroke="#c2185b" stroke-width="7"/>
+  <text x="400" y="378" font-family="sans-serif" font-size="22" fill="#a0306a" text-anchor="middle">건물주변</text>
+  <text x="760" y="425" font-family="sans-serif" font-size="14" fill="#aaa" text-anchor="end">예시 배치도 (연습용 그림)</text></svg>`;
+  return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+}
+function tutSampleSvg(label, c1, c2){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs>
+  <rect width="600" height="400" fill="url(#g)"/>${Array.from({length:8},(_,i)=>`<line x1="0" y1="${50*i}" x2="600" y2="${50*i}" stroke="#fff" stroke-opacity=".25"/>`).join('')}
+  <text x="300" y="215" font-family="sans-serif" font-size="34" fill="#fff" text-anchor="middle">${label}</text></svg>`;
+  return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+}
+function buildTutorialProject(){
+  // 라이브러리에서 사진 있는 재료를 골라 예시로 씀 (사진 2장 이상 우선)
+  const mats = Object.values(DB).flat().filter(m=>(m.exImgs||[]).length).sort((a,b)=>b.exImgs.length-a.exImgs.length);
+  let mi = 0;
+  const pick = ()=> mats.length ? mats[(mi++) % mats.length] : null;
+  // 예시 페이지가 넘치지 않게 옵션마다 사진 1장만 보이게 (나머지는 '이 페이지에서 빼기' 상태 — ✕/다시 넣기 연습도 됨)
+  const O = (on)=>{ const m = pick(); const n = m ? m.exImgs.length : 0;
+    return {id:uid('o'), matId:m?m.id:null, text:m?'':'예시 옵션', on:!!on, hide:false, ...(n>1?{picOff:Array.from({length:n-1},(_,k)=>k+1)}:{})}; };
+  const a = [O(true), O()], b = [O(true), O()], c = [O(), O(true)];
+  const w1 = O(true), w2 = O();
+  const txId = uid('t');
+  return {
+    id: TUT_ID, name:'🎓 사용법 연습 (저장 안 됨)', addr:'연습용', types:['연습'], memo:'',
+    meta:{logo:'', title:'사용법 연습 프로젝트', subtitle:'여기서 고친 내용은 저장되지 않아요 · 마음껏 눌러 보세요', date:'2026. 11.', footer:'', orient:'portrait', projLine:'연습용 예시'},
+    spaces:[
+      {id:uid('sp'), kind:'section', name:'실외', date:'2026.11', blocks:[]},
+      {id:uid('sp'), name:'외부 바닥', blocks:[
+        {id:uid('b'), type:'image', label:'배치도 — 색으로 부위 구분', img:tutPlanSvg(), width:430, ar:'800/440'},
+        {id:uid('b'), type:'option', label:'외부 바닥', ratio:'4/3', parts:[{name:'주차장', options:a}, {name:'진입로', options:b}, {name:'건물주변', options:c}]}
+      ]},
+      {id:uid('sp'), name:'창호', blocks:[
+        {id:uid('b'), type:'option', label:'창호', ratio:'4/3', parts:[{name:'', options:[w1, w2]}],
+         grpOrder:[w1.id, 'tx:'+txId, w2.id], grpTexts:{[txId]:{span:2, content:'■특징 : 사진 옆에 이렇게 설명을 쓸 수 있어요.\n\n■장점 : Enter로 줄을 바꾸면 그대로 남아요.\n\n■단점 : 아래 사진 옆 빈칸에도 "＋글"로 하나 넣어 보세요.'}}}
+      ]},
+      {id:uid('sp'), name:'블록 배치 연습', blocks:[
+        {id:uid('b'), type:'text', label:'메모', content:'이 블록을 툴바의 ✥로 잡아서 옆 블록의 오른쪽·아래쪽 가장자리에 놓아 보세요.'},
+        {id:uid('b'), type:'material', label:'재료', matIds:mats.slice(0,2).map(m=>m.id)},
+        {id:uid('b'), type:'image', label:'예시 이미지', img:tutSampleSvg('예시 이미지','#8aa3b8','#4f6d85'), width:260},
+        {id:uid('b'), type:'gallery', label:'예시 카드', items:[{img:tutSampleSvg('카드 A','#c9a77c','#8c6a43'), title:'예시 A', desc:'설명을 적어요'}, {img:tutSampleSvg('카드 B','#9bb59a','#5c7a5b'), title:'예시 B', desc:'설명을 적어요'}]}
+      ]}
+    ]
+  };
+}
+// 단계: 제목, 설명, 보여줄 페이지(이름)·요소, 완료 판단
+const TUT_STEPS = [
+  {t:'화면 살펴보기', page:0, hl:'.rail', manual:true,
+   d:'왼쪽은 <b>페이지 목록</b>, 가운데 하얀 종이가 <b>결과물 그 자체</b>예요. 보이는 그대로 PDF로 나가요.<br>점선·버튼처럼 편집할 때만 보이는 것들은 인쇄할 때 자동으로 사라져요.'},
+  {t:'글자 바로 고치기', page:0, hl:'#page-root .cv-title',
+   d:'표지의 <b>제목을 클릭</b>해서 아무 글자나 바꿔 보세요. 따로 입력창 없이 그 자리에서 고쳐요.',
+   check:(p,P)=>p.meta.title!==P.meta.title || p.meta.subtitle!==P.meta.subtitle},
+  {t:'페이지 추가·복제·순서', page:2, hl:'.rail',
+   d:'왼쪽 페이지 썸네일에 마우스를 올리면 <b>↑↓ · 복제 · 삭제</b> 버튼이 나와요. 썸네일을 <b>끌어서</b> 순서를 바꿀 수도 있어요.<br>하나 복제하거나 순서를 바꿔 보세요. 삭제해도 "되돌리기"가 떠요.',
+   check:(p,P)=>p.spaces.map(s=>s.id).join()!==P.spaces.map(s=>s.id).join()},
+  {t:'블록 추가하기', page:4, hl:'#page-root .add-blk-bar',
+   d:'페이지 위쪽의 <b>옵션 선택 / 재료 / 이미지 / 텍스트 / 예시 카드</b> 버튼으로 블록을 넣어요. 하나 추가해 보세요.<br>페이지가 넘치면 자동으로 막아 줘요.',
+   check:(p,P)=>tutCount(p,b=>1)>tutCount(P,b=>1)},
+  {t:'옵션 체크하기', page:2, hl:'#page-root .opt-head',
+   d:'옵션 표의 <b>□ 를 클릭</b>하면 ■ 로 바뀌어요(선택한 마감). 사진 위 제목줄도 같이 바뀌어요.<br>"＋ 옵션"으로 라이브러리 재료를 더 넣을 수도 있어요.',
+   check:(p,P)=>tutOpts(p).map(o=>o.on).join()!==tutOpts(P).map(o=>o.on).join() || tutOpts(p).length!==tutOpts(P).length},
+  {t:'부위 색 칠하기', page:2, hl:'#page-root .opt-h-part',
+   d:'[주차장] 같은 <b>부위 칸에 마우스를 올리면 팔레트</b> 아이콘이 나와요. 배치도와 같은 색으로 칠해 보세요. PDF에도 색이 나와요.',
+   check:p=>tutParts(p).some(pt=>pt.color)},
+  {t:'사진 순서 바꾸기·빼기', page:2, hl:'#page-root .opt-ph',
+   d:'사진에 마우스를 올리면 오른쪽 위에 <b>‹ › ✕</b>가 나와요. ✕는 이 페이지에서만 빼는 거예요(라이브러리 사진은 그대로).<br>예시에선 옵션마다 사진 1장만 보이게 빼 둬서, 제목줄의 <b>사진 다시 넣기</b> 아이콘으로 되살려 볼 수도 있어요.',
+   check:(p,P)=>{ const sig = q=>tutOpts(q).map(o=>JSON.stringify([o.picOrder||[], o.picOff||[]])).join(); return sig(p)!==sig(P); }},
+  {t:'사진 확대·이동', page:2, hl:'#page-root .opt-ph',
+   d:'사진을 <b>두 번 클릭</b>(또는 돋보기) → <b>휠로 확대</b>, <b>끌어서 위치 이동</b> → Enter 또는 바깥 클릭으로 완료.<br>막대에 인쇄 해상도(초록/노랑/빨강)가 같이 나와요.',
+   check:p=>tutOpts(p).some(o=>o.crops) || tutBlocks(p).some(b=>b.crops)},
+  {t:'사진 묶음 자리 옮기기', page:2, hl:'#page-root .opt-cap',
+   d:'사진 위 <b>회색 제목줄을 잡고 끌어</b> 다른 사진 앞뒤나 빈칸에 놓아 보세요. 같은 부위끼리 한 줄에 모을 때 써요.',
+   check:(p,P)=>{ const sig = q=>tutBlocks(q).filter(b=>b.type==='option').map(b=>{ const g = b.grpOrder||[]; return g.filter(x=>x!=='_' && !String(x).startsWith('tx:')).join('|') + '#' + g.filter(x=>x==='_').length; });
+     const a = sig(p), z = sig(P); return a.some((v,i)=>{ const [o1,g1] = v.split('#'), [o0,g0] = (z[i]||'#0').split('#'); return (o1 && o0 && o1!==o0) || +g1 > +g0; }); }},
+  {t:'사진 옆에 글 쓰기', page:3, hl:'#page-root .opt-gap, #page-root .opt-tcell',
+   d:'사진 줄의 <b>빈칸에 마우스를 올리면 "＋글"</b>이 나와요. 눌러서 특징·장점·단점을 써 보세요. 막대의 ‹ ›로 넓이도 바꿔요.',
+   check:(p,P)=>tutTexts(p)>tutTexts(P)},
+  {t:'블록 옮기기·쌓기', page:4, hl:'#page-root .blk',
+   d:'블록에 마우스를 올리면 위에 도구 막대가 나와요. <b>✥ 를 잡고</b> 다른 블록의 <b>왼쪽·오른쪽</b>에 놓으면 옆에, <b>위·아래</b>에 놓으면 같은 칸에 쌓여요. 파란 선이 놓일 곳을 보여줘요.',
+   check:(p,P)=>{ if(tutBlocks(p).some(b=>b.under)) return true;
+     return p.spaces.some(sp=>{ const sp0 = P.spaces.find(x=>x.id===sp.id); if(!sp0) return false; const ids0 = (sp0.blocks||[]).map(b=>b.id);
+       const now = (sp.blocks||[]).map(b=>b.id).filter(id=>ids0.includes(id)); return now.join()!==ids0.filter(id=>now.includes(id)).join(); }); }},
+  {t:'블록 너비 조절', page:4, hl:'#page-root .blk-text',
+   d:'블록 <b>오른쪽 가장자리</b>의 파란 손잡이를 끌면 너비가 바뀌어요(¼·⅓·½…에 달라붙어요). 두 번 클릭하면 기본 너비로.',
+   check:p=>tutBlocks(p).some(b=>b.w)},
+  {t:'블록 잠그기', page:4, hl:'#page-root .blk',
+   d:'다 만든 블록은 도구 막대의 <b>자물쇠</b>로 잠가요. 잠그면 실수로 고치거나 옮길 수 없어요. "잠김 · 풀기"로 다시 풀어요.',
+   check:p=>tutBlocks(p).some(b=>b.locked)},
+  {t:'이미지 글자 서식', page:4, hl:'#page-root .blk-img',
+   d:'이미지 블록 도구 막대의 <b>글자 서식</b> 버튼으로 라벨 글자의 크기·굵기·정렬·색을 바꿔 보세요. 사진은 칸을 클릭하거나 끌어 놓아 바꿔요.',
+   check:p=>tutBlocks(p).some(b=>b.type==='image' && b.ls)},
+  {t:'실행취소', page:null, hl:'#undo-btn',
+   d:'실수했으면 위쪽 <b>실행취소</b> 버튼이나 <b>Ctrl+Z</b>. 다시 하기는 Ctrl+Shift+Z예요. 한 번 눌러 보세요.',
+   check:()=>_tut && _tut.undo>0},
+  {t:'재료 라이브러리 검색', page:null, hl:'[onclick="openMatLibrary()"]',
+   d:'위쪽 <b>재료 라이브러리</b>에서 모든 재료를 관리해요. 맨 위 <b>검색창</b>에 "벽돌"처럼 입력해 보세요.<br>빨간 "저해상도" 표시는 인쇄하면 흐릴 수 있는 작은 사진이에요. 다 보면 "완료"로 돌아와요.',
+   check:()=>_tut && _tut.searched},
+  {t:'PDF로 내보내기', page:null, hl:'[onclick="printProject()"]',
+   d:'오른쪽 위 <b>PDF로 내보내기</b> → 인쇄 창에서 "PDF로 저장"을 고르면 돼요. 섹션 표지의 "이 섹션만 PDF로"로 한 권씩 뽑을 수도 있어요. 한 번 눌러 보세요(취소해도 돼요).',
+   check:()=>_tut && _tut.print>0},
+];
+function tutBlocks(p){ return (p.spaces||[]).flatMap(s=>s.blocks||[]); }
+function tutCount(p,f){ return tutBlocks(p).filter(f).length; }
+function tutParts(p){ return tutBlocks(p).filter(b=>b.type==='option').flatMap(b=>b.parts||[]); }
+function tutOpts(p){ return tutParts(p).flatMap(pt=>pt.options||[]); }
+function tutTexts(p){ return tutBlocks(p).filter(b=>b.grpTexts).reduce((a,b)=>a+Object.values(b.grpTexts).filter(t=>(t.content||'').trim()).length,0); }
+function startTutorial(){
+  if(_tut) return;
+  const st = document.getElementById('save-status');
+  if(_saveBusy || (_imgPending && _imgPending.size) || (st && st.classList.contains('error') && ghSettings.token)){
+    toast('저장이 끝난 뒤에 시작해 주세요 (잠깐 기다렸다가 다시 눌러 주세요)');
+    if(ghSettings.token && !_saveBusy) saveToGithub();
+    return;
+  }
+  clearTimeout(_autoSaveTimer);
+  _tut = {snap:appState(), imgStore:JSON.parse(JSON.stringify(imgStore)), done:new Set(), cur:0, undo:0, print:0, searched:false, open:true};
+  const p = buildTutorialProject();
+  projects.push(p);
+  _tut.init = JSON.parse(JSON.stringify(p));
+  historyReset();
+  openProject(TUT_ID);
+  if(curProj().meta.orient!=='portrait') render();
+  renderTutPanel();
+  toast('연습 모드예요 — 여기서 한 건 저장되지 않아요. 오른쪽 아래 안내를 따라 해 보세요');
+}
+function exitTutorial(){
+  if(!_tut) return;
+  const t = _tut; _tut = null;
+  const c = cloneShared(t.snap);
+  DB = c.DB; projects = c.projects; PAGE_TEMPLATES = c.PAGE_TEMPLATES; BRAND_LOGO = c.BRAND_LOGO;
+  imgStore = t.imgStore;
+  libQuery = '';
+  const el = document.getElementById('tut-panel'); if(el) el.remove();
+  document.querySelectorAll('.tut-hl').forEach(e=>e.classList.remove('tut-hl'));
+  historyReset();
+  mode = 'projects'; curProjId = null; curPage = 0;
+  render();
+  if(ghSettings.token) updateSaveStatus('saved', '저장됨');
+  toast(`연습을 마쳤어요 (${t.done.size}/${TUT_STEPS.length}단계) — 연습에서 한 건 저장되지 않았어요`);
+}
+function tutCheck(){
+  if(!_tut) return;
+  const p = projects.find(x=>x.id===TUT_ID); if(!p) return;
+  let newly = [];
+  TUT_STEPS.forEach((s,i)=>{ if(!_tut.done.has(i) && s.check){ try{ if(s.check(p, _tut.init)){ _tut.done.add(i); newly.push(i); } }catch(e){} } });
+  if(newly.length){
+    toast(`✓ "${TUT_STEPS[newly[0]].t}" 해 봤어요!` + (_tut.done.size===TUT_STEPS.length ? ' 모든 단계를 끝냈어요 🎉' : ''));
+    if(newly.includes(_tut.cur)){ const nx = TUT_STEPS.findIndex((_,i)=>!_tut.done.has(i)); if(nx>=0) _tut.cur = nx; }
+    renderTutPanel();
+  }
+}
+function tutGo(i){ if(!_tut) return; _tut.cur = i; _tut.open = true; renderTutPanel(); }
+function tutDoneManual(i){ if(!_tut) return; _tut.done.add(i); const nx = TUT_STEPS.findIndex((_,k)=>!_tut.done.has(k)); _tut.cur = nx<0 ? i : nx; renderTutPanel(); }
+function tutShow(i){
+  if(!_tut) return;
+  const s = TUT_STEPS[i];
+  if(s.page!=null){
+    if(mode!=='editor' || curProjId!==TUT_ID){ mode = 'editor'; curProjId = TUT_ID; }
+    if(curPage!==s.page){ curPage = Math.min(s.page, pages().length-1); render(); }
+  }
+  setTimeout(()=>{
+    const els = [...document.querySelectorAll(s.hl)].filter(e=>e.offsetParent!==null).slice(0,3);
+    if(!els.length){ toast('이 화면에선 안 보여요 — 해당 페이지로 가서 다시 눌러 보세요'); return; }
+    els[0].scrollIntoView({block:'center', behavior:'smooth'});
+    els.forEach(e=>{ e.classList.remove('tut-hl'); void e.offsetWidth; e.classList.add('tut-hl'); setTimeout(()=>e.classList.remove('tut-hl'), 3200); });
+  }, 60);
+}
+function renderTutPanel(){
+  if(!_tut) return;
+  let el = document.getElementById('tut-panel');
+  if(!el){ el = document.createElement('div'); el.id = 'tut-panel'; el.className = 'no-print'; document.body.appendChild(el); }
+  const n = _tut.done.size, N = TUT_STEPS.length;
+  if(!_tut.open){
+    el.className = 'no-print min';
+    el.innerHTML = `<div class="tut-min" onclick="_tut.open=true;renderTutPanel()"><i class="ti ti-school"></i> 사용법 연습 ${n}/${N} <i class="ti ti-chevron-up"></i></div>`;
+    return;
+  }
+  el.className = 'no-print';
+  el.innerHTML = `
+    <div class="tut-hd"><i class="ti ti-school"></i><b>사용법 연습</b><span class="tut-note">저장 안 됨</span>
+      <span class="tut-x" onclick="_tut.open=false;renderTutPanel()" title="접기"><i class="ti ti-chevron-down"></i></span></div>
+    <div class="tut-prog"><div class="tut-bar"><i style="width:${Math.round(n/N*100)}%"></i></div><span>${n}/${N}</span></div>
+    <ol class="tut-steps">${TUT_STEPS.map((s,i)=>`
+      <li class="${_tut.done.has(i)?'done':''} ${i===_tut.cur?'cur':''}">
+        <div class="tut-st" onclick="tutGo(${i})"><span class="tut-ck">${_tut.done.has(i)?'<i class="ti ti-check"></i>':i+1}</span>${esc(s.t)}</div>
+        ${i===_tut.cur?`<div class="tut-body">${s.d}
+          <div class="tut-act">
+            <button class="btn" onclick="tutShow(${i})"><i class="ti ti-target-arrow"></i> 어디예요?</button>
+            ${s.manual && !_tut.done.has(i)?`<button class="btn btn-dark" onclick="tutDoneManual(${i})">확인했어요</button>`:''}
+            ${i<N-1?`<button class="btn" onclick="tutGo(${i+1})">다음 <i class="ti ti-chevron-right"></i></button>`:''}
+          </div></div>`:''}
+      </li>`).join('')}</ol>
+    <div class="tut-ft"><span>끝내면 연습 전 상태로 돌아가요</span><button class="btn btn-dark" onclick="exitTutorial()"><i class="ti ti-logout"></i> 연습 끝내기</button></div>`;
+  const cur = el.querySelector('li.cur'); if(cur) cur.scrollIntoView({block:'nearest'});
+}
 // 겹치지 않는 id (같은 밀리초에 여러 개 만들어도 안전)
 let _uidSeq = 0;
 function uid(prefix){ return prefix + Date.now().toString(36) + (++_uidSeq).toString(36) + Math.random().toString(36).slice(2,6); }
@@ -2467,6 +2709,7 @@ function historyUndo(){
   if(!_hist.undo.length){ toast('더 되돌릴 게 없어요'); return; }
   _hist.redo.push(appState());
   applyState(_hist.undo.pop());
+  if(_tut){ _tut.undo++; setTimeout(tutCheck, 0); }
   toast('실행취소');
 }
 function historyRedo(){
@@ -3324,7 +3567,7 @@ function searchMats(q){
   }));
   return out;
 }
-function setLibQuery(v){ libQuery = v; renderLibBody(); }
+function setLibQuery(v){ libQuery = v; renderLibBody(); if(_tut && v.trim()){ _tut.searched = true; tutCheck(); } }
 function matCardHtml(m, cat){
   return `<div class="mat-card" onclick="openMatModal('${m.id}')">
       <div class="mat-card-del no-print" onclick="event.stopPropagation();deleteMat('${m.id}')"><i class="ti ti-x"></i></div>
@@ -4008,6 +4251,7 @@ async function testGithubConnection(){
 let _autoSaveTimer = null, _dirtyAt = 0;
 function markDirty(){
   historyTouch(); updateHistButtons();   // 실행취소 기록용 (저장 로직과 무관)
+  if(_tut){ setTimeout(tutCheck, 0); return; }   // 사용법 연습 중 — 저장 안 함
   if(!ghSettings.token) return;
   const btn = document.getElementById('save-btn');
   btn.style.display=''; btn.style.background='#c0392b'; btn.style.borderColor='#c0392b';
@@ -4055,6 +4299,7 @@ function scheduleSaveRetry(){
   if(t) t.textContent = `저장 실패 · ${Math.round(w/1000)}초 뒤 다시 시도`;
 }
 async function saveToGithub(){
+  if(_tut){ toast('연습 모드라 저장하지 않아요 — "연습 끝내기"를 누르면 원래대로 돌아가요'); return; }
   if(!ghSettings.token){ openGithubSetup(); return; }
   if(_saveBusy){ _saveAgain = true; return; }          // 저장 중 → 끝나고 한 번 더
   _saveBusy = true; _saveAgain = false;
