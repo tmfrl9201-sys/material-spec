@@ -194,7 +194,7 @@ body.mode-editor .zoom-pill,body.mode-template .zoom-pill{display:flex}
 .img-slot-main.framing .img-ratio-badge{display:block}
 
 .blk-text{flex:1 1 260px}
-.blk-text-content{font-size:11.5px;line-height:1.6;min-height:60px;padding:8px 9px;border:1px solid var(--border2);border-radius:7px;background:var(--bg2)}
+.blk-text-content{white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;font-size:11.5px;line-height:1.6;min-height:60px;padding:8px 9px;border:1px solid var(--border2);border-radius:7px;background:var(--bg2)}
 
 .add-blk-bar{display:flex;gap:6px;margin-bottom:10px}
 .btn-add-blk{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;border:1px solid var(--border);font-size:11px;color:var(--fg3);cursor:pointer;background:#fff}
@@ -216,7 +216,7 @@ body.mode-editor .zoom-pill,body.mode-template .zoom-pill{display:flex}
 .gal-img.has-img .gal-hint{display:none}
 .gal-body{padding:6px 8px}
 .gal-title{font-size:11px;font-weight:700}
-.gal-desc{font-size:9.5px;color:var(--fg3);margin-top:2px;line-height:1.4}
+.gal-desc{white-space:pre-wrap;font-size:9.5px;color:var(--fg3);margin-top:2px;line-height:1.4}
 .gal-card-del{position:absolute;top:5px;right:5px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;display:none;align-items:center;justify-content:center;font-size:9px;cursor:pointer;z-index:2}
 .gal-card:hover .gal-card-del{display:flex}
 .gal-add-card{border:1.3px dashed var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px;color:var(--fg4);font-size:10.5px;cursor:pointer;min-height:110px}
@@ -483,13 +483,13 @@ body.mode-projects .rail{display:none}
 .opt-ph.empty.add span{font-size:8.5px;color:var(--fg4)}
 .opt-photos.drop{outline:2px dashed var(--accent);outline-offset:2px}
 label.opt-mini{margin:0}
-.opt-sub{font-size:9px;color:var(--fg3);text-align:center;margin-top:4px;line-height:1.35}
+.opt-sub{white-space:pre-wrap;font-size:9px;color:var(--fg3);text-align:center;margin-top:4px;line-height:1.35}
 .opt-sub-wrap{position:relative;display:flex;justify-content:center;align-items:flex-start;gap:2px}
 .opt-sub-wrap .opt-mini{display:none;position:absolute;right:0;top:2px}
 .opt-sub-wrap:hover .opt-mini{display:flex}
 .opt-sub.lib{position:relative}
 .opt-sub.lib:hover::before,.opt-sub.lib:focus::before{content:'📚 라이브러리 공통 — 고치면 모든 프로젝트에 반영';position:absolute;left:50%;bottom:100%;transform:translateX(-50%);white-space:nowrap;background:var(--fg);color:#fff;font-size:9px;padding:2px 6px;border-radius:4px;margin-bottom:2px;z-index:5;font-weight:500}
-.opt-note{font-size:9.5px;color:var(--fg2);text-align:center;margin-top:3px;line-height:1.4;min-height:12px}
+.opt-note{white-space:pre-wrap;font-size:9.5px;color:var(--fg2);text-align:center;margin-top:3px;line-height:1.4;min-height:12px}
 .opt-note:empty{opacity:0;margin-top:0;min-height:0}
 .opt-grp:hover .opt-note:empty,.opt-note:empty:focus{opacity:1;margin-top:3px;min-height:12px}
 
@@ -999,7 +999,7 @@ function coverHtml(){
       </div>
     </div>
     <div class="cv-foot">
-      <span class="cv-foot-lbl">날짜</span>
+      <span class="cv-foot-lbl no-print">날짜</span>
       <span class="cv-date" contenteditable data-ph="2026. 06." oninput="updateMeta('date',this)">${esc(m.date)}</span>
     </div>
   </div>`;
@@ -1591,7 +1591,7 @@ function removeGalItem(containerId, bId, idx){
 }
 function updateGalItem(containerId, bId, idx, field, el){
   markDirty();
-  getBlock(containerId,bId).items[idx][field] = el.textContent;
+  getBlock(containerId,bId).items[idx][field] = field==='desc' ? editableText(el) : el.textContent;
 }
 function uploadGalImg(containerId, bId, idx, input){
   markDirty();
@@ -1629,9 +1629,24 @@ function renameBlockLabel(containerId, bId, el){
   getBlock(containerId,bId).label = el.textContent;
   if(mode==='editor') renderRail();
 }
+// contenteditable에서 Enter로 넣은 줄바꿈(<div>/<br>)까지 살려서 글자로 꺼냄 — 화면엔 white-space:pre-wrap으로 그대로 보임
+function editableText(el){
+  let out = '';
+  const walk = n=>{ for(const c of n.childNodes){
+    if(c.nodeType===3) out += c.nodeValue;
+    else if(c.nodeName==='BR') out += '\n';
+    else if(/^(DIV|P|LI)$/.test(c.nodeName)){
+      if(out && !out.endsWith('\n')) out += '\n';
+      walk(c);
+      if(!(c.lastChild && c.lastChild.nodeName==='BR')) out += '\n';   // <div><br></div> = 빈 줄 하나
+    } else walk(c);
+  }};
+  walk(el);
+  return out.replace(/\u00a0/g,' ').replace(/\n+$/,'');
+}
 function updateBlockText(containerId, bId, el){
   markDirty();
-  getBlock(containerId,bId).content = el.textContent;
+  getBlock(containerId,bId).content = editableText(el);
 }
 /* ===== 이미지 틀 비율 조절 =====
    오른쪽 가장자리 = 가로만, 아래 가장자리 = 세로만 → 틀 비율(b.ar = 가로/세로)이 바뀜.
@@ -2493,12 +2508,12 @@ async function addMatPhotos(matId, fileList){
 
 // 옵션 사진 아래 설명(가격)을 고치면 라이브러리 재료(sub)에 바로 저장 → 이 재료를 쓰는 모든 페이지에 같이 반영
 // 사진 아래 "이 프로젝트에만" 설명 (라이브러리와 무관)
-function editOptNote(cid,bId,pi,oi,el){ optAt(cid,bId,pi,oi).note = el.textContent.trim(); markDirty(); }
+function editOptNote(cid,bId,pi,oi,el){ optAt(cid,bId,pi,oi).note = editableText(el).trim(); markDirty(); }
 function toggleOptSub(cid,bId,pi,oi){ const o=optAt(cid,bId,pi,oi); o.hideSub=!o.hideSub; render(); markDirty(); }
 function editMatSub(matId, el){
   const m = getMat(matId); if(!m) return;
-  m.sub = el.textContent.trim();
-  document.querySelectorAll(`[data-sub="${matId}"]`).forEach(x=>{ if(x!==el) x.textContent = el.textContent; });
+  m.sub = editableText(el).trim();
+  document.querySelectorAll(`[data-sub="${matId}"]`).forEach(x=>{ if(x!==el) x.textContent = m.sub; });
   markDirty();
 }
 function optAt(cid,bId,pi,oi){ return getBlock(cid,bId).parts[pi].options[oi]; }
