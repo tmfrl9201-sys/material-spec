@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>재료마감리스트 — WYSIWYG 프로토타입</title>
+<title>유타건축 재료 마감리스트</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 :root{
@@ -1209,6 +1209,9 @@ function pages(){ return [{type:'cover'}, ...curProj().spaces.map(sp=>({type:'sp
 function render(){
   if(_tut && !(mode==='library' || mode==='templates' || mode==='template' || (mode==='editor' && curProjId===TUT_ID))){ exitTutorial(); return; }   // 연습 프로젝트를 벗어나면 연습 끝 (라이브러리·템플릿 화면은 연습 중에도 들어가 볼 수 있음)
   document.body.className = 'mode-'+mode;
+  // 브라우저 탭 이름 (PDF로 저장할 때 기본 파일 이름으로도 쓰임)
+  { const pj = mode==='editor' && curProj(); const APP = '유타건축 재료 마감리스트';
+    document.title = pj ? `${pj.name||'프로젝트'} · ${APP}` : mode==='library' ? `재료 라이브러리 · ${APP}` : (mode==='templates'||mode==='template') ? `템플릿 · ${APP}` : APP; }
   document.getElementById('page-root').style.display = (mode==='library'||mode==='projects'||mode==='templates') ? 'none' : 'block';
   document.getElementById('tlib-root').style.display = mode==='templates' ? 'block' : 'none';
   document.getElementById('lib-root').style.display = mode==='library' ? 'flex' : 'none';
