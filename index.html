@@ -166,6 +166,8 @@ body.mode-editor .zoom-pill,body.mode-template .zoom-pill{display:flex}
 .fp-btn:hover{border-color:var(--fg3);color:var(--fg)}
 .fp-btn.on{background:var(--fg);color:#fff;border-color:var(--fg)}
 .fp-btn.wide{padding:0 8px;font-size:11px}
+.fp-wrap{display:flex;flex-wrap:wrap;gap:4px}
+#ph-fmt-pop{width:236px}
 .blk{position:relative;border-radius:8px;padding:4px}
 .blk:hover{background:rgba(45,106,224,0.035)}
 .blk-toolbar{position:absolute;top:-11px;right:2px;display:none;gap:2px;background:#fff;border:1px solid var(--border2);border-radius:6px;padding:2px;box-shadow:0 2px 8px rgba(0,0,0,.08);z-index:3}
@@ -574,7 +576,7 @@ body.mode-projects .rail{display:none}
 }
 .opt-cap-tools{position:absolute;right:3px;top:50%;transform:translateY(-50%);display:none;gap:1px}
 .opt-grp:hover .opt-cap-tools{display:flex}
-.opt-photos{display:grid;gap:8px}
+.opt-photos{display:grid;gap:8px;align-items:start}
 .opt-ph{aspect-ratio:var(--opt-ratio,4/3);overflow:hidden;background:var(--bg2)}
 .opt-ph img{width:100%;height:100%;object-fit:cover;display:block}
 .opt-ph{position:relative}
@@ -1785,6 +1787,67 @@ function setLblStyle(k, v, live){
   renderLblFormat();
 }
 
+/* ===== 옵션 사진 하나하나의 비율·폭 (2026.11.11) =====
+   o.ph[라이브러리 사진 번호] = {r:'3/4' 같은 비율 | 원본이면 '가로/세로' 실제 픽셀, orig:true, w:1~3 칸}
+   폭은 3칸 줄 안에서만 (한 옵션 사진 폭 합계 ≤ 3). 바꿀 때마다 applyOrRevert로 페이지 넘침 검사. */
+const PH_RATIOS = [['','기본'],['orig','원본'],['4/3','4:3'],['3/2','3:2'],['16/9','16:9'],['1/1','1:1'],['3/4','3:4'],['2/3','2:3']];
+let _phCtx = null;
+function openPhFormat(ev, cid, bId, pi, oi, idx){
+  ev.stopPropagation();
+  closePhFormat(); closeLblFormat(); closePartColor();
+  _phCtx = {cid, bId, pi, oi, idx};
+  const pop = document.createElement('div');
+  pop.id = 'ph-fmt-pop'; pop.className = 'color-pop fmt-pop no-print';
+  pop.onmousedown = e=>e.stopPropagation();
+  document.body.appendChild(pop);
+  renderPhFormat();
+  const r = ev.currentTarget.getBoundingClientRect();
+  let x = r.left - 100, y = r.bottom + 6;
+  if(x + pop.offsetWidth > innerWidth - 8) x = innerWidth - pop.offsetWidth - 8;
+  if(y + pop.offsetHeight > innerHeight - 8) y = r.top - pop.offsetHeight - 6;
+  pop.style.left = Math.max(8,x)+'px'; pop.style.top = Math.max(8,y)+'px';
+  setTimeout(()=>document.addEventListener('mousedown', closePhFormat), 0);
+}
+function closePhFormat(){ const pop = document.getElementById('ph-fmt-pop'); if(pop) pop.remove(); document.removeEventListener('mousedown', closePhFormat); _phCtx = null; }
+function renderPhFormat(){
+  const pop = document.getElementById('ph-fmt-pop'); if(!pop || !_phCtx) return;
+  const {cid, bId, pi, oi, idx} = _phCtx;
+  const b = getBlock(cid, bId); if(!b){ closePhFormat(); return; }
+  const f = (optAt(cid,bId,pi,oi).ph||{})[idx] || {};
+  const curR = f.orig ? 'orig' : (f.r||''), curW = f.w||1;
+  pop.innerHTML = `<div class="cp-title">이 사진의 비율·폭</div>
+    <div class="fp-lbl" style="margin-bottom:5px">비율 <span style="color:var(--fg4)">(기본 = 블록 비율 ${(b.ratio||'4/3').replace('/',':')})</span></div>
+    <div class="fp-wrap">${PH_RATIOS.map(([v,t])=>`<span class="fp-btn wide ${curR===v?'on':''}" onclick="setPhFormat('r','${v}')">${t}</span>`).join('')}</div>
+    ${b.stack ? '<div class="fp-lbl" style="margin-top:8px;color:var(--fg4)">세로 쌓기 블록은 폭이 한 칸으로 고정돼요</div>'
+      : `<div class="fp-row" style="margin-top:8px"><span class="fp-lbl">폭</span>${[1,2,3].map(w=>`<span class="fp-btn wide ${curW===w?'on':''}" onclick="setPhFormat('w',${w})">${w}칸</span>`).join('')}</div>`}
+    <div class="fp-lbl" style="margin-top:8px;color:var(--fg4);line-height:1.5">페이지를 넘치게 되면 바뀌지 않아요. 보이는 부분은 사진 확대(돋보기)로 맞춰요.</div>`;
+}
+function phNaturalRatio(src){
+  return new Promise(res=>{ const im = new Image(); im.onload = ()=>res(im.naturalWidth && im.naturalHeight ? `${im.naturalWidth}/${im.naturalHeight}` : ''); im.onerror = ()=>res(''); im.src = src; });
+}
+async function setPhFormat(k, v){
+  if(!_phCtx) return;
+  const {cid, bId, pi, oi, idx} = _phCtx;
+  const b = getBlock(cid, bId); const o = optAt(cid,bId,pi,oi); const m = getMat(o.matId); if(!b || !m) return;
+  const prev = o.ph ? JSON.parse(JSON.stringify(o.ph)) : null;
+  const f = {...((o.ph||{})[idx]||{})};
+  if(k==='r'){
+    if(v==='orig'){ const r = await phNaturalRatio(imgSrc(m.exImgs[idx])); if(!r){ toast('사진 크기를 읽지 못했어요'); return; } f.r = r; f.orig = true; }
+    else { delete f.orig; if(v) f.r = v; else delete f.r; }
+  } else if(k==='w'){
+    const others = optPics(o, m).filter(p=>p.i!==idx).reduce((a,p)=>a + (((o.ph||{})[p.i]||{}).w||1), 0);
+    if(others + v > 3){ toast(`한 줄은 3칸이라 이 옵션의 다른 사진 때문에 ${v}칸은 안 돼요 — 다른 사진을 빼거나 줄여 주세요`); return; }
+    if(v>1) f.w = v; else delete f.w;
+  }
+  if(_hist.timer) historyCommit();
+  const ok = applyOrRevert(()=>{
+    const ph = {...(o.ph||{})};
+    if(Object.keys(f).length) ph[idx] = f; else delete ph[idx];
+    if(Object.keys(ph).length) o.ph = ph; else delete o.ph;
+  }, ()=>{ if(prev) o.ph = prev; else delete o.ph; });
+  if(ok) renderPhFormat();
+}
+
 /* ===== 사진 틀 안에서 확대·이동 (재료 블록 칩, 옵션 사진) =====
    틀 크기는 그대로, 사진만 확대(최대 5배)하고 끌어서 보이는 부분을 옮김.
    재료 블록: b.crops[matId] / 옵션: o.crops[라이브러리 사진 번호] = {z, x, y}  (x,y = 틀 크기 대비 % 이동)
@@ -2011,6 +2074,9 @@ const TUT_STEPS = [
   {t:'사진 확대·이동', page:2, hl:'#page-root .opt-ph',
    d:'사진을 <b>두 번 클릭</b>(또는 돋보기) → <b>휠로 확대</b>, <b>끌어서 위치 이동</b> → Enter 또는 바깥 클릭으로 완료.<br>막대에 인쇄 해상도(초록/노랑/빨강)가 같이 나와요.',
    check:p=>tutOpts(p).some(o=>o.crops) || tutBlocks(p).some(b=>b.crops)},
+  {t:'사진 비율·폭', page:3, hl:'#page-root .opt-ph',
+   d:'사진에 마우스를 올리고 <b>비율 버튼</b>(돋보기 옆)을 눌러 보세요. 사진마다 <b>원본·4:3·1:1·3:4…</b> 비율과 <b>폭(1~3칸)</b>을 따로 정해요.<br>세로로 긴 사진은 3:4나 원본, 넓은 사진은 2칸으로. 페이지가 넘치면 안 바뀌어요.',
+   check:p=>tutOpts(p).some(o=>o.ph)},
   {t:'사진 묶음 자리 옮기기', page:2, hl:'#page-root .opt-cap',
    d:'사진 위 <b>회색 제목줄을 잡고 끌어</b> 다른 사진 앞뒤나 빈칸에 놓아 보세요. 같은 부위끼리 한 줄에 모을 때 써요.',
    check:(p,P)=>{ const sig = q=>tutBlocks(q).filter(b=>b.type==='option').map(b=>{ const g = b.grpOrder||[]; return g.filter(x=>x!=='_' && !String(x).startsWith('tx:')).join('|') + '#' + g.filter(x=>x==='_').length; });
@@ -2999,8 +3065,10 @@ function optionBlockHtml(cid, b, toolbarBase){
     const imgs = pics.map(p=>p.src);
     const libN = (m.exImgs||[]).length;
     const offN = libN - imgs.length;
-    const n = Math.max(1, imgs.length);
-    const span = b.stack ? 1 : n;
+    const phf = k=>(o.ph||{})[pics[k].i] || {};   // 사진별 비율·폭 (o.ph[라이브러리 사진 번호] = {r, w, orig})
+    const pw = pics.map((_,k)=>b.stack ? 1 : Math.max(1, Math.min(3, phf(k).w||1)));
+    const n = Math.max(1, pw.reduce((a,x)=>a+x,0));
+    const span = b.stack ? 1 : Math.min(3, n);
     const pre = multi && part.name ? (part.color ? `<span class="opt-part-tag" style="background:${part.color}">${esc(part.name)}</span>` : `[${esc(part.name)}] `) : '';
     groups.push({id:o.id, span, html:`<div class="opt-grp ${o.on?'on':''}" data-gid="${o.id}" style="grid-column:span ${span}" ondragover="optGrpOver(event,this)" ondragleave="this.classList.remove('drop-l','drop-r')" ondrop="optGrpDrop(event,'${cid}','${b.id}','${o.id}',this)">
       <div class="opt-cap" draggable="true" ondragstart="optGrpDragStart(event,'${b.id}','${o.id}')" ondragend="optGrpDragEnd()" title="끌어서 자리 옮기기"><span class="opt-grip no-print"><i class="ti ti-grip-vertical"></i></span><span class="opt-box" onclick="toggleOpt('${cid}','${b.id}',${pi},${oi})">${o.on?'■':'□'}</span><span>${pre}<span data-ok="${b.id}-${pi}-${oi}">${esc(optName(o))}</span></span>
@@ -3011,7 +3079,7 @@ function optionBlockHtml(cid, b, toolbarBase){
           <span class="opt-mini" onclick="toggleOptPhoto('${cid}','${b.id}',${pi},${oi})" title="사진 숨기기 (체크표에만 표시)"><i class="ti ti-photo-off"></i></span>
         </span></div>
       <div class="opt-photos" style="grid-template-columns:repeat(${b.stack?1:n},1fr)" ondragover="if(event.dataTransfer.types.includes('Files')){event.preventDefault();this.classList.add('drop')}" ondragleave="this.classList.remove('drop')" ondrop="this.classList.remove('drop');if(event.dataTransfer.files.length){event.preventDefault();addMatPhotos('${m.id}',event.dataTransfer.files)}">
-        ${imgs.length ? pics.map((p,k)=>`<div class="opt-ph crop-frame" data-crop="o|${cid}|${b.id}|${pi}|${oi}|${p.i}" ondblclick="startCrop(this)"><img src="${p.src}" style="${cropCss((o.crops||{})[p.i])}"><div class="opt-ph-tools no-print"><span onclick="event.stopPropagation();startCrop(this.closest('.opt-ph'))" title="사진 확대·이동 (두 번 클릭해도 돼요)"><i class="ti ti-zoom-in"></i></span>${k>0?`<span onclick="moveOptPic('${cid}','${b.id}',${pi},${oi},${k},-1)" title="왼쪽으로"><i class="ti ti-chevron-left"></i></span>`:''}${k<imgs.length-1?`<span onclick="moveOptPic('${cid}','${b.id}',${pi},${oi},${k},1)" title="오른쪽으로"><i class="ti ti-chevron-right"></i></span>`:''}<span class="danger" onclick="hideOptPic('${cid}','${b.id}',${pi},${oi},${p.i})" title="이 페이지에서 이 사진 빼기 (라이브러리 사진은 그대로)"><i class="ti ti-x"></i></span></div></div>`).join('')
+        ${imgs.length ? pics.map((p,k)=>`<div class="opt-ph crop-frame" data-crop="o|${cid}|${b.id}|${pi}|${oi}|${p.i}" style="${pw[k]>1?`grid-column:span ${pw[k]};`:''}${phf(k).r?`aspect-ratio:${phf(k).r};`:''}" ondblclick="startCrop(this)"><img src="${p.src}" style="${cropCss((o.crops||{})[p.i])}"><div class="opt-ph-tools no-print"><span onclick="event.stopPropagation();startCrop(this.closest('.opt-ph'))" title="사진 확대·이동 (두 번 클릭해도 돼요)"><i class="ti ti-zoom-in"></i></span><span onclick="openPhFormat(event,'${cid}','${b.id}',${pi},${oi},${p.i})" title="이 사진의 비율·폭"><i class="ti ti-aspect-ratio"></i></span>${k>0?`<span onclick="moveOptPic('${cid}','${b.id}',${pi},${oi},${k},-1)" title="왼쪽으로"><i class="ti ti-chevron-left"></i></span>`:''}${k<imgs.length-1?`<span onclick="moveOptPic('${cid}','${b.id}',${pi},${oi},${k},1)" title="오른쪽으로"><i class="ti ti-chevron-right"></i></span>`:''}<span class="danger" onclick="hideOptPic('${cid}','${b.id}',${pi},${oi},${p.i})" title="이 페이지에서 이 사진 빼기 (라이브러리 사진은 그대로)"><i class="ti ti-x"></i></span></div></div>`).join('')
           : libN ? `<div class="opt-ph empty add no-print" onclick="showOptPics('${cid}','${b.id}',${pi},${oi})" title="뺀 사진 다시 넣기"><i class="ti ti-photo-up"></i>사진을 모두 뺐어요<br><span>눌러서 다시 넣기 (${libN}장)</span></div>`
           : `<label class="opt-ph empty add no-print" title="클릭하거나 사진을 끌어다 놓으세요"><i class="ti ti-photo-plus"></i>사진 추가 (최대 3장)<br><span>라이브러리 "${esc(getCatOf(m.id))} › ${esc(m.name)}"에 저장돼요</span><input type="file" accept="image/*" multiple hidden onchange="addMatPhotos('${m.id}',this.files);this.value=''"></label>`}
       </div>
@@ -4074,7 +4142,7 @@ function remapMatPics(matId, oldArr, newArr){
     if(o.matId!==matId) return;
     if(o.picOrder) o.picOrder = fix(o.picOrder);
     if(o.picOff){ o.picOff = fix(o.picOff); if(!o.picOff.length) delete o.picOff; }
-    if(o.crops){ const nc = {}; Object.keys(o.crops).forEach(k=>{ const j = map[+k]; if(j!==undefined && j>=0) nc[j] = o.crops[k]; }); if(Object.keys(nc).length) o.crops = nc; else delete o.crops; }
+    ['crops','ph'].forEach(key=>{ if(!o[key]) return; const nc = {}; Object.keys(o[key]).forEach(k=>{ const j = map[+k]; if(j!==undefined && j>=0) nc[j] = o[key][k]; }); if(Object.keys(nc).length) o[key] = nc; else delete o[key]; });
   });
 }
 async function saveMatModal(){
