@@ -290,10 +290,22 @@ body.mode-projects .rail{display:none}
 /* 템플릿 화면 */
 .tlib-panel{--ts:.25;--ts-s:.12}
 .tl-hint{margin-left:10px;color:var(--fg4);font-size:10.5px}
-.tl-group{font-size:12px;font-weight:700;color:var(--fg2);margin:22px 0 10px;display:flex;align-items:center;gap:6px}
-.tl-group span{font-size:10.5px;font-weight:500;color:var(--fg4)}
-.tl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
-.tl-grid.sets{grid-template-columns:1fr}
+.proj-panel.tlib-panel{max-width:1500px}
+.tl-col-pages{position:sticky;top:12px;max-height:calc(100vh - 140px);overflow-y:auto}
+.tl-two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px;align-items:start;margin-top:14px}
+.tl-col{display:flex;flex-direction:column;gap:12px;min-width:0;border-radius:12px;padding:12px;background:var(--bg2);border:1.5px dashed transparent;transition:border-color .1s, background .1s}
+.tl-col-hd{font-size:12.5px;font-weight:700;color:var(--fg2);display:flex;align-items:center;gap:6px}
+.tl-col-hd span{font-size:10.5px;font-weight:500;color:var(--fg4)}
+.tl-col-hd em{font-style:normal;font-weight:400;font-size:10px;color:var(--fg4);margin-left:auto;display:none}
+.tl-dragging .tl-col-pages .tl-col-hd em{display:inline}
+.tl-col-pages.drop-out{border-color:#c0392b;background:#fdf3f2}
+.tl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.tl-pcard{cursor:grab}
+.tl-pcard .tl-actions{top:14px;right:14px}
+.drag-src{opacity:.35}
+.tl-set-hd{padding-right:60px}
+.tl-add-set{border:1.5px dashed var(--border);border-radius:10px;padding:14px;text-align:center;font-size:12px;color:var(--fg3);cursor:pointer;background:#fff}
+.tl-add-set:hover{border-color:var(--accent);color:var(--fg)}
 .tl-card{position:relative;background:#fff;border:1px solid var(--border2);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;transition:border-color .1s, box-shadow .1s}
 .tl-card:hover{border-color:var(--fg4);box-shadow:0 4px 16px rgba(0,0,0,.06)}
 .tl-thumb{position:relative;width:100%;aspect-ratio:794/562;overflow:hidden;border:1px solid var(--border2);border-radius:5px;background:#fff;cursor:pointer}
@@ -313,24 +325,24 @@ body.mode-projects .rail{display:none}
 .tl-actions span{width:24px;height:24px;border-radius:6px;background:#fff;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--fg3);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .tl-actions span:hover{color:var(--fg);border-color:var(--fg4)}
 .tl-actions span.danger:hover{color:#c0392b;border-color:#f3c6c6;background:#fdecea}
-.tl-set-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
-.tl-set-pg{flex:0 0 120px;min-width:0}
+.tl-set-strip{display:flex;flex-wrap:wrap;gap:10px;padding:6px;margin:-6px;border-radius:8px;min-height:60px;transition:background .1s}
+.tl-set-strip.drop-end{background:var(--bg2)}
+.tl-set-strip.drop-end::after{content:'';width:3px;align-self:stretch;min-height:60px;border-radius:2px;background:var(--accent)}
+.tl-set-pg{flex:0 0 92px;min-width:0;position:relative;cursor:grab}
+.tl-set-pg.drop-before::before{content:'';position:absolute;left:-7px;top:0;bottom:16px;width:3px;border-radius:2px;background:var(--accent)}
+.tl-set-x{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:#fff;border:1px solid var(--border2);display:none;align-items:center;justify-content:center;font-size:10px;color:var(--fg3);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.08);z-index:2}
+.tl-set-pg:hover .tl-set-x{display:flex}
+.tl-set-x:hover{color:#c0392b;border-color:#f3c6c6;background:#fdecea}
 .tl-set-cap{font-size:9.5px;color:var(--fg3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-set-sec{flex:0 0 120px;min-width:0;align-self:flex-start;aspect-ratio:794/562;border:1px dashed var(--border);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--fg3);font-size:10px;text-align:center;padding:6px}
+.tl-set-sec{flex:0 0 92px;min-width:0;align-self:flex-start;aspect-ratio:794/562;border:1px dashed var(--border);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--fg3);font-size:10px;text-align:center;padding:6px}
 .tl-set-sec.portrait{aspect-ratio:794/1123}
-.tl-set-sec b{color:var(--fg2);font-size:11px}
+.tl-set-sec b{color:var(--fg2);font-size:10.5px;outline:none;border-radius:3px;padding:0 3px;min-width:30px;cursor:text}
+.tl-set-sec b:hover{background:var(--bg2)}
+.tl-set-sec b:focus{background:#fff;box-shadow:0 0 0 1.5px var(--accent)}
+.tl-set-sec b:empty::before{content:attr(data-ph);color:var(--fg4);font-weight:400}
 .tl-empty-set{font-size:11px;color:var(--fg4);align-self:center}
 .crumb-link{cursor:pointer;color:var(--fg3)}
 .crumb-link:hover{color:var(--fg);text-decoration:underline}
-.tset-list{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;max-height:44vh;overflow-y:auto}
-.tset-row{display:flex;align-items:center;gap:6px;border:1px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:12px}
-.tset-no{font-size:10px;color:var(--fg4);width:16px}
-.tset-nm{flex:1}
-.tset-btn{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg3);font-size:11px}
-.tset-btn:hover{background:var(--bg);color:var(--fg)}
-.tset-btn.danger:hover{background:#fdecea;color:#c0392b}
-.tset-empty{font-size:11px;color:var(--fg4);padding:8px 0}
-.tset-add{width:100%;font:inherit;font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:#fff}
 .lib-usage{margin-top:22px;padding-top:12px;border-top:1px solid var(--border2);font-size:11px;color:var(--fg2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .lib-usage-sub{color:var(--fg3)}
 .lib-clean-btn{margin-left:auto;padding:3px 10px;font-size:10.5px}
@@ -738,15 +750,6 @@ body.mode-projects .app-home-txt,body.mode-projects .app-home-sep{display:none}
   <div class="ov-box" style="width:480px">
     <div class="ov-hdr"><b>페이지 추가</b><span id="tmpl-where" style="font-size:11px;color:var(--fg3)"></span><span class="ov-close" onclick="closeTmplPicker()"><i class="ti ti-x"></i></span></div>
     <div class="tmpl-grid" id="tmpl-grid"></div>
-  </div>
-</div>
-
-<!-- 세트 페이지 구성 -->
-<div class="ov" id="ov-tset">
-  <div class="ov-box" style="width:420px">
-    <div class="ov-hdr"><b>세트 페이지 구성</b><span class="ov-close" onclick="closeSetEditor()"><i class="ti ti-x"></i></span></div>
-    <div id="tset-body"></div>
-    <div class="ov-actions"><button class="btn btn-dark" onclick="closeSetEditor()">완료</button></div>
   </div>
 </div>
 
@@ -2027,7 +2030,7 @@ const TUT_STEPS = [
    d:'이미지 블록 도구 막대의 <b>글자 서식</b> 버튼으로 라벨 글자의 크기·굵기·정렬·색을 바꿔 보세요. 사진은 칸을 클릭하거나 끌어 놓아 바꿔요.',
    check:p=>tutBlocks(p).some(b=>b.type==='image' && b.ls)},
   {t:'템플릿 화면', page:null, hl:'.tl-thumb', go:'templates',
-   d:'홈 위쪽 <b>[템플릿]</b>에서 모든 페이지 템플릿과 세트를 실제 모양 그대로 모아 봐요. (연습 중엔 "어디예요?"로 바로 가요)<br>미리보기를 <b>눌러서 편집</b>해 보세요. 이름은 카드에서 바로 고치고, 복제·삭제·그룹, 세트의 <b>페이지 구성</b>도 여기서 해요. "완료"를 누르면 돌아와요.',
+   d:'홈 위쪽 <b>[템플릿]</b>에서 모든 페이지 템플릿과 세트를 실제 모양 그대로 모아 봐요. (연습 중엔 "어디예요?"로 바로 가요)<br>왼쪽은 <b>세트</b>, 오른쪽은 <b>개별 페이지</b>예요. 오른쪽 페이지를 왼쪽 세트로 <b>끌어다 끼워 넣고</b>, 세트 안에서 끌어 순서를 바꾸고, 오른쪽으로 끌어내면 세트에서 빠져요.<br>미리보기를 <b>눌러서 편집</b>해 보세요. 이름·섹션 이름은 그 자리에서 고쳐요. "완료"를 누르면 돌아와요.',
    check:()=>_tut && _tut.tmplEdit},
   {t:'실행취소', page:null, hl:'#undo-btn',
    d:'실수했으면 위쪽 <b>실행취소</b> 버튼이나 <b>Ctrl+Z</b>. 다시 하기는 Ctrl+Shift+Z예요. 한 번 눌러 보세요.',
@@ -3524,7 +3527,7 @@ function renderTmplGrid(){
       <i class="ti ${t.icon}"></i><b>${esc(t.name)}</b>${t.orient==='portrait'?'<span class="tmpl-badge">A4 세로</span>':''}<p>${esc(t.pageIds?`${t.desc} · ${t.pageIds.length+1}페이지`:t.desc)}</p>
     </div>`;
   const groups = {};
-  PAGE_TEMPLATES.forEach(t=>{ const g = t.pageIds ? '세트 (여러 페이지 한번에)' : (t.group||'페이지 템플릿'); (groups[g]=groups[g]||[]).push(t); });
+  PAGE_TEMPLATES.forEach(t=>{ const g = t.pageIds ? '세트 (여러 페이지 한번에)' : '페이지 템플릿'; (groups[g]=groups[g]||[]).push(t); });
   const order = Object.keys(groups).sort((a,b)=>(b.startsWith('세트')?1:0)-(a.startsWith('세트')?1:0));
   document.getElementById('tmpl-grid').innerHTML =
     `<div class="tmpl-card blank" onclick="pickPageTemplate(null)"><i class="ti ti-file-plus"></i><b>빈 페이지</b><p>블록을 직접 구성</p></div>` +
@@ -3578,7 +3581,7 @@ function saveCurrentAsTemplate(){
 
 /* ===== 템플릿 화면 (홈 → 템플릿, 2026.11.11) =====
    mode 'templates' — 모든 페이지 템플릿을 실제 페이지 미리보기로 모아 보고, 이름·그룹·복제·삭제·새로 만들기,
-   세트는 페이지 구성(순서·추가·빼기)·섹션 이름 편집. 페이지 편집은 기존 템플릿 편집 화면(mode 'template')으로 들어가고 "완료"로 여기 돌아옴. */
+   왼쪽 세트 / 오른쪽 개별 페이지 2단 — 드래그로 세트에 끼워넣기·순서 바꾸기·빼기, 섹션 이름은 그 자리 편집 (2026.11.11 그룹 없앰). 페이지 편집은 기존 템플릿 편집 화면(mode 'template')으로 들어가고 "완료"로 여기 돌아옴. */
 let tlibQuery = '';
 function openTemplatesHome(){ prevMode = mode; mode = 'templates'; render(); }
 function exitTemplatesHome(){
@@ -3589,27 +3592,26 @@ function tmplPreviewHtml(t){
   // 템플릿 편집 화면과 같은 모양을 그대로 축소 (편집 UI는 썸네일에서 숨김)
   return `<div class="pg-space"><div class="sp-name">${esc(t.pageName||t.name||'')}</div>${blocksAreaHtml(t, 'tmpl:'+t.id)}</div>`;
 }
-function tmplGroupOf(t){ return t.pageIds ? '세트 — 여러 페이지 한번에' : (t.group || '내 템플릿'); }
 function tmplSetsUsing(id){ return PAGE_TEMPLATES.filter(s=>s.pageIds && s.pageIds.includes(id)); }
 function renderTemplatesHome(){
   const root = document.getElementById('tlib-root'); if(!root) return;
   const q = libNorm(tlibQuery);
-  const list = PAGE_TEMPLATES.filter(t=>!q || libNorm(`${t.name}|${t.pageName||''}|${t.group||''}|${t.desc||''}|${t.section||''}`).includes(q));
-  const groups = {};
-  list.forEach(t=>{ (groups[tmplGroupOf(t)] = groups[tmplGroupOf(t)] || []).push(t); });
-  const order = Object.keys(groups).sort((a,b)=>(b.startsWith('세트')?1:0)-(a.startsWith('세트')?1:0));
-  const thumb = (t, small)=>`<div class="tl-thumb ${t.orient==='portrait'?'portrait':''} ${small?'small':''}" onclick="editTemplate('${t.id}')" title="눌러서 편집">
+  const hit = t=>!q || libNorm(`${t.name}|${t.pageName||''}|${t.desc||''}|${t.section||''}`).includes(q);
+  const allPages = PAGE_TEMPLATES.filter(t=>!t.pageIds), allSets = PAGE_TEMPLATES.filter(t=>t.pageIds);
+  const pagesL = allPages.filter(hit);
+  // 세트는 이름·섹션이 맞거나, 안에 든 페이지가 검색에 걸리면 보여줌
+  const setsL = allSets.filter(s=>hit(s) || (q && s.pageIds.some(id=>{ const t = allPages.find(x=>x.id===id); return t && hit(t); })));
+  const thumb = (t, small)=>`<div class="tl-thumb ${t.orient==='portrait'?'portrait':''} ${small?'small':''}" onclick="editTemplate('${t.id}')" title="눌러서 편집 · 끌어서 세트에 넣기">
       <div class="thumb-live"><div class="thumb-page page${t.orient==='portrait'?' portrait':''}">${tmplPreviewHtml(t)}</div></div></div>`;
   const pageCard = t=>{
     const sets = tmplSetsUsing(t.id);
-    return `<div class="tl-card">
+    return `<div class="tl-card tl-pcard" draggable="true" ondragstart="tlDragStart(event,{page:'${t.id}'})" ondragend="tlDragEnd()">
       ${thumb(t)}
       <div class="tl-info">
-        <div class="tl-name" contenteditable data-ph="템플릿 이름" onclick="event.stopPropagation()" oninput="renameTemplate('${t.id}',this)">${esc(t.name)}</div>
+        <div class="tl-name" contenteditable data-ph="템플릿 이름" draggable="false" ondragstart="event.preventDefault();event.stopPropagation()" onclick="event.stopPropagation()" oninput="renameTemplate('${t.id}',this)">${esc(t.name)}</div>
         <div class="tl-meta">
           <span class="tl-chip">${t.orient==='portrait'?'A4 세로':'가로형'}</span>
-          <span class="tl-chip link" onclick="setTemplateGroup('${t.id}')" title="그룹 바꾸기"><i class="ti ti-folder"></i> ${esc(t.group||'그룹 없음')}</span>
-          ${sets.length?`<span class="tl-chip" title="${esc(sets.map(s=>s.name).join(', '))}"><i class="ti ti-stack-2"></i> 세트 ${sets.length}개에 포함</span>`:''}
+          ${sets.length?`<span class="tl-chip" title="${esc(sets.map(s=>s.name).join(', '))}"><i class="ti ti-stack-2"></i> 세트 ${sets.length}개</span>`:''}
         </div>
       </div>
       <div class="tl-actions">
@@ -3620,51 +3622,136 @@ function renderTemplatesHome(){
     </div>`;
   };
   const setCard = s=>{
-    const pgs = (s.pageIds||[]).map(id=>PAGE_TEMPLATES.find(x=>x.id===id)).filter(Boolean);
-    return `<div class="tl-card tl-set">
-      <div class="tl-set-strip">
-        <div class="tl-set-sec ${s.orient==='portrait'?'portrait':''}"><i class="ti ti-bookmark"></i><b>${esc(s.section||s.name)}</b><span>섹션 표지</span></div>
-        ${pgs.map(p=>`<div class="tl-set-pg">${thumb(p,true)}<div class="tl-set-cap" title="${esc(p.name)}">${esc(p.name)}</div></div>`).join('')}
-        ${pgs.length?'':'<div class="tl-empty-set">페이지가 없어요 — "페이지 구성"에서 넣어 주세요</div>'}
-      </div>
-      <div class="tl-info">
+    const pgs = (s.pageIds||[]).map(id=>PAGE_TEMPLATES.find(x=>x.id===id));
+    return `<div class="tl-card tl-set" data-set="${s.id}">
+      <div class="tl-set-hd">
         <div class="tl-name" contenteditable data-ph="세트 이름" oninput="renameTemplate('${s.id}',this)">${esc(s.name)}</div>
-        <div class="tl-meta"><span class="tl-chip">${s.orient==='portrait'?'A4 세로':'가로형'}</span><span class="tl-chip">섹션 표지 + ${pgs.length}페이지</span></div>
+        <div class="tl-meta"><span class="tl-chip">${s.orient==='portrait'?'A4 세로':'가로형'}</span><span class="tl-chip">섹션 표지 + ${pgs.filter(Boolean).length}페이지</span></div>
+      </div>
+      <div class="tl-set-strip" ondragover="tlDragOver(event)" ondragleave="tlDragLeave(event)" ondrop="tlDrop(event,'${s.id}')">
+        <div class="tl-set-sec ${s.orient==='portrait'?'portrait':''}"><i class="ti ti-bookmark"></i>
+          <b contenteditable spellcheck="false" data-ph="섹션 이름" title="섹션 표지에 들어갈 이름 — 눌러서 바로 고쳐요" oninput="setSetSection('${s.id}',this)">${esc(s.section||'')}</b><span>섹션 표지</span></div>
+        ${pgs.map((p,i)=>p?`<div class="tl-set-pg" draggable="true" data-i="${i}" ondragstart="tlDragStart(event,{set:'${s.id}',i:${i}})" ondragend="tlDragEnd()">
+            ${thumb(p,true)}<div class="tl-set-cap" title="${esc(p.name)}">${i+1}. ${esc(p.name)}</div>
+            <span class="tl-set-x" onclick="removeSetPageAt('${s.id}',${i})" title="세트에서 빼기 (템플릿은 그대로)"><i class="ti ti-x"></i></span></div>`:'').join('')}
+        ${pgs.length?'':'<div class="tl-empty-set">오른쪽 페이지를 여기로 끌어다 놓으세요</div>'}
       </div>
       <div class="tl-actions">
-        <span onclick="openSetEditor('${s.id}')" title="페이지 구성·섹션 이름"><i class="ti ti-list-details"></i></span>
-        <span onclick="duplicateTemplate('${s.id}')" title="복제"><i class="ti ti-copy"></i></span>
-        <span class="danger" onclick="deleteTemplateHome('${s.id}')" title="삭제 (되돌리기 가능 — 안의 페이지 템플릿은 그대로)"><i class="ti ti-trash"></i></span>
+        <span onclick="duplicateTemplate('${s.id}')" title="세트 복제"><i class="ti ti-copy"></i></span>
+        <span class="danger" onclick="deleteTemplateHome('${s.id}')" title="세트 삭제 (되돌리기 가능 — 안의 페이지 템플릿은 그대로)"><i class="ti ti-trash"></i></span>
       </div>
     </div>`;
   };
   root.innerHTML = `
     <div class="proj-toolbar no-print">
-      <div class="proj-search-wrap"><i class="ti ti-search"></i><input id="tlib-q" placeholder="템플릿 이름·그룹 검색" value="${esc(tlibQuery)}" oninput="tlibQuery=this.value;renderTemplatesHome()"></div>
+      <div class="proj-search-wrap"><i class="ti ti-search"></i><input id="tlib-q" placeholder="세트·페이지 이름 검색" value="${esc(tlibQuery)}" oninput="tlibQuery=this.value;renderTemplatesHome()"></div>
     </div>
-    <div class="proj-count">템플릿 ${PAGE_TEMPLATES.filter(t=>!t.pageIds).length}개 · 세트 ${PAGE_TEMPLATES.filter(t=>t.pageIds).length}개${q?` · "${esc(tlibQuery)}" 검색 결과 ${list.length}개`:''}
-      <span class="tl-hint">썸네일을 누르면 편집 · 이름은 그 자리에서 고쳐요 · 프로젝트에서 "+ 페이지"로 가져다 써요</span></div>
-    ${order.map(g=>`<div class="tl-group">${esc(g)} <span>${groups[g].length}</span></div>
-      <div class="tl-grid ${g.startsWith('세트')?'sets':''}">${groups[g].map(t=>t.pageIds?setCard(t):pageCard(t)).join('')}</div>`).join('')
-      || '<div class="lib-empty">찾는 템플릿이 없어요</div>'}`;
+    <div class="proj-count">세트 ${allSets.length}개 · 페이지 템플릿 ${allPages.length}개${q?` · "${esc(tlibQuery)}" 검색 중`:''}
+      <span class="tl-hint">썸네일을 누르면 편집 · 오른쪽 페이지를 왼쪽 세트로 끌어다 넣고, 세트 안에서 끌어 순서를 바꿔요</span></div>
+    <div class="tl-two">
+      <section class="tl-col">
+        <div class="tl-col-hd"><i class="ti ti-stack-2"></i> 세트 <span>${setsL.length}</span></div>
+        ${setsL.map(setCard).join('') || (q?'<div class="lib-empty">찾는 세트가 없어요</div>':'')}
+        ${q?'':'<div class="tl-add-set" onclick="createTemplateSet()"><i class="ti ti-plus"></i> 새 세트</div>'}
+      </section>
+      <section class="tl-col tl-col-pages" ondragover="tlDragOverPages(event)" ondragleave="this.classList.remove('drop-out')" ondrop="tlDropPages(event)">
+        <div class="tl-col-hd"><i class="ti ti-file"></i> 페이지 템플릿 <span>${pagesL.length}</span><em>세트의 페이지를 여기로 끌어 놓으면 세트에서 빠져요</em></div>
+        <div class="tl-grid">${pagesL.map(pageCard).join('')}</div>
+        ${pagesL.length?'':'<div class="lib-empty">찾는 페이지가 없어요</div>'}
+      </section>
+    </div>`;
   // 썸네일 배율 = 썸네일 폭 / 실제 페이지 폭(794px)
   const t0 = root.querySelector('.tl-thumb:not(.small)'), t1 = root.querySelector('.tl-thumb.small');
   if(t0) root.style.setProperty('--ts', (t0.clientWidth/794).toFixed(4));
   if(t1) root.style.setProperty('--ts-s', (t1.clientWidth/794).toFixed(4));
-  if(document.activeElement && document.activeElement.id!=='tlib-q' && tlibQuery){ /* 검색 중이 아니면 그대로 */ }
   const qi = document.getElementById('tlib-q'); if(qi && tlibQuery){ qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
 }
+/* 템플릿 화면 드래그: 페이지 → 세트(끼워넣기), 세트 안 순서 바꾸기, 세트 → 다른 세트(옮기기), 세트 → 오른쪽(빼기) */
+let _tlDrag = null;
+function tlDragStart(e, d){
+  _tlDrag = d; e.stopPropagation();
+  try{ e.dataTransfer.setData('text/plain', d.page||d.set); e.dataTransfer.effectAllowed = 'copyMove'; }catch(_){}
+  document.body.classList.add('tl-dragging');
+  setTimeout(()=>{ const el = e.target.closest('.tl-set-pg,.tl-pcard'); if(el) el.classList.add('drag-src'); }, 0);
+}
+function tlDragEnd(){
+  _tlDrag = null; document.body.classList.remove('tl-dragging');
+  document.querySelectorAll('.drag-src,.drop-before,.drop-end,.drop-out').forEach(el=>el.classList.remove('drag-src','drop-before','drop-end','drop-out'));
+}
+function tlDropIndex(strip, x, y){
+  const items = [...strip.querySelectorAll('.tl-set-pg')];
+  for(let k=0;k<items.length;k++){
+    const r = items[k].getBoundingClientRect();
+    if(y < r.top || (y <= r.bottom && x < r.left + r.width/2)) return k;
+  }
+  return items.length;
+}
+function tlDragOver(e){
+  if(!_tlDrag) return;
+  e.preventDefault(); e.stopPropagation();
+  const strip = e.currentTarget;
+  try{ e.dataTransfer.dropEffect = _tlDrag.page ? 'copy' : 'move'; }catch(_){}
+  document.querySelectorAll('.drop-before,.drop-end,.drop-out').forEach(el=>el.classList.remove('drop-before','drop-end','drop-out'));
+  const idx = tlDropIndex(strip, e.clientX, e.clientY);
+  const items = strip.querySelectorAll('.tl-set-pg');
+  if(items[idx]) items[idx].classList.add('drop-before'); else strip.classList.add('drop-end');
+}
+function tlDragLeave(e){
+  const strip = e.currentTarget;
+  if(e.relatedTarget && strip.contains(e.relatedTarget)) return;
+  strip.classList.remove('drop-end'); strip.querySelectorAll('.drop-before').forEach(el=>el.classList.remove('drop-before'));
+}
+function tlDrop(e, setId){
+  e.preventDefault(); e.stopPropagation();
+  const d = _tlDrag; const strip = e.currentTarget;
+  const idx0 = tlDropIndex(strip, e.clientX, e.clientY);
+  tlDragEnd();
+  if(!d) return;
+  const s = PAGE_TEMPLATES.find(x=>x.id===setId); if(!s) return;
+  if(d.page){
+    const t = PAGE_TEMPLATES.find(x=>x.id===d.page); if(!t) return;
+    const cur = s.pageIds.indexOf(d.page);
+    if(cur>=0) moveSetPageTo(s, cur, idx0);
+    else { if(_hist.timer) historyCommit(); s.pageIds.splice(idx0, 0, d.page); markDirty(); toast(`"${t.name}"을(를) "${s.name}" ${idx0+1}번째에 넣었어요`); }
+  } else if(d.set===setId){
+    moveSetPageTo(s, d.i, idx0);
+  } else {
+    const src = PAGE_TEMPLATES.find(x=>x.id===d.set); if(!src) return;
+    const pid = src.pageIds[d.i]; const t = PAGE_TEMPLATES.find(x=>x.id===pid);
+    if(s.pageIds.includes(pid)){ toast(`"${s.name}"에는 이미 이 페이지가 있어요`); return; }
+    if(_hist.timer) historyCommit();
+    src.pageIds.splice(d.i, 1); s.pageIds.splice(idx0, 0, pid); markDirty();
+    toast(`"${t?t.name:'페이지'}"을(를) "${s.name}"(으)로 옮겼어요`);
+  }
+  renderTemplatesHome();
+}
+function moveSetPageTo(s, from, to){
+  if(to > from) to--;
+  if(to===from) return;
+  if(_hist.timer) historyCommit();
+  const [id] = s.pageIds.splice(from, 1); s.pageIds.splice(to, 0, id); markDirty();
+}
+function tlDragOverPages(e){
+  if(!_tlDrag || !_tlDrag.set) return;
+  e.preventDefault(); e.currentTarget.classList.add('drop-out');
+  try{ e.dataTransfer.dropEffect = 'move'; }catch(_){}
+}
+function tlDropPages(e){
+  e.preventDefault();
+  const d = _tlDrag; tlDragEnd();
+  if(d && d.set) removeSetPageAt(d.set, d.i);
+}
+function removeSetPageAt(setId, i){
+  const s = PAGE_TEMPLATES.find(x=>x.id===setId); if(!s || !s.pageIds[i]) return;
+  const t = PAGE_TEMPLATES.find(x=>x.id===s.pageIds[i]);
+  if(_hist.timer) historyCommit();
+  s.pageIds.splice(i, 1); markDirty(); renderTemplatesHome();
+  toast(`"${t?t.name:'페이지'}"을(를) "${s.name}"에서 뺐어요 (템플릿은 그대로)`);
+}
+function setSetSection(id, el){ const s = PAGE_TEMPLATES.find(x=>x.id===id); if(!s) return; s.section = el.textContent.trim(); markDirty(); }
 function renameTemplate(id, el){
   const t = PAGE_TEMPLATES.find(x=>x.id===id); if(!t) return;
   t.name = el.textContent.trim() || t.name; markDirty();
-}
-function setTemplateGroup(id){
-  const t = PAGE_TEMPLATES.find(x=>x.id===id); if(!t) return;
-  const gs = [...new Set(PAGE_TEMPLATES.filter(x=>!x.pageIds && x.group).map(x=>x.group))];
-  const v = prompt(`그룹 이름을 입력하세요 (비우면 "내 템플릿")\n지금 있는 그룹: ${gs.join(', ')||'없음'}`, t.group||'');
-  if(v===null) return;
-  if(v.trim()) t.group = v.trim(); else delete t.group;
-  markDirty(); renderTemplatesHome();
 }
 function duplicateTemplate(id){
   const t = PAGE_TEMPLATES.find(x=>x.id===id); if(!t) return;
@@ -3697,33 +3784,11 @@ function toggleTemplateOrient(){
   t.orient = t.orient==='portrait' ? 'landscape' : 'portrait';
   markDirty(); render();
 }
-/* 세트 페이지 구성 편집 (선택 동작이라 팝업 허용) */
-let _setEditId = null;
-function openSetEditor(id){ _setEditId = id; renderSetEditor(); document.getElementById('ov-tset').classList.add('show'); }
-function closeSetEditor(){ document.getElementById('ov-tset').classList.remove('show'); _setEditId = null; if(mode==='templates') renderTemplatesHome(); }
-function renderSetEditor(){
-  const s = PAGE_TEMPLATES.find(x=>x.id===_setEditId); if(!s) return;
-  const pgs = s.pageIds.map(id=>PAGE_TEMPLATES.find(x=>x.id===id)).filter(Boolean);
-  const avail = PAGE_TEMPLATES.filter(t=>!t.pageIds);
-  document.getElementById('tset-body').innerHTML = `
-    <div class="ov-field"><label>섹션 이름 (프로젝트에 넣으면 이 이름의 섹션 표지가 앞에 생겨요)</label>
-      <input type="text" value="${esc(s.section||'')}" placeholder="예) 실내 : 임대세대" oninput="setSetField('section',this.value)"></div>
-    <div class="ov-field"><label>페이지 (위에서부터 순서대로 들어가요)</label>
-      <div class="tset-list">${pgs.map((p,i)=>`<div class="tset-row"><span class="tset-no">${i+1}</span><span class="tset-nm">${esc(p.name)}</span>
-        <span class="tset-btn" onclick="moveSetPage(${i},-1)" title="위로" ${i?'':'style="visibility:hidden"'}><i class="ti ti-chevron-up"></i></span>
-        <span class="tset-btn" onclick="moveSetPage(${i},1)" title="아래로" ${i<pgs.length-1?'':'style="visibility:hidden"'}><i class="ti ti-chevron-down"></i></span>
-        <span class="tset-btn danger" onclick="removeSetPage(${i})" title="세트에서 빼기 (템플릿은 그대로)"><i class="ti ti-x"></i></span></div>`).join('') || '<div class="tset-empty">아직 페이지가 없어요</div>'}</div>
-      <select class="tset-add" onchange="if(this.value){addSetPage(this.value);}"><option value="">＋ 페이지 템플릿 추가…</option>
-        ${avail.map(t=>`<option value="${t.id}">${esc(t.name)}${t.group?` · ${esc(t.group)}`:''}</option>`).join('')}</select>
-    </div>`;
-}
-function setSetField(k, v){ const s = PAGE_TEMPLATES.find(x=>x.id===_setEditId); if(!s) return; s[k] = v; markDirty(); }
-function moveSetPage(i, d){ const s = PAGE_TEMPLATES.find(x=>x.id===_setEditId); const j = i+d; if(j<0||j>=s.pageIds.length) return; [s.pageIds[i], s.pageIds[j]] = [s.pageIds[j], s.pageIds[i]]; markDirty(); renderSetEditor(); }
-function removeSetPage(i){ const s = PAGE_TEMPLATES.find(x=>x.id===_setEditId); s.pageIds.splice(i,1); markDirty(); renderSetEditor(); }
-function addSetPage(id){ const s = PAGE_TEMPLATES.find(x=>x.id===_setEditId); s.pageIds.push(id); markDirty(); renderSetEditor(); }
 function createTemplateSet(){
   const s = {id:uid('pt'), name:'새 세트', icon:'ti-stack-2', desc:'직접 만든 세트', orient:'portrait', section:'', pageIds:[]};
-  PAGE_TEMPLATES.push(s); markDirty(); renderTemplatesHome(); openSetEditor(s.id);
+  if(_hist.timer) historyCommit();
+  PAGE_TEMPLATES.push(s); markDirty(); renderTemplatesHome();
+  toast('새 세트를 만들었어요 — 오른쪽 페이지를 끌어다 넣고, 섹션 이름을 적어 주세요');
 }
 /* ===== 재료 라이브러리 (DB 관리) ===== */
 let curLibCat = null;
