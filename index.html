@@ -237,6 +237,7 @@ body.mode-editor .zoom-pill,body.mode-template .zoom-pill{display:flex}
 .tmpl-card-actions span:hover{background:var(--bg);color:var(--fg)}
 
 body.mode-template .rail,
+body.mode-templates .rail,
 body.mode-library .rail,
 body.mode-projects .rail{display:none}
 
@@ -286,6 +287,50 @@ body.mode-projects .rail{display:none}
 @keyframes tutPulse{0%{box-shadow:0 0 0 0 rgba(242,194,48,.9)}70%{box-shadow:0 0 0 12px rgba(242,194,48,0)}100%{box-shadow:0 0 0 0 rgba(242,194,48,0)}}
 .tut-hl{outline:3px solid #f2c230!important;outline-offset:3px;animation:tutPulse 1s ease-out 3;border-radius:6px;position:relative;z-index:6}
 @media print{ #tut-panel,.tut-badge{display:none!important} }
+/* 템플릿 화면 */
+.tlib-panel{--ts:.25;--ts-s:.12}
+.tl-hint{margin-left:10px;color:var(--fg4);font-size:10.5px}
+.tl-group{font-size:12px;font-weight:700;color:var(--fg2);margin:22px 0 10px;display:flex;align-items:center;gap:6px}
+.tl-group span{font-size:10.5px;font-weight:500;color:var(--fg4)}
+.tl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.tl-grid.sets{grid-template-columns:1fr}
+.tl-card{position:relative;background:#fff;border:1px solid var(--border2);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;transition:border-color .1s, box-shadow .1s}
+.tl-card:hover{border-color:var(--fg4);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.tl-thumb{position:relative;width:100%;aspect-ratio:794/562;overflow:hidden;border:1px solid var(--border2);border-radius:5px;background:#fff;cursor:pointer}
+.tl-thumb.portrait{aspect-ratio:794/1123}
+.tl-thumb .thumb-page{transform:scale(var(--ts))}
+.tl-thumb.small .thumb-page{transform:scale(var(--ts-s))}
+.tl-thumb:hover{border-color:var(--accent)}
+.tl-name{font-size:12.5px;font-weight:600;outline:none;border-radius:4px;padding:1px 3px;margin:0 -3px}
+.tl-name:hover{background:var(--bg)}
+.tl-name:focus{background:var(--bg);box-shadow:inset 0 0 0 1px var(--border)}
+.tl-meta{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tl-chip{font-size:10px;color:var(--fg3);background:var(--bg2);border-radius:4px;padding:1px 6px;display:inline-flex;align-items:center;gap:3px}
+.tl-chip.link{cursor:pointer}
+.tl-chip.link:hover{color:var(--fg);background:var(--bg)}
+.tl-actions{position:absolute;top:16px;right:16px;display:none;gap:3px;z-index:2}
+.tl-card:hover .tl-actions{display:flex}
+.tl-actions span{width:24px;height:24px;border-radius:6px;background:#fff;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--fg3);cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.tl-actions span:hover{color:var(--fg);border-color:var(--fg4)}
+.tl-actions span.danger:hover{color:#c0392b;border-color:#f3c6c6;background:#fdecea}
+.tl-set-strip{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+.tl-set-pg{flex:0 0 120px;min-width:0}
+.tl-set-cap{font-size:9.5px;color:var(--fg3);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-set-sec{flex:0 0 120px;min-width:0;align-self:flex-start;aspect-ratio:794/562;border:1px dashed var(--border);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--fg3);font-size:10px;text-align:center;padding:6px}
+.tl-set-sec.portrait{aspect-ratio:794/1123}
+.tl-set-sec b{color:var(--fg2);font-size:11px}
+.tl-empty-set{font-size:11px;color:var(--fg4);align-self:center}
+.crumb-link{cursor:pointer;color:var(--fg3)}
+.crumb-link:hover{color:var(--fg);text-decoration:underline}
+.tset-list{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;max-height:44vh;overflow-y:auto}
+.tset-row{display:flex;align-items:center;gap:6px;border:1px solid var(--border2);border-radius:6px;padding:5px 8px;font-size:12px}
+.tset-no{font-size:10px;color:var(--fg4);width:16px}
+.tset-nm{flex:1}
+.tset-btn{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fg3);font-size:11px}
+.tset-btn:hover{background:var(--bg);color:var(--fg)}
+.tset-btn.danger:hover{background:#fdecea;color:#c0392b}
+.tset-empty{font-size:11px;color:var(--fg4);padding:8px 0}
+.tset-add{width:100%;font:inherit;font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:#fff}
 .lib-usage{margin-top:22px;padding-top:12px;border-top:1px solid var(--border2);font-size:11px;color:var(--fg2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .lib-usage-sub{color:var(--fg3)}
 .lib-clean-btn{margin-left:auto;padding:3px 10px;font-size:10.5px}
@@ -673,6 +718,7 @@ body.mode-projects .app-home-txt,body.mode-projects .app-home-sep{display:none}
       <div class="page" id="page-root"></div>
       <div class="lib-panel" id="lib-root" style="display:none"></div>
       <div class="proj-panel" id="proj-root" style="display:none"></div>
+      <div class="proj-panel tlib-panel" id="tlib-root" style="display:none"></div>
     </div>
     <div class="zoom-pill no-print" id="zoom-pill">
       <button onclick="setPageZoom(pageZoom/1.1)" title="축소 (Ctrl+휠 아래 / Ctrl+-)">−</button>
@@ -692,6 +738,15 @@ body.mode-projects .app-home-txt,body.mode-projects .app-home-sep{display:none}
   <div class="ov-box" style="width:480px">
     <div class="ov-hdr"><b>페이지 추가</b><span id="tmpl-where" style="font-size:11px;color:var(--fg3)"></span><span class="ov-close" onclick="closeTmplPicker()"><i class="ti ti-x"></i></span></div>
     <div class="tmpl-grid" id="tmpl-grid"></div>
+  </div>
+</div>
+
+<!-- 세트 페이지 구성 -->
+<div class="ov" id="ov-tset">
+  <div class="ov-box" style="width:420px">
+    <div class="ov-hdr"><b>세트 페이지 구성</b><span class="ov-close" onclick="closeSetEditor()"><i class="ti ti-x"></i></span></div>
+    <div id="tset-body"></div>
+    <div class="ov-actions"><button class="btn btn-dark" onclick="closeSetEditor()">완료</button></div>
   </div>
 </div>
 
@@ -1149,9 +1204,10 @@ function resolveContainer(containerId){
 function pages(){ return [{type:'cover'}, ...curProj().spaces.map(sp=>({type:'space', sp}))]; }
 
 function render(){
-  if(_tut && !(mode==='library' || (mode==='editor' && curProjId===TUT_ID))){ exitTutorial(); return; }   // 연습 프로젝트를 벗어나면 연습 끝
+  if(_tut && !(mode==='library' || mode==='templates' || mode==='template' || (mode==='editor' && curProjId===TUT_ID))){ exitTutorial(); return; }   // 연습 프로젝트를 벗어나면 연습 끝 (라이브러리·템플릿 화면은 연습 중에도 들어가 볼 수 있음)
   document.body.className = 'mode-'+mode;
-  document.getElementById('page-root').style.display = (mode==='library'||mode==='projects') ? 'none' : 'block';
+  document.getElementById('page-root').style.display = (mode==='library'||mode==='projects'||mode==='templates') ? 'none' : 'block';
+  document.getElementById('tlib-root').style.display = mode==='templates' ? 'block' : 'none';
   document.getElementById('lib-root').style.display = mode==='library' ? 'flex' : 'none';
   document.getElementById('proj-root').style.display = mode==='projects' ? 'block' : 'none';
   const portrait = currentOrient()==='portrait';
@@ -1161,6 +1217,7 @@ function render(){
   if(mode==='template'){ renderTemplateEditor(); }
   else if(mode==='library'){ renderLibrary(); }
   else if(mode==='projects'){ renderProjectsList(); }
+  else if(mode==='templates'){ renderTemplatesHome(); }
   else { renderRail(); renderPage(); }
   renderCrumb();
   syncRoute();
@@ -1174,6 +1231,7 @@ function renderTopBar(){
       <h1><i class="ti ti-template"></i> 템플릿 편집 — ${esc(t.name)}</h1>
       <span class="hint"><i class="ti ti-info-circle"></i> 여기서 바꾼 내용은 라이브러리 전체에 반영돼요. 이미 프로젝트에 가져온 페이지는 영향받지 않아요.</span>
       <div class="spacer"></div>
+      <button class="btn" onclick="toggleTemplateOrient()" title="템플릿 페이지 크기 바꾸기"><i class="ti ti-${t.orient==='portrait'?'file':'file-horizontal'}"></i> ${t.orient==='portrait'?'A4 세로':'가로형'}</button>
       <button class="btn" onclick="deleteTemplateFromLibrary('${t.id}', true)"><i class="ti ti-trash"></i> 템플릿 삭제</button>
       <button class="btn btn-dark" onclick="exitTemplateEdit()"><i class="ti ti-check"></i> 완료</button>`;
   } else if(mode==='library'){
@@ -1183,12 +1241,22 @@ function renderTopBar(){
       <div class="spacer"></div>
       <button class="btn" onclick="triggerBulkUpload()"><i class="ti ti-cloud-upload"></i> 사진 일괄 업로드</button>
       <button class="btn btn-dark" onclick="exitMatLibrary()"><i class="ti ti-check"></i> 완료</button>`;
+  } else if(mode==='templates'){
+    bar.innerHTML = `
+      <h1><i class="ti ti-template"></i> 템플릿</h1>
+      <span class="hint"><i class="ti ti-info-circle"></i> 여기서 고친 템플릿은 앞으로 넣는 페이지에 반영돼요. 이미 프로젝트에 넣은 페이지는 그대로예요.</span>
+      <div class="spacer"></div>
+      <button class="btn" onclick="createTemplateSet()"><i class="ti ti-stack-2"></i> 새 세트</button>
+      <button class="btn" onclick="createTemplate('landscape')"><i class="ti ti-file-horizontal"></i> 새 템플릿 (가로형)</button>
+      <button class="btn" onclick="createTemplate('portrait')"><i class="ti ti-file"></i> 새 템플릿 (A4 세로)</button>
+      <button class="btn btn-dark" onclick="exitTemplatesHome()"><i class="ti ti-check"></i> 완료</button>`;
   } else if(mode==='projects'){
     bar.innerHTML = `
       <h1><i class="ti ti-building"></i> 프로젝트</h1>
       <span class="hint"><i class="ti ti-info-circle"></i> 프로젝트를 골라서 열거나 새로 만드세요.</span>
       <div class="spacer"></div>
       <button class="btn btn-tut" onclick="startTutorial()" title="저장되지 않는 예시 프로젝트에서 모든 기능을 직접 눌러 보며 배워요"><i class="ti ti-school"></i> 사용법 연습하기</button>
+      <button class="btn" onclick="openTemplatesHome()"><i class="ti ti-template"></i> 템플릿</button>
       <button class="btn" onclick="openMatLibrary()"><i class="ti ti-palette"></i> 재료 라이브러리</button>
       <button class="btn btn-dark" onclick="openNewProjectModal()"><i class="ti ti-plus"></i> 새 프로젝트</button>`;
   } else {
@@ -1958,6 +2026,9 @@ const TUT_STEPS = [
   {t:'이미지 글자 서식', page:4, hl:'#page-root .blk-img',
    d:'이미지 블록 도구 막대의 <b>글자 서식</b> 버튼으로 라벨 글자의 크기·굵기·정렬·색을 바꿔 보세요. 사진은 칸을 클릭하거나 끌어 놓아 바꿔요.',
    check:p=>tutBlocks(p).some(b=>b.type==='image' && b.ls)},
+  {t:'템플릿 화면', page:null, hl:'.tl-thumb', go:'templates',
+   d:'홈 위쪽 <b>[템플릿]</b>에서 모든 페이지 템플릿과 세트를 실제 모양 그대로 모아 봐요. (연습 중엔 "어디예요?"로 바로 가요)<br>미리보기를 <b>눌러서 편집</b>해 보세요. 이름은 카드에서 바로 고치고, 복제·삭제·그룹, 세트의 <b>페이지 구성</b>도 여기서 해요. "완료"를 누르면 돌아와요.',
+   check:()=>_tut && _tut.tmplEdit},
   {t:'실행취소', page:null, hl:'#undo-btn',
    d:'실수했으면 위쪽 <b>실행취소</b> 버튼이나 <b>Ctrl+Z</b>. 다시 하기는 Ctrl+Shift+Z예요. 한 번 눌러 보세요.',
    check:()=>_tut && _tut.undo>0},
@@ -2023,6 +2094,7 @@ function tutDoneManual(i){ if(!_tut) return; _tut.done.add(i); const nx = TUT_ST
 function tutShow(i){
   if(!_tut) return;
   const s = TUT_STEPS[i];
+  if(s.go==='templates' && mode!=='templates'){ prevMode = mode; mode = 'templates'; render(); }
   if(s.page!=null){
     if(mode!=='editor' || curProjId!==TUT_ID){ mode = 'editor'; curProjId = TUT_ID; }
     if(curPage!==s.page){ curPage = Math.min(s.page, pages().length-1); render(); }
@@ -2452,6 +2524,7 @@ let _routePending = false;   // 새로고침으로 #/p/... 에 들어왔을 때 
 function routeKeyFor(m){
   if(m==='editor' && curProjId) return '#/p/'+curProjId;
   if(m==='library') return '#/library';
+  if(m==='templates') return '#/templates';
   if(m==='template' && editingTemplateId) return '#/t/'+editingTemplateId;
   return '#/';
 }
@@ -2573,6 +2646,7 @@ function applyInitialRoute(){
   let m;
   if((m = h.match(/^#\/p\/(.+)$/)) && projects.find(p=>p.id===m[1])){ curProjId = m[1]; curPage = 0; mode = 'editor'; }
   else if(h==='#/library'){ prevMode = 'projects'; mode = 'library'; curLibCat = Object.keys(DB)[0] || null; }
+  else if(h==='#/templates'){ prevMode = 'projects'; mode = 'templates'; }
   else if((m = h.match(/^#\/t\/(.+)$/)) && PAGE_TEMPLATES.find(t=>t.id===m[1])){ prevMode = 'projects'; editingTemplateId = m[1]; mode = 'template'; }
 }
 _navStack[0] = location.hash || '#/';
@@ -3469,6 +3543,7 @@ function pickPageTemplate(tmplId){
 }
 function editTemplate(tmplId){
   closeTmplPicker();
+  if(_tut){ _tut.tmplEdit = true; setTimeout(tutCheck, 0); }
   prevMode = mode;
   mode = 'template';
   editingTemplateId = tmplId;
@@ -3501,6 +3576,155 @@ function saveCurrentAsTemplate(){
   toast(`"${name}" 템플릿으로 저장됐어요`);
 }
 
+/* ===== 템플릿 화면 (홈 → 템플릿, 2026.11.11) =====
+   mode 'templates' — 모든 페이지 템플릿을 실제 페이지 미리보기로 모아 보고, 이름·그룹·복제·삭제·새로 만들기,
+   세트는 페이지 구성(순서·추가·빼기)·섹션 이름 편집. 페이지 편집은 기존 템플릿 편집 화면(mode 'template')으로 들어가고 "완료"로 여기 돌아옴. */
+let tlibQuery = '';
+function openTemplatesHome(){ prevMode = mode; mode = 'templates'; render(); }
+function exitTemplatesHome(){
+  if(_tut){ mode = 'editor'; curProjId = TUT_ID; render(); return; }   // 연습 중엔 연습 프로젝트로 돌아감
+  if(navBackTo('#/')) return; mode = 'projects'; render();
+}
+function tmplPreviewHtml(t){
+  // 템플릿 편집 화면과 같은 모양을 그대로 축소 (편집 UI는 썸네일에서 숨김)
+  return `<div class="pg-space"><div class="sp-name">${esc(t.pageName||t.name||'')}</div>${blocksAreaHtml(t, 'tmpl:'+t.id)}</div>`;
+}
+function tmplGroupOf(t){ return t.pageIds ? '세트 — 여러 페이지 한번에' : (t.group || '내 템플릿'); }
+function tmplSetsUsing(id){ return PAGE_TEMPLATES.filter(s=>s.pageIds && s.pageIds.includes(id)); }
+function renderTemplatesHome(){
+  const root = document.getElementById('tlib-root'); if(!root) return;
+  const q = libNorm(tlibQuery);
+  const list = PAGE_TEMPLATES.filter(t=>!q || libNorm(`${t.name}|${t.pageName||''}|${t.group||''}|${t.desc||''}|${t.section||''}`).includes(q));
+  const groups = {};
+  list.forEach(t=>{ (groups[tmplGroupOf(t)] = groups[tmplGroupOf(t)] || []).push(t); });
+  const order = Object.keys(groups).sort((a,b)=>(b.startsWith('세트')?1:0)-(a.startsWith('세트')?1:0));
+  const thumb = (t, small)=>`<div class="tl-thumb ${t.orient==='portrait'?'portrait':''} ${small?'small':''}" onclick="editTemplate('${t.id}')" title="눌러서 편집">
+      <div class="thumb-live"><div class="thumb-page page${t.orient==='portrait'?' portrait':''}">${tmplPreviewHtml(t)}</div></div></div>`;
+  const pageCard = t=>{
+    const sets = tmplSetsUsing(t.id);
+    return `<div class="tl-card">
+      ${thumb(t)}
+      <div class="tl-info">
+        <div class="tl-name" contenteditable data-ph="템플릿 이름" onclick="event.stopPropagation()" oninput="renameTemplate('${t.id}',this)">${esc(t.name)}</div>
+        <div class="tl-meta">
+          <span class="tl-chip">${t.orient==='portrait'?'A4 세로':'가로형'}</span>
+          <span class="tl-chip link" onclick="setTemplateGroup('${t.id}')" title="그룹 바꾸기"><i class="ti ti-folder"></i> ${esc(t.group||'그룹 없음')}</span>
+          ${sets.length?`<span class="tl-chip" title="${esc(sets.map(s=>s.name).join(', '))}"><i class="ti ti-stack-2"></i> 세트 ${sets.length}개에 포함</span>`:''}
+        </div>
+      </div>
+      <div class="tl-actions">
+        <span onclick="editTemplate('${t.id}')" title="편집"><i class="ti ti-pencil"></i></span>
+        <span onclick="duplicateTemplate('${t.id}')" title="복제"><i class="ti ti-copy"></i></span>
+        <span class="danger" onclick="deleteTemplateHome('${t.id}')" title="삭제 (되돌리기 가능)"><i class="ti ti-trash"></i></span>
+      </div>
+    </div>`;
+  };
+  const setCard = s=>{
+    const pgs = (s.pageIds||[]).map(id=>PAGE_TEMPLATES.find(x=>x.id===id)).filter(Boolean);
+    return `<div class="tl-card tl-set">
+      <div class="tl-set-strip">
+        <div class="tl-set-sec ${s.orient==='portrait'?'portrait':''}"><i class="ti ti-bookmark"></i><b>${esc(s.section||s.name)}</b><span>섹션 표지</span></div>
+        ${pgs.map(p=>`<div class="tl-set-pg">${thumb(p,true)}<div class="tl-set-cap" title="${esc(p.name)}">${esc(p.name)}</div></div>`).join('')}
+        ${pgs.length?'':'<div class="tl-empty-set">페이지가 없어요 — "페이지 구성"에서 넣어 주세요</div>'}
+      </div>
+      <div class="tl-info">
+        <div class="tl-name" contenteditable data-ph="세트 이름" oninput="renameTemplate('${s.id}',this)">${esc(s.name)}</div>
+        <div class="tl-meta"><span class="tl-chip">${s.orient==='portrait'?'A4 세로':'가로형'}</span><span class="tl-chip">섹션 표지 + ${pgs.length}페이지</span></div>
+      </div>
+      <div class="tl-actions">
+        <span onclick="openSetEditor('${s.id}')" title="페이지 구성·섹션 이름"><i class="ti ti-list-details"></i></span>
+        <span onclick="duplicateTemplate('${s.id}')" title="복제"><i class="ti ti-copy"></i></span>
+        <span class="danger" onclick="deleteTemplateHome('${s.id}')" title="삭제 (되돌리기 가능 — 안의 페이지 템플릿은 그대로)"><i class="ti ti-trash"></i></span>
+      </div>
+    </div>`;
+  };
+  root.innerHTML = `
+    <div class="proj-toolbar no-print">
+      <div class="proj-search-wrap"><i class="ti ti-search"></i><input id="tlib-q" placeholder="템플릿 이름·그룹 검색" value="${esc(tlibQuery)}" oninput="tlibQuery=this.value;renderTemplatesHome()"></div>
+    </div>
+    <div class="proj-count">템플릿 ${PAGE_TEMPLATES.filter(t=>!t.pageIds).length}개 · 세트 ${PAGE_TEMPLATES.filter(t=>t.pageIds).length}개${q?` · "${esc(tlibQuery)}" 검색 결과 ${list.length}개`:''}
+      <span class="tl-hint">썸네일을 누르면 편집 · 이름은 그 자리에서 고쳐요 · 프로젝트에서 "+ 페이지"로 가져다 써요</span></div>
+    ${order.map(g=>`<div class="tl-group">${esc(g)} <span>${groups[g].length}</span></div>
+      <div class="tl-grid ${g.startsWith('세트')?'sets':''}">${groups[g].map(t=>t.pageIds?setCard(t):pageCard(t)).join('')}</div>`).join('')
+      || '<div class="lib-empty">찾는 템플릿이 없어요</div>'}`;
+  // 썸네일 배율 = 썸네일 폭 / 실제 페이지 폭(794px)
+  const t0 = root.querySelector('.tl-thumb:not(.small)'), t1 = root.querySelector('.tl-thumb.small');
+  if(t0) root.style.setProperty('--ts', (t0.clientWidth/794).toFixed(4));
+  if(t1) root.style.setProperty('--ts-s', (t1.clientWidth/794).toFixed(4));
+  if(document.activeElement && document.activeElement.id!=='tlib-q' && tlibQuery){ /* 검색 중이 아니면 그대로 */ }
+  const qi = document.getElementById('tlib-q'); if(qi && tlibQuery){ qi.focus(); qi.setSelectionRange(qi.value.length, qi.value.length); }
+}
+function renameTemplate(id, el){
+  const t = PAGE_TEMPLATES.find(x=>x.id===id); if(!t) return;
+  t.name = el.textContent.trim() || t.name; markDirty();
+}
+function setTemplateGroup(id){
+  const t = PAGE_TEMPLATES.find(x=>x.id===id); if(!t) return;
+  const gs = [...new Set(PAGE_TEMPLATES.filter(x=>!x.pageIds && x.group).map(x=>x.group))];
+  const v = prompt(`그룹 이름을 입력하세요 (비우면 "내 템플릿")\n지금 있는 그룹: ${gs.join(', ')||'없음'}`, t.group||'');
+  if(v===null) return;
+  if(v.trim()) t.group = v.trim(); else delete t.group;
+  markDirty(); renderTemplatesHome();
+}
+function duplicateTemplate(id){
+  const t = PAGE_TEMPLATES.find(x=>x.id===id); if(!t) return;
+  const c = JSON.parse(JSON.stringify(t));
+  c.id = uid('pt'); c.name = t.name + ' 복사본';
+  (c.blocks||[]).forEach(b=>b.id = uid('b'));
+  PAGE_TEMPLATES.splice(PAGE_TEMPLATES.indexOf(t)+1, 0, c);
+  markDirty(); renderTemplatesHome();
+  toast(`"${c.name}"을(를) 만들었어요`);
+}
+function deleteTemplateHome(id){
+  const t = PAGE_TEMPLATES.find(x=>x.id===id); if(!t) return;
+  const sets = t.pageIds ? [] : tmplSetsUsing(id);
+  if(sets.length && !confirm(`"${t.name}"은(는) 세트 ${sets.map(s=>`"${s.name}"`).join(', ')}에도 들어 있어요.\n삭제하면 그 세트에서도 빠져요. 삭제할까요? (바로 되돌리기 가능)`)) return;
+  if(_hist.timer) historyCommit();
+  PAGE_TEMPLATES = PAGE_TEMPLATES.filter(x=>x.id!==id);
+  sets.forEach(s=>{ s.pageIds = s.pageIds.filter(x=>x!==id); });
+  markDirty(); renderTemplatesHome();
+  showUndo(`"${t.name}" 템플릿을 삭제했어요 (이미 프로젝트에 넣은 페이지는 그대로예요)`);
+}
+function createTemplate(orient){
+  const t = {id:uid('pt'), name:'새 템플릿', icon:'ti-template', desc:'직접 만든 템플릿', orient: orient==='portrait'?'portrait':'landscape', blocks:[]};
+  PAGE_TEMPLATES.push(t);
+  markDirty();
+  editTemplate(t.id);
+  toast('새 템플릿이에요 — 위쪽 버튼으로 블록을 넣고, 다 되면 "완료"를 누르세요');
+}
+function toggleTemplateOrient(){
+  const t = PAGE_TEMPLATES.find(x=>x.id===editingTemplateId); if(!t) return;
+  t.orient = t.orient==='portrait' ? 'landscape' : 'portrait';
+  markDirty(); render();
+}
+/* 세트 페이지 구성 편집 (선택 동작이라 팝업 허용) */
+let _setEditId = null;
+function openSetEditor(id){ _setEditId = id; renderSetEditor(); document.getElementById('ov-tset').classList.add('show'); }
+function closeSetEditor(){ document.getElementById('ov-tset').classList.remove('show'); _setEditId = null; if(mode==='templates') renderTemplatesHome(); }
+function renderSetEditor(){
+  const s = PAGE_TEMPLATES.find(x=>x.id===_setEditId); if(!s) return;
+  const pgs = s.pageIds.map(id=>PAGE_TEMPLATES.find(x=>x.id===id)).filter(Boolean);
+  const avail = PAGE_TEMPLATES.filter(t=>!t.pageIds);
+  document.getElementById('tset-body').innerHTML = `
+    <div class="ov-field"><label>섹션 이름 (프로젝트에 넣으면 이 이름의 섹션 표지가 앞에 생겨요)</label>
+      <input type="text" value="${esc(s.section||'')}" placeholder="예) 실내 : 임대세대" oninput="setSetField('section',this.value)"></div>
+    <div class="ov-field"><label>페이지 (위에서부터 순서대로 들어가요)</label>
+      <div class="tset-list">${pgs.map((p,i)=>`<div class="tset-row"><span class="tset-no">${i+1}</span><span class="tset-nm">${esc(p.name)}</span>
+        <span class="tset-btn" onclick="moveSetPage(${i},-1)" title="위로" ${i?'':'style="visibility:hidden"'}><i class="ti ti-chevron-up"></i></span>
+        <span class="tset-btn" onclick="moveSetPage(${i},1)" title="아래로" ${i<pgs.length-1?'':'style="visibility:hidden"'}><i class="ti ti-chevron-down"></i></span>
+        <span class="tset-btn danger" onclick="removeSetPage(${i})" title="세트에서 빼기 (템플릿은 그대로)"><i class="ti ti-x"></i></span></div>`).join('') || '<div class="tset-empty">아직 페이지가 없어요</div>'}</div>
+      <select class="tset-add" onchange="if(this.value){addSetPage(this.value);}"><option value="">＋ 페이지 템플릿 추가…</option>
+        ${avail.map(t=>`<option value="${t.id}">${esc(t.name)}${t.group?` · ${esc(t.group)}`:''}</option>`).join('')}</select>
+    </div>`;
+}
+function setSetField(k, v){ const s = PAGE_TEMPLATES.find(x=>x.id===_setEditId); if(!s) return; s[k] = v; markDirty(); }
+function moveSetPage(i, d){ const s = PAGE_TEMPLATES.find(x=>x.id===_setEditId); const j = i+d; if(j<0||j>=s.pageIds.length) return; [s.pageIds[i], s.pageIds[j]] = [s.pageIds[j], s.pageIds[i]]; markDirty(); renderSetEditor(); }
+function removeSetPage(i){ const s = PAGE_TEMPLATES.find(x=>x.id===_setEditId); s.pageIds.splice(i,1); markDirty(); renderSetEditor(); }
+function addSetPage(id){ const s = PAGE_TEMPLATES.find(x=>x.id===_setEditId); s.pageIds.push(id); markDirty(); renderSetEditor(); }
+function createTemplateSet(){
+  const s = {id:uid('pt'), name:'새 세트', icon:'ti-stack-2', desc:'직접 만든 세트', orient:'portrait', section:'', pageIds:[]};
+  PAGE_TEMPLATES.push(s); markDirty(); renderTemplatesHome(); openSetEditor(s.id);
+}
 /* ===== 재료 라이브러리 (DB 관리) ===== */
 let curLibCat = null;
 let editMatId = null; // 편집 중인 재료 id (null이면 새 재료)
@@ -3526,7 +3750,8 @@ function renderCrumb(){
   let t = '';
   if(mode==='editor' && curProj()) t = `<i class="ti ti-chevron-right"></i><b>${esc(curProj().name)}</b>`;
   else if(mode==='library') t = `<i class="ti ti-chevron-right"></i><b>재료 라이브러리</b>`;
-  else if(mode==='template'){ const tp = PAGE_TEMPLATES.find(x=>x.id===editingTemplateId); t = `<i class="ti ti-chevron-right"></i><b>템플릿 편집${tp?' · '+esc(tp.name):''}</b>`; }
+  else if(mode==='templates') t = `<i class="ti ti-chevron-right"></i><b>템플릿</b>`;
+  else if(mode==='template'){ const tp = PAGE_TEMPLATES.find(x=>x.id===editingTemplateId); t = `${prevMode==='templates'?'<i class="ti ti-chevron-right"></i><span class="crumb-link" onclick="exitTemplateEdit()">템플릿</span>':''}<i class="ti ti-chevron-right"></i><b>템플릿 편집${tp?' · '+esc(tp.name):''}</b>`; }
   el.innerHTML = t;
 }
 function goProjectsList(){
