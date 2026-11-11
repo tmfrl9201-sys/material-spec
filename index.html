@@ -168,6 +168,8 @@ body.mode-editor .zoom-pill,body.mode-template .zoom-pill{display:flex}
 .fp-btn.wide{padding:0 8px;font-size:11px}
 .fp-wrap{display:flex;flex-wrap:wrap;gap:4px}
 #ph-fmt-pop{width:236px}
+.ph-note{font-size:10.5px;color:var(--fg4);line-height:1.5}
+.ph-note b{color:var(--fg3);font-weight:600}
 .blk{position:relative;border-radius:8px;padding:4px}
 .blk:hover{background:rgba(45,106,224,0.035)}
 .blk-toolbar{position:absolute;top:-11px;right:2px;display:none;gap:2px;background:#fff;border:1px solid var(--border2);border-radius:6px;padding:2px;box-shadow:0 2px 8px rgba(0,0,0,.08);z-index:3}
@@ -1816,11 +1818,11 @@ function renderPhFormat(){
   const f = (optAt(cid,bId,pi,oi).ph||{})[idx] || {};
   const curR = f.orig ? 'orig' : (f.r||''), curW = f.w||1;
   pop.innerHTML = `<div class="cp-title">이 사진의 비율·폭</div>
-    <div class="fp-lbl" style="margin-bottom:5px">비율 <span style="color:var(--fg4)">(기본 = 블록 비율 ${(b.ratio||'4/3').replace('/',':')})</span></div>
+    <div class="ph-note" style="margin-bottom:5px"><b>비율</b> · 기본 = 블록 비율 ${(b.ratio||'4/3').replace('/',':')}</div>
     <div class="fp-wrap">${PH_RATIOS.map(([v,t])=>`<span class="fp-btn wide ${curR===v?'on':''}" onclick="setPhFormat('r','${v}')">${t}</span>`).join('')}</div>
-    ${b.stack ? '<div class="fp-lbl" style="margin-top:8px;color:var(--fg4)">세로 쌓기 블록은 폭이 한 칸으로 고정돼요</div>'
+    ${b.stack ? '<div class="ph-note" style="margin-top:8px">세로 쌓기 블록은 폭이 한 칸으로 고정돼요</div>'
       : `<div class="fp-row" style="margin-top:8px"><span class="fp-lbl">폭</span>${[1,2,3].map(w=>`<span class="fp-btn wide ${curW===w?'on':''}" onclick="setPhFormat('w',${w})">${w}칸</span>`).join('')}</div>`}
-    <div class="fp-lbl" style="margin-top:8px;color:var(--fg4);line-height:1.5">페이지를 넘치게 되면 바뀌지 않아요. 보이는 부분은 사진 확대(돋보기)로 맞춰요.</div>`;
+    <div class="ph-note" style="margin-top:8px">페이지가 넘치면 바뀌지 않아요. 보이는 부분은 사진 확대(돋보기)로 맞춰요.</div>`;
 }
 function phNaturalRatio(src){
   return new Promise(res=>{ const im = new Image(); im.onload = ()=>res(im.naturalWidth && im.naturalHeight ? `${im.naturalWidth}/${im.naturalHeight}` : ''); im.onerror = ()=>res(''); im.src = src; });
